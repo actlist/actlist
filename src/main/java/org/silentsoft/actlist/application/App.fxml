@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
+   <children>
+		<AnchorPane fx:id="root" stylesheets="@App.css" minHeight="300.0" minWidth="380.0" prefHeight="300.0" prefWidth="380.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+		   <children>
+		      <AnchorPane fx:id="head" styleClass="head" maxHeight="25.0" prefHeight="25.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+		         <children>
+		            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		               <children>
+		                  <Pane prefWidth="10.0"/>
+		                  <Label text="Actlist" textAlignment="CENTER" textFill="#f4f4f4">
+		                     <font>
+							    <Font name="Verdana" size="13.0" />
+						     </font>
+						     <padding>
+						     	<Insets left="10.0"></Insets>
+						     </padding>
+		                  </Label>
+		                  <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+			              <HBox alignment="BOTTOM_RIGHT" minHeight="25.0" prefHeight="25.0" styleClass="controls">
+			                 <children>
+			            	    <Button fx:id="appMinimizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-minimize-button" />
+							    <Button fx:id="appMaximizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-maximize-button" />
+							    <Button fx:id="appCloseBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-close-button" />
+			            	 </children>
+			              </HBox>
+		               </children>
+		            </HBox>
+		         </children>
+		      </AnchorPane>
+		      <ScrollPane fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="25.0">
+		         <content>
+		            <VBox fx:id="componentBox" />
+		         </content>
+		      </ScrollPane>
+		   </children>
+		</AnchorPane>
+   </children>
+   <effect>
+      <DropShadow />
+   </effect>
+</AnchorPane>
