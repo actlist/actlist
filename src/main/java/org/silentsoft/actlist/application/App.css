@@ -1,0 +1,53 @@
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+
+.anchor-pane {
+   -fx-background-color: transparent;
+}
+
+.border-pane {
+   -fx-background-color: transparent;
+}
+
+.head {
+	-fx-background-color: rgb(35, 35, 35);
+}
+.head > * > .button {
+	-fx-cursor: hand;
+	-fx-background-repeat: no-repeat;
+	-fx-background-color: transparent;
+	-fx-background-position: center, center;
+}
+.head > * > .button:hover {
+	-fx-background-color: rgba(235,235,235,0.05);
+}
+.head > * > .button:pressed {
+	-fx-background-color: rgba(180,180,180,0.05);
+}
+.head > * > .controls > .button {
+	-fx-cursor: hand;
+	-fx-background-size: 24, 24;
+	-fx-background-repeat: no-repeat;
+	-fx-background-color: transparent;
+	-fx-background-position: center, center;
+}
+.head > * > .controls > .button:hover {
+	-fx-background-color: rgba(235,235,235,0.05);
+}
+.head > * > .controls > .button:pressed {
+	-fx-background-color: rgba(180,180,180,0.05);
+}
+.app-minimize-button {
+	-fx-background-image: url("/images/app/ic_minimize_white_48dp.png");
+}
+.app-maximize-button {
+	-fx-background-image: url("/images/app/ic_maximize_white_48dp.png");
+}
+.app-close-button {
+	-fx-background-image: url("/images/app/ic_close_white_48dp.png");
+}
