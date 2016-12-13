@@ -3,6 +3,9 @@ package org.silentsoft.actlist.application;
 import java.awt.Desktop;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 import javafx.animation.Transition;
 import javafx.application.Application;
@@ -106,10 +109,19 @@ public class App extends Application implements HotkeyListener {
 	
 	private void displayIcon() {
 		// taskbar
-		stage.getIcons().add(new Image("/images/icon/app_icon.png"));
+		stage.getIcons().addAll(new Function<int[], List<Image>>() {
+			@Override
+			public List<Image> apply(int[] values) {
+				ArrayList<Image> images = new ArrayList<Image>();
+				for (int size : values) {
+					images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), ".png")));
+				}
+				return images;
+			}
+		}.apply(new int[]{24, 32, 48, 64, 128, 256}));
 		
 		// system tray
-		TrayIconHandler.registerTrayIcon(new ImageIcon(getClass().getResource("/images/icon/app_icon.png")).getImage(), "Actlist", actionEvent -> {
+		TrayIconHandler.registerTrayIcon(new ImageIcon(getClass().getResource("/images/icon/actlist_16.png")).getImage(), "Actlist", actionEvent -> {
 			showOrHide();
 		});
 		

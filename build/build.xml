@@ -62,12 +62,12 @@
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="D:\SILENTSOFT\workspace\actlist">
+			<fileset dir="D:\SILENTSOFT\git\actlist">
 				<include name="src\main\resources/**" />
 			</fileset>
 		</copy>
 		<copy todir="project">
-			<fileset dir="D:\SILENTSOFT\workspace\actlist">
+			<fileset dir="D:\SILENTSOFT\git\actlist">
 				<include name="src\main\java/**" />
 			</fileset>
 		</copy>
