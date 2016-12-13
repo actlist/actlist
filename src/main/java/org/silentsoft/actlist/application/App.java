@@ -94,7 +94,7 @@ public class App extends Application implements HotkeyListener {
 	}
 	
 	private void initIntellitype() {
-		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "lib", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), ".dll")).toString());
+		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "libs", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), ".dll")).toString());
 		
 		if (JIntellitype.isJIntellitypeSupported() == false) {
 			System.exit(1); // Abnormal termination.
@@ -102,6 +102,7 @@ public class App extends Application implements HotkeyListener {
 	}
 	
 	private void checkSingleInstance() {
+		// TODO Hmmm... It does not work. why..?
 		if (JIntellitype.checkInstanceAlreadyRunning("Actlist")) {
 			System.exit(0); // Just termination.
 		}
