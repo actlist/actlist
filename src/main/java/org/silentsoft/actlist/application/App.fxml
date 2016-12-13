@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.control.*?>
@@ -9,19 +10,25 @@
 
 <AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
    <children>
-		<AnchorPane fx:id="root" stylesheets="@App.css" minHeight="300.0" minWidth="380.0" prefHeight="300.0" prefWidth="380.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+		<AnchorPane fx:id="root" minHeight="300.0" minWidth="380.0" prefHeight="300.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
-		      <AnchorPane fx:id="head" styleClass="head" maxHeight="25.0" prefHeight="25.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
 		         <children>
 		            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		               <children>
-		                  <Pane prefWidth="10.0"/>
+                          <Pane prefWidth="3.0" />
+                          <Label styleClass="app-icon" prefWidth="24.0" prefHeight="24.0">
+                             <effect>
+						        <DropShadow />
+						     </effect>
+                          </Label>
+                          <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
 		                  <Label text="Actlist" textAlignment="CENTER" textFill="#f4f4f4">
 		                     <font>
 							    <Font name="Verdana" size="13.0" />
 						     </font>
 						     <padding>
-						     	<Insets left="10.0"></Insets>
+						     	<Insets left="10.0" />
 						     </padding>
 		                  </Label>
 		                  <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />

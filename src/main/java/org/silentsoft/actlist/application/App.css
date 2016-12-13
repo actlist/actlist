@@ -14,6 +14,12 @@
    -fx-background-color: transparent;
 }
 
+.app-icon {
+	-fx-background-size: 24, 24;
+	-fx-background-repeat: no-repeat;
+	-fx-background-image: url("/images/icon/actlist_24.png");
+}
+
 .head {
 	-fx-background-color: rgb(35, 35, 35);
 }
