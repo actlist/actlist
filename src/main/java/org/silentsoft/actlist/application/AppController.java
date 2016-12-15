@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
 
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.actlist.plugin.PluginComponent;
 import org.silentsoft.actlist.util.FileUtil;
@@ -195,7 +197,7 @@ public class AppController implements EventListener {
     private void saveDeactivatedPlugins() {
     	try {
     		StringBuffer buffer = new StringBuffer();
-    		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get("DEACTIVATED_PLUGINS");
+    		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
     		for (String deactivatedPlugin : deactivatedPlugins) {
     			buffer.append(deactivatedPlugin);
     			buffer.append("\r\n");
@@ -207,11 +209,12 @@ public class AppController implements EventListener {
     	}
     }
 	
+	@SuppressWarnings("unchecked")
 	private void loadPlugins() {
 		componentBox.getChildren().clear();
 		try {
 			List<String> deactivatedPlugins = readDeactivatedPlugins();
-			SharedMemory.getDataMap().put("DEACTIVATED_PLUGINS", deactivatedPlugins);
+			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 			
 			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
 				try {
@@ -220,17 +223,20 @@ public class AppController implements EventListener {
 						String name = file.getName();
 						if (name.contains(".")) {
 							String extension = name.substring(name.lastIndexOf("."), name.length());
-							if (".jar".equalsIgnoreCase(extension)) {
+							if (CommonConst.EXTENSION_JAR.equalsIgnoreCase(extension)) {
 								URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ path.toUri().toURL() });
-								FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(".fxml")));
-								Node component = fxmlLoader.load();
-								((PluginComponent) fxmlLoader.getController()).initialize((ActlistPlugin) urlClassLoader.loadClass("Plugin").newInstance(), name, !deactivatedPlugins.contains(name));
-								componentBox.getChildren().add(component);
+								Class<?> pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+								if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
+									FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
+									Node component = fxmlLoader.load();
+									((PluginComponent) fxmlLoader.getController()).initialize((Class<? extends ActlistPlugin>) pluginClass, name, !deactivatedPlugins.contains(name));
+									componentBox.getChildren().add(component);
+								}
 							}
 						}
 					}
 				} catch (Exception e) {
-					;
+					
 				}
 			});
 			
@@ -253,14 +259,14 @@ public class AppController implements EventListener {
 				componentBox.getChildren().add(pane);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue == false && newValue == true) {
-				EventHandler.callEvent(getClass(), "APPLICATION_ACTIVATED");
+				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_ACTIVATED);
 			} else if (oldValue == true && newValue == false) {
-				EventHandler.callEvent(getClass(), "APPLICATION_DEACTIVATED");
+				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_DEACTIVATED);
 			}
 		});
 	}
@@ -268,7 +274,7 @@ public class AppController implements EventListener {
 	@Override
 	public void onEvent(String event) {
 		switch (event) {
-		case "SAVE_DEACTIVATED_PLUGINS":
+		case BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS:
 			saveDeactivatedPlugins();
 			break;
 		}

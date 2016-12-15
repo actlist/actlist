@@ -23,6 +23,8 @@ import javax.swing.ImageIcon;
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
 
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.util.SystemUtil;
 import org.silentsoft.ui.component.messagebox.MessageBox;
 import org.silentsoft.ui.tray.TrayIconHandler;
@@ -63,7 +65,7 @@ public class App extends Application implements HotkeyListener {
 		
 		initialize();
 		
-		stage.setTitle("Actlist");
+		stage.setTitle(BizConst.APPLICATION_NAME);
 		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setScene(new Scene(app, Color.TRANSPARENT));
 		stage.setOnCloseRequest(event -> {
@@ -85,7 +87,7 @@ public class App extends Application implements HotkeyListener {
 		displayIcon();
 		registerHotkey();
 		
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(".fxml")));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(CommonConst.EXTENSION_FXML)));
 		app = fxmlLoader.load();
 		appController = fxmlLoader.getController();
 		Platform.runLater(() -> {
@@ -94,7 +96,7 @@ public class App extends Application implements HotkeyListener {
 	}
 	
 	private void initIntellitype() {
-		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "libs", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), ".dll")).toString());
+		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "libs", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), CommonConst.EXTENSION_DLL)).toString());
 		
 		if (JIntellitype.isJIntellitypeSupported() == false) {
 			System.exit(1); // Abnormal termination.
@@ -102,8 +104,7 @@ public class App extends Application implements HotkeyListener {
 	}
 	
 	private void checkSingleInstance() {
-		// TODO Hmmm... It does not work. why..?
-		if (JIntellitype.checkInstanceAlreadyRunning("Actlist")) {
+		if (SystemUtil.findProcessByImageName(String.join("", BizConst.APPLICATION_NAME, CommonConst.EXTENSION_EXE))) {
 			System.exit(0); // Just termination.
 		}
 	}
@@ -115,14 +116,14 @@ public class App extends Application implements HotkeyListener {
 			public List<Image> apply(int[] values) {
 				ArrayList<Image> images = new ArrayList<Image>();
 				for (int size : values) {
-					images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), ".png")));
+					images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), CommonConst.EXTENSION_PNG)));
 				}
 				return images;
 			}
 		}.apply(new int[]{24, 32, 48, 64, 128, 256}));
 		
 		// system tray
-		TrayIconHandler.registerTrayIcon(new ImageIcon(getClass().getResource("/images/icon/actlist_16.png")).getImage(), "Actlist", actionEvent -> {
+		TrayIconHandler.registerTrayIcon(new ImageIcon(getClass().getResource("/images/icon/actlist_16.png")).getImage(), BizConst.APPLICATION_NAME, actionEvent -> {
 			showOrHide();
 		});
 		
