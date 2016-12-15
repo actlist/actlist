@@ -27,6 +27,11 @@
          </children>
       </HBox>
       <JFXToggleButton fx:id="togActivator" layoutX="199.0" layoutY="-2.0" onAction="#toggleOnAction" selected="false" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" AnchorPane.rightAnchor="-0.203125" />
+      <HBox fx:id="pluginLoadingBox" alignment="CENTER" layoutY="45.0" prefHeight="45.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXSpinner />
+         </children>
+      </HBox>
       <Separator layoutX="35.0" layoutY="45.0" prefWidth="215.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0" />
       <VBox fx:id="contentBox" layoutX="35.0" layoutY="50.0" prefWidth="380.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0">
          <children>
@@ -37,6 +42,13 @@
                   <Insets top="5.0" />
                </padding>
             </Separator>
+            -->
+         </children>
+      </VBox>
+      <VBox fx:id="contentLoadingBox" visible="false" alignment="CENTER" layoutX="35.0" layoutY="50.0" prefWidth="380.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <!-- Generate by code. 
+            <JFXSpinner />
             -->
          </children>
       </VBox>
