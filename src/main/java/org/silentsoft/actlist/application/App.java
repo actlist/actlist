@@ -1,6 +1,7 @@
 package org.silentsoft.actlist.application;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,9 +24,17 @@ import javax.swing.ImageIcon;
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
 
+import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
+import org.silentsoft.actlist.configuration.Configuration;
+import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
+import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.event.EventListener;
+import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.component.messagebox.MessageBox;
 import org.silentsoft.ui.tray.TrayIconHandler;
 import org.silentsoft.ui.util.StageUtil;
@@ -33,10 +42,8 @@ import org.silentsoft.ui.util.StageUtil;
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
-public class App extends Application implements HotkeyListener {
+public class App extends Application implements HotkeyListener, EventListener {
 
-	private static final int CTRL_ALT_A = 1;
-	
 	private static Stage stage;
 	
 	private static Parent app;
@@ -71,8 +78,12 @@ public class App extends Application implements HotkeyListener {
 		stage.setOnCloseRequest(event -> {
 			stage.hide();
 		});
+		stage.setOpacity(ConfigUtil.getStageOpacity());
+		stage.setAlwaysOnTop(ConfigUtil.isAlwaysOnTop());
 		
-		AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+		if (ConfigUtil.isAnimationEffect()) {
+			AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+		}
 		stage.show();
 	}
 	
@@ -81,10 +92,14 @@ public class App extends Application implements HotkeyListener {
 		
 		StageUtil.registerStage(stage);
 		
+		EventHandler.addListener(this);
+		
 		// WARNING : DO NOT MODIFY FUNCTION CALL PRIORITY
 		initIntellitype();
 		checkSingleInstance();
-		displayIcon();
+		loadConfiguration();
+		displayStageIcon();
+		registerTrayIcon();
 		registerHotkey();
 		
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(CommonConst.EXTENSION_FXML)));
@@ -109,7 +124,30 @@ public class App extends Application implements HotkeyListener {
 		}
 	}
 	
-	private void displayIcon() {
+	private void loadConfiguration() {
+		try {
+			ActlistConfig actlistConfig = null;
+			
+			File configFile = Paths.get(System.getProperty("user.dir"), "actlist.jar.config").toFile();
+			if (configFile.exists()) {
+				String configContent = FileUtil.readFile(configFile);
+				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
+			} else {
+				actlistConfig = new ActlistConfig();
+				actlistConfig.put("stageOpacity", 1.0);
+				actlistConfig.put("showHideActlistHotKeyModifier", JIntellitype.MOD_CONTROL + JIntellitype.MOD_ALT);
+				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
+				actlistConfig.put("animationEffect", true);
+				actlistConfig.put("alwaysOnTop", false);
+			}
+			
+			SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	private void displayStageIcon() {
 		// taskbar
 		stage.getIcons().addAll(new Function<int[], List<Image>>() {
 			@Override
@@ -121,15 +159,20 @@ public class App extends Application implements HotkeyListener {
 				return images;
 			}
 		}.apply(new int[]{24, 32, 48, 64, 128, 256}));
-		
+	}
+	
+	private void registerTrayIcon() {
 		// system tray
 		TrayIconHandler.registerTrayIcon(new ImageIcon(getClass().getResource("/images/icon/actlist_16.png")).getImage(), BizConst.APPLICATION_NAME, actionEvent -> {
 			showOrHide();
 		});
 		
-		// TODO The user may want to change this shortcut.
-		TrayIconHandler.addItem("Show/Hide (Ctrl+Alt+A)", actionEvent -> {
+		TrayIconHandler.addItem(String.join("", "Show/Hide ", "(", ConfigUtil.getShowHideActlistHotKeyText().replaceAll(" ", ""), ")"), actionEvent -> {
 			showOrHide();
+		});
+		
+		TrayIconHandler.addItem("Configuration", actionEvent -> {
+			showConfiguration();
 		});
 		
 		TrayIconHandler.addSeparator();
@@ -177,23 +220,51 @@ public class App extends Application implements HotkeyListener {
 	}
 	
 	private void registerHotkey() {
-		
 		JIntellitype.getInstance().addHotKeyListener(this);
-		JIntellitype.getInstance().registerHotKey(CTRL_ALT_A, JIntellitype.MOD_CONTROL + JIntellitype.MOD_ALT, 'A');
+		JIntellitype.getInstance().registerHotKey(BizConst.HOTKEY_SHOW_HIDE_ACTLIST, ConfigUtil.getShowHideActlistHotKeyModifier(), ConfigUtil.getShowHideActlistHotKeyCode());
 	}
 	
 	private void showOrHide() {
 		Platform.runLater(() -> {
 			if (stage.isShowing()) {
-				Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
-    			animation.setOnFinished(actionEvent -> {
-    				stage.hide();
-    			});
-    			animation.play();
+				if (ConfigUtil.isAnimationEffect()) {
+					Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
+	    			animation.setOnFinished(actionEvent -> {
+	    				stage.hide();
+	    			});
+	    			animation.play();
+				} else {
+					stage.hide();
+				}
 			} else {
-				AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+				if (ConfigUtil.isAnimationEffect()) {
+					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+				}
 				stage.show();
 			}
+		});
+	}
+	
+	private Stage configurationStage;
+	private void showConfiguration() {
+		Platform.runLater(() -> {
+			if (configurationStage == null) {
+				configurationStage = new Stage();
+				configurationStage.setTitle("Actlist Configuration");
+				configurationStage.setScene(new Scene(new Configuration().getViewer()));
+				configurationStage.setResizable(false);
+				configurationStage.getIcons().addAll(new Function<int[], List<Image>>() {
+					@Override
+					public List<Image> apply(int[] values) {
+						ArrayList<Image> images = new ArrayList<Image>();
+						for (int size : values) {
+							images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), CommonConst.EXTENSION_PNG)));
+						}
+						return images;
+					}
+				}.apply(new int[]{24, 32, 48, 64, 128, 256}));
+			}
+			configurationStage.show();
 		});
 	}
 	
@@ -205,10 +276,19 @@ public class App extends Application implements HotkeyListener {
 	@Override
 	public void onHotKey(int identifier) {
 		switch (identifier) {
-		case CTRL_ALT_A:
+		case BizConst.HOTKEY_SHOW_HIDE_ACTLIST:
 			showOrHide();
 			break;
 		}
 	}
-		
+
+	@Override
+	public void onEvent(String event) {
+		switch (event) {
+		case BizConst.EVENT_REGISTER_TRAY_ICON:
+			registerTrayIcon();
+			break;
+		}
+	}
+	
 }
