@@ -23,8 +23,6 @@
 		<junit.version>4.8.1</junit.version>
 
 		<!-- Silentsoft -->
-		<silentsoft.core.version>1.0.2</silentsoft.core.version>
-		<silentsoft.io.version>1.0.0</silentsoft.io.version>
 		<silentsoft.ui.version>1.0.0</silentsoft.ui.version>
 
 		<!-- Actlist -->
@@ -65,16 +63,6 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.silentsoft</groupId>
-			<artifactId>silentsoft-core</artifactId>
-			<version>${silentsoft.core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.silentsoft</groupId>
-			<artifactId>silentsoft-io</artifactId>
-			<version>${silentsoft.io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.silentsoft</groupId>
