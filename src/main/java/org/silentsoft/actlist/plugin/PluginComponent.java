@@ -1,8 +1,13 @@
 package org.silentsoft.actlist.plugin;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -21,6 +26,10 @@ import javafx.scene.paint.Paint;
 
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
+import org.silentsoft.actlist.plugin.config.PluginConfigMap;
+import org.silentsoft.actlist.plugin.config.PluginConfigObservableMap;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -28,6 +37,9 @@ import org.silentsoft.io.memory.SharedMemory;
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
+
+
+
 
 
 public class PluginComponent implements EventListener {
@@ -68,6 +80,39 @@ public class PluginComponent implements EventListener {
 			try {
 				plugin = pluginClass.newInstance();
 				
+				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
+				if (configFile.exists()) {
+					String configContent = FileUtil.readFile(configFile);
+					PluginConfigMap pluginConfigMap = JSONUtil.JSONToObject(configContent, PluginConfigMap.class);
+					if (pluginConfigMap != null && pluginConfigMap.getConfig() != null) {
+						plugin.setConfigMap(FXCollections.observableMap(pluginConfigMap.getConfig()));
+					}
+				}
+				
+				// FIXME : It takes too long to detect it first time.
+				plugin.getConfigMap().addListener(new MapChangeListener<String, String>() {
+					@Override
+					public void onChanged(javafx.collections.MapChangeListener.Change<? extends String, ? extends String> change) {
+						try {
+							if (configFile.getParentFile().exists() == false) {
+								configFile.getParentFile().mkdirs();
+							}
+							
+							if (configFile.exists() == false) {
+								configFile.createNewFile();
+							}
+							
+							PluginConfigObservableMap pluginConfigObservableMap = new PluginConfigObservableMap();
+							pluginConfigObservableMap.setConfig((ObservableMap<String, String>) change.getMap());
+							FileUtil.saveFile(configFile, JSONUtil.ObjectToString(pluginConfigObservableMap));
+						} catch (Exception e) {
+							
+						}
+					}
+				});
+				
+				plugin.initialize();
+				
 				this.pluginFileName = pluginFileName;
 				String pluginName = plugin.getPluginName();
 				String pluginDescription = plugin.getPlguinDescription();
@@ -102,11 +147,14 @@ public class PluginComponent implements EventListener {
 					EventHandler.addListener(this);
 				});
 			} catch (Exception e) {
+				e.printStackTrace();
 				Platform.runLater(() -> {
 					lblPluginName.setText(pluginFileName);
 					togActivator.setUnToggleLineColor(Paint.valueOf("#da4242"));
 					togActivator.setDisable(true);
 					togActivator.setOpacity(1.0); // remove disable effect.
+					
+					EventHandler.removeListener(this);
 				});
 			} finally {
 				pluginLoadingBox.setVisible(false);
