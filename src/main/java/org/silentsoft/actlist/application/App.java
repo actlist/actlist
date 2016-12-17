@@ -25,7 +25,7 @@ import jidefx.animation.AnimationUtils;
 
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
-import org.silentsoft.actlist.util.SystemUtil;
+import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.ui.component.messagebox.MessageBox;
 import org.silentsoft.ui.tray.TrayIconHandler;
 import org.silentsoft.ui.util.StageUtil;
@@ -157,6 +157,9 @@ public class App extends Application implements HotkeyListener {
 				message.append(" Jidefx-common\r\n");
 				message.append(" JFoenix\r\n");
 				message.append(" ControlsFx\r\n");
+				message.append(" Jackson\r\n");
+				message.append(" Apache-commons\r\n");
+				message.append(" JNA\r\n");
 				message.append("\r\n");
 				message.append("Open Source License\r\n");
 				// TODO specify open source licenses here.

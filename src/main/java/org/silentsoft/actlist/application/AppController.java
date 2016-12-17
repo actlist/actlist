@@ -26,7 +26,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.actlist.plugin.PluginComponent;
-import org.silentsoft.actlist.util.FileUtil;
+import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -215,6 +215,8 @@ public class AppController implements EventListener {
 		try {
 			List<String> deactivatedPlugins = readDeactivatedPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
+			
+			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
 			
 			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
 				try {
