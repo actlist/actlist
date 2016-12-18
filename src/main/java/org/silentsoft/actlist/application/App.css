@@ -57,3 +57,7 @@
 .app-close-button {
 	-fx-background-image: url("/images/app/ic_close_white_48dp.png");
 }
+
+.body {
+	-fx-background-color: #ffffff;
+}

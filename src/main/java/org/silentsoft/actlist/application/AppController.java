@@ -96,7 +96,7 @@ public class AppController implements EventListener {
         			double x = (mouseEvent.getScreenX() - stage.getX());
         			double y = (mouseEvent.getScreenY() - stage.getY());
 
-        			maximizeProperty.setMaximized(stage, false);
+        			changeMaximizeProperty(stage);
         			
         			stage.setX(x);
                     stage.setY(y);
@@ -256,7 +256,7 @@ public class AppController implements EventListener {
 				AnchorPane pane = new AnchorPane(hBox);
 				pane.setStyle("-fx-background-color: #ffffff;");
 				pane.setPrefWidth(200);
-				pane.setPrefHeight(150);
+				pane.setPrefHeight(140);
 
 				componentBox.getChildren().add(pane);
 			}
