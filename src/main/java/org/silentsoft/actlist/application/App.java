@@ -14,7 +14,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,7 +38,6 @@ import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
-import org.silentsoft.ui.component.messagebox.MessageBox;
 import org.silentsoft.ui.tray.TrayIconHandler;
 import org.silentsoft.ui.util.StageUtil;
 
@@ -64,6 +66,19 @@ public class App extends Application implements HotkeyListener, EventListener {
 	
 	static Parent getParent() {
 		return app;
+	}
+	
+	List<Image> getIcons() {
+		return new Function<int[], List<Image>>() {
+			@Override
+			public List<Image> apply(int[] values) {
+				ArrayList<Image> images = new ArrayList<Image>();
+				for (int size : values) {
+					images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), CommonConst.EXTENSION_PNG)));
+				}
+				return images;
+			}
+		}.apply(new int[]{24, 32, 48, 64, 128, 256});
 	}
 
 	@Override
@@ -149,16 +164,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 	
 	private void displayStageIcon() {
 		// taskbar
-		stage.getIcons().addAll(new Function<int[], List<Image>>() {
-			@Override
-			public List<Image> apply(int[] values) {
-				ArrayList<Image> images = new ArrayList<Image>();
-				for (int size : values) {
-					images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), CommonConst.EXTENSION_PNG)));
-				}
-				return images;
-			}
-		}.apply(new int[]{24, 32, 48, 64, 128, 256}));
+		stage.getIcons().addAll(getIcons());
 	}
 	
 	private void registerTrayIcon() {
@@ -208,7 +214,13 @@ public class App extends Application implements HotkeyListener, EventListener {
 				// TODO specify open source licenses here.
 				message.append(" Apache License 2.0\r\n");
 				
-				MessageBox.showAbout("Actlist", message.toString());
+				Alert alert = new Alert(AlertType.INFORMATION);
+				((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(getIcons());
+				alert.setTitle("About");
+				alert.setHeaderText("Actlist");
+				alert.setGraphic(new ImageView("/images/icon/actlist_48.png"));
+				alert.setContentText(message.toString());
+				alert.showAndWait();
 			});
 		});
 		
