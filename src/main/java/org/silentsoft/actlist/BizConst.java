@@ -9,6 +9,7 @@ public class BizConst {
 	public static final String EVENT_APPLICATION_DEACTIVATED  = "EVENT_APPLICATION_DEACTIVATED";
 	public static final String EVENT_SAVE_DEACTIVATED_PLUGINS = "EVENT_SAVE_DEACTIVATED_PLUGINS";
 	public static final String EVENT_REGISTER_TRAY_ICON       = "EVENT_REGISTER_TRAY_ICON";
+	public static final String EVENT_APPLICATION_SHOW_HIDE    = "EVENT_APPLICATION_SHOW_HIDE";
 	
 	public static final String APPLICATION_NAME = "Actlist";
 	
