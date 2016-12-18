@@ -134,7 +134,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 	}
 	
 	private void checkSingleInstance() {
-		if (SystemUtil.findProcessByImageName(String.join("", BizConst.APPLICATION_NAME, CommonConst.EXTENSION_EXE))) {
+		if (SystemUtil.findProcessByImageName(String.join("", BizConst.APPLICATION_NAME, CommonConst.EXTENSION_EXE), SystemUtil.getCurrentProcessId())) {
 			System.exit(0); // Just termination.
 		}
 	}
@@ -197,7 +197,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 			Platform.runLater(() -> {
 				StringBuffer message = new StringBuffer();
 				// TODO need to change to use BuildVersion class file instead hard-coding. but, I dont have time.
-				message.append("Version  : 1.0.0\r\n");
+				message.append("Version  : 1.1.0\r\n");
 				message.append("\r\n");
 				message.append("Homepage : silentsoft.org\r\n");
 				message.append("\r\n");
@@ -299,6 +299,9 @@ public class App extends Application implements HotkeyListener, EventListener {
 		switch (event) {
 		case BizConst.EVENT_REGISTER_TRAY_ICON:
 			registerTrayIcon();
+			break;
+		case BizConst.EVENT_APPLICATION_SHOW_HIDE:
+			showOrHide();
 			break;
 		}
 	}
