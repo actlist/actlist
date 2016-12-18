@@ -11,7 +11,7 @@
 
 <AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
    <children>
-		<AnchorPane fx:id="root" minHeight="180.0" minWidth="380.0" prefHeight="180.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+		<AnchorPane fx:id="root" minHeight="90.0" minWidth="380.0" prefHeight="230.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
 		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 		         <children>
