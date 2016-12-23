@@ -7,10 +7,12 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
@@ -20,8 +22,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
 
+import org.controlsfx.control.PopOver;
 import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
@@ -34,9 +39,6 @@ import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 
 public class PluginComponent implements EventListener {
-
-	@FXML
-	private AnchorPane root;
 
 	@FXML
 	private JFXHamburger hand;
@@ -60,7 +62,7 @@ public class PluginComponent implements EventListener {
 	
 	private ActlistPlugin plugin;
 	
-	private ContextMenu contextMenu;
+	private PopOver popOver;
 	
 	public void initialize() {
 		// This method is automatically called by FXMLLoader.
@@ -85,7 +87,7 @@ public class PluginComponent implements EventListener {
 				
 				this.pluginFileName = pluginFileName;
 				String pluginName = plugin.getPluginName();
-				String pluginDescription = plugin.getPlguinDescription();
+				String pluginDescription = plugin.getPluginDescription();
 				
 				Platform.runLater(() -> {
 					lblPluginName.setText(pluginName);
@@ -99,10 +101,13 @@ public class PluginComponent implements EventListener {
 						activated();
 					}
 					
-					contextMenu = new ContextMenu();
+					popOver = new PopOver(new VBox());
+					((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
+					popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+					
 					for (Function function : plugin.getFunctionMap().values()) {
-						MenuItem menuItem = new MenuItem("", function.graphic);
-						menuItem.setOnAction((actionEvent) -> {
+						Label label = new Label("", function.graphic);
+						label.setOnMouseClicked(mouseEvent -> {
 							try {
 								if (function.action != null) {
 									function.action.run();
@@ -111,8 +116,33 @@ public class PluginComponent implements EventListener {
 								e.printStackTrace();
 							}
 						});
-						contextMenu.getItems().add(menuItem);
+						
+						addNodeToPopOver(label);
 					}
+					
+					if (plugin.getFunctionMap().size() > 0) {
+						((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+					}
+					
+					Label label = new Label("About");
+					label.setOnMouseClicked(mouseEvent -> {
+						Alert alert = new Alert(AlertType.INFORMATION);
+						((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
+						alert.setTitle("About");
+						alert.setHeaderText(plugin.getPluginName());
+						if (plugin.getPluginDescription() != null) {
+							StringBuffer contentText = new StringBuffer();
+							contentText.append(plugin.getPluginDescription());
+							if (plugin.getPluginAuthor() != null) {
+								contentText.append("\r\n\r\n");
+								contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
+							}
+							alert.setContentText(contentText.toString());
+						}
+						
+						alert.showAndWait();
+					});
+					addNodeToPopOver(label);
 					
 					EventHandler.addListener(this);
 				});
@@ -130,6 +160,20 @@ public class PluginComponent implements EventListener {
 				pluginLoadingBox.setVisible(false);
 			}
 		}).start();
+	}
+	
+	private void addNodeToPopOver(Node node) {
+		HBox hBox = new HBox(node);
+		hBox.setAlignment(Pos.CENTER);
+		hBox.setPadding(new Insets(3, 3, 3, 3));
+		hBox.setStyle("-fx-background-color: white;");
+		hBox.setOnMouseEntered(mouseEvent -> {
+			hBox.setStyle("-fx-background-color: lightgray;");
+		});
+		hBox.setOnMouseExited(mouseEvent -> {
+			hBox.setStyle("-fx-background-color: white;");
+		});
+		((VBox) popOver.getContentNode()).getChildren().add(hBox);
 	}
 	
 	private void loadPluginGraphic() {
@@ -187,7 +231,8 @@ public class PluginComponent implements EventListener {
 	private void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseButton.SECONDARY) {
 			if (togActivator.selectedProperty().get()) {
-				contextMenu.show(root, e.getScreenX(), e.getScreenY());
+				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
+				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 			}
 		}
 	}
@@ -228,7 +273,7 @@ public class PluginComponent implements EventListener {
 					
 					contentBox.getChildren().clear();
 					contentLoadingBox.getChildren().clear();
-					contextMenu.hide();
+					popOver.hide();
 					plugin.pluginDeactivated();
 				} catch (Exception e) {
 					

@@ -10,14 +10,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" onMouseClicked="#mouseClicked" prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
+<AnchorPane prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
    <children>
       <JFXHamburger fx:id="hand" layoutX="13.0" layoutY="19.0" opacity="0.2" prefHeight="14.0" prefWidth="11.0">
          <cursor>
             <Cursor fx:constant="MOVE" />
          </cursor>
       </JFXHamburger>
-      <HBox layoutY="18.0" prefHeight="20.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="60.0">
+      <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label fx:id="lblPluginName" prefHeight="16.0" prefWidth="302.0" text="Plugin name here" HBox.hgrow="SOMETIMES">
                <font>
@@ -25,6 +25,12 @@
                </font>
             </Label>
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets top="5.0" />
+         </padding>
       </HBox>
       <JFXToggleButton fx:id="togActivator" layoutX="199.0" layoutY="-2.0" onAction="#toggleOnAction" selected="false" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" AnchorPane.rightAnchor="-0.203125" />
       <HBox fx:id="pluginLoadingBox" alignment="CENTER" layoutY="45.0" prefHeight="45.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -45,7 +51,7 @@
             -->
          </children>
       </VBox>
-      <VBox fx:id="contentLoadingBox" visible="false" alignment="CENTER" layoutX="35.0" layoutY="50.0" prefWidth="380.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0">
+      <VBox fx:id="contentLoadingBox" alignment="CENTER" layoutX="35.0" layoutY="50.0" prefWidth="380.0" style="-fx-background-color: white;" visible="false" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0">
          <children>
             <!-- Generate by code. 
             <JFXSpinner />
