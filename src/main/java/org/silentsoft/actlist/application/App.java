@@ -68,7 +68,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 		return app;
 	}
 	
-	List<Image> getIcons() {
+	public static List<Image> getIcons() {
 		return new Function<int[], List<Image>>() {
 			@Override
 			public List<Image> apply(int[] values) {
