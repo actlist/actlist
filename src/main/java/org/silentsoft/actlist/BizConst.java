@@ -4,6 +4,7 @@ public class BizConst {
 
 	public static final String KEY_ACTLIST_CONFIG = "KEY_ACTLIST_CONFIG";
 	public static final String KEY_DEACTIVATED_PLUGINS = "KEY_DEACTIVATED_PLUGINS";
+	public static final String KEY_COMPONENT_BOX = "KEY_COMPONENT_BOX";
 	
 	public static final String EVENT_APPLICATION_ACTIVATED    = "EVENT_APPLICATION_ACTIVATED";
 	public static final String EVENT_APPLICATION_DEACTIVATED  = "EVENT_APPLICATION_DEACTIVATED";
