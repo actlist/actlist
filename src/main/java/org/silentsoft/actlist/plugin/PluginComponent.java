@@ -17,7 +17,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -97,10 +96,6 @@ public class PluginComponent implements EventListener {
 					
 					togActivator.setSelected(activated);
 					
-					if (activated) {
-						activated();
-					}
-					
 					popOver = new PopOver(new VBox());
 					((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 					popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
@@ -143,6 +138,18 @@ public class PluginComponent implements EventListener {
 						alert.showAndWait();
 					});
 					addNodeToPopOver(label);
+					
+					if (activated) {
+						activated();
+					}
+					
+					plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
+						if (oldValue == newValue) {
+							return;
+						}
+						
+						displayLoadingBar(newValue);
+					});
 					
 					EventHandler.addListener(this);
 				});
@@ -199,18 +206,8 @@ public class PluginComponent implements EventListener {
 		  </VBox>
 		 */
 		
-		
 		try {
-			contentBox.getChildren().clear();
-			contentLoadingBox.getChildren().clear();
-			
 			if (plugin.existsGraphic()) {
-				contentLoadingBox.getChildren().add(new JFXSpinner());
-				
-				AnchorPane.setTopAnchor(contentLoadingBox, 50.0);
-				AnchorPane.setBottomAnchor(contentLoadingBox, 0.0);
-				
-				contentLoadingBox.setVisible(true);
 				Node pluginContent = plugin.getGraphic();
 				if (pluginContent != null) {
 					contentBox.getChildren().add(new BorderPane(pluginContent));
@@ -222,8 +219,31 @@ public class PluginComponent implements EventListener {
 			}
 		} catch (Exception e) {
 			
-		} finally {
-			contentLoadingBox.setVisible(false);
+		}
+	}
+	
+	private void displayLoadingBar(boolean shouldShowLoadingBar) {
+		if (plugin.existsGraphic()) {
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					contentLoadingBox.getChildren().clear();
+					
+					if (shouldShowLoadingBar) {
+						contentLoadingBox.getChildren().add(new JFXSpinner());
+					}
+					
+					contentLoadingBox.setVisible(shouldShowLoadingBar);
+				}
+			};
+			
+			if (Platform.isFxApplicationThread()) {
+				runnable.run();
+			} else {
+				Platform.runLater(() -> {
+					runnable.run();
+				});
+			}
 		}
 	}
 	
@@ -247,11 +267,15 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void activated() {
+		displayLoadingBar(true);
+		
 		new Thread(() -> {
 			Platform.runLater(() -> {
 				try {
 					plugin.pluginActivated();
 					loadPluginGraphic();
+					
+					displayLoadingBar(false);
 					
 					List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
 					deactivatedPlugins.remove(pluginFileName);
