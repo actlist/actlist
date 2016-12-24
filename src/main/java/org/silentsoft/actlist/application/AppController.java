@@ -64,6 +64,9 @@ public class AppController implements EventListener {
 	protected void initialize() {
 		EventHandler.addListener(this);
 		
+		root.setPrefWidth(ConfigUtil.getRootWidth());
+		root.setPrefHeight(ConfigUtil.getRootHeight());
+		
 		maximizeProperty = new MaximizeProperty(App.getStage());
 		
 		makeDraggable(App.getStage(), head);
@@ -183,6 +186,9 @@ public class AppController implements EventListener {
     private void makeResizable(final Stage stage, final Region region) {
     	StageDragResizer.makeResizable(stage, region, 7, () -> {
     		try {
+    			ConfigUtil.setRootWidth(region.getWidth());
+    			ConfigUtil.setRootHeight(region.getHeight());
+    			
     			ConfigUtil.setStageWidth(App.getStage().getWidth());
     			ConfigUtil.setStageHeight(App.getStage().getHeight());
     		} catch (Exception e) {
