@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
+<AnchorPane fx:id="root" prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
    <children>
       <JFXHamburger fx:id="hand" layoutX="13.0" layoutY="19.0" opacity="0.2" prefHeight="14.0" prefWidth="11.0">
          <cursor>
@@ -38,7 +38,7 @@
             <JFXSpinner />
          </children>
       </HBox>
-      <Separator layoutX="35.0" layoutY="45.0" prefWidth="215.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0" />
+      <Separator layoutX="35.0" layoutY="50.0" prefWidth="215.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0" />
       <VBox fx:id="contentBox" layoutX="35.0" layoutY="50.0" prefWidth="380.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0">
          <children>
             <!-- Generate by code. 

@@ -43,6 +43,9 @@ public class AppController implements EventListener {
 	private AnchorPane head;
 	
 	@FXML
+	private AnchorPane body;
+	
+	@FXML
 	private Button appMinimizeBtn;
 	
 	@FXML
@@ -71,6 +74,8 @@ public class AppController implements EventListener {
 		StageDragResizer.makeResizable(App.getStage(), root);
 		
 		loadPlugins();
+		
+		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
 	}
 	
 	/**
@@ -181,12 +186,30 @@ public class AppController implements EventListener {
 			AnchorPane.setRightAnchor(root, 0.0);
 			AnchorPane.setTopAnchor(root, 0.0);
 			AnchorPane.setBottomAnchor(root, 0.0);
+			
+			AnchorPane.setLeftAnchor(head, 0.0);
+			AnchorPane.setRightAnchor(head, 0.0);
+			AnchorPane.setTopAnchor(head, 0.0);
+			
+			AnchorPane.setLeftAnchor(body, 0.0);
+			AnchorPane.setRightAnchor(body, 0.0);
+			AnchorPane.setTopAnchor(body, 25.0);
+			AnchorPane.setBottomAnchor(body, 0.0);
 		} else {
 			// Showing shadow when normalized.
 			AnchorPane.setLeftAnchor(root, 5.0);
 			AnchorPane.setRightAnchor(root, 5.0);
 			AnchorPane.setTopAnchor(root, 5.0);
 			AnchorPane.setBottomAnchor(root, 5.0);
+			
+			// Make offset for change the size of application via mouse.
+			AnchorPane.setLeftAnchor(head, 2.0);
+			AnchorPane.setRightAnchor(head, 2.0);
+			AnchorPane.setTopAnchor(head, 2.0);
+			AnchorPane.setLeftAnchor(body, 2.0);
+			AnchorPane.setRightAnchor(body, 2.0);
+			AnchorPane.setTopAnchor(body, 27.0);
+			AnchorPane.setBottomAnchor(body, 2.0);
 		}
     }
     

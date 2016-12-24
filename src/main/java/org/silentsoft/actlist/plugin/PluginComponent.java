@@ -15,11 +15,16 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
@@ -37,8 +42,12 @@ import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 
+
 public class PluginComponent implements EventListener {
 
+	@FXML
+	private AnchorPane root;
+	
 	@FXML
 	private JFXHamburger hand;
 	
@@ -89,6 +98,8 @@ public class PluginComponent implements EventListener {
 				String pluginDescription = plugin.getPluginDescription();
 				
 				Platform.runLater(() -> {
+					makeDraggable();
+
 					lblPluginName.setText(pluginName);
 					if (pluginDescription != null && "".equals(pluginDescription) == false) {
 						lblPluginName.setTooltip(new Tooltip(pluginDescription));
@@ -168,6 +179,64 @@ public class PluginComponent implements EventListener {
 				pluginLoadingBox.setVisible(false);
 			}
 		}).start();
+	}
+	
+	private void makeDraggable() {
+		hand.setOnDragDetected(mouseEvent -> {
+			createSnapshot(mouseEvent);
+			
+			root.startFullDrag();
+		});
+		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
+			root.setStyle("-fx-background-color: #f2f2f2;");
+			
+			mouseDragEvent.consume();
+		});
+		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
+			deleteSnapshot();
+			
+			// move index of dragging node to index of drop target.
+			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			int indexOfDraggingNode = componentBox.getChildren().indexOf(mouseDragEvent.getGestureSource());
+			int indexOfDropTarget = componentBox.getChildren().indexOf(root);
+			if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
+				final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
+				componentBox.getChildren().add(indexOfDropTarget, node);
+			}
+			
+			mouseDragEvent.consume();
+		});
+		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
+			root.setStyle("-fx-background-color: #ffffff;");
+			
+			mouseDragEvent.consume();
+		});
+		hand.setOnMouseReleased(mouseEvent -> {
+			// in most cases, the 'root' will consume the mouse drag event. so will not being called this event.
+			// but the meaning of this event being called is that it is outside the drag area. so, must remove the snapshot.
+			deleteSnapshot();
+		});
+	}
+	
+	private void createSnapshot(MouseEvent mouseEvent) {
+		ImageView snapshot = new ImageView(root.snapshot(null, null));
+		snapshot.setManaged(false);
+		snapshot.setMouseTransparent(true);
+		snapshot.setEffect(new DropShadow(3.0, 0.0, 1.5, Color.valueOf("#333333")));
+		
+		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+		componentBox.getChildren().add(snapshot);
+		componentBox.setUserData(snapshot);
+		componentBox.setOnMouseDragged(event -> {
+			snapshot.relocate(event.getX() - mouseEvent.getX(), event.getY() - mouseEvent.getY());
+		});
+	}
+	
+	private void deleteSnapshot() {
+		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+		componentBox.setOnMouseDragged(null);
+		componentBox.getChildren().remove(componentBox.getUserData());
+		componentBox.setUserData(null);
 	}
 	
 	private void addNodeToPopOver(Node node) {
