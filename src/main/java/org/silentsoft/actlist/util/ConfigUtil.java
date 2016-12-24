@@ -12,6 +12,30 @@ public class ConfigUtil {
 		return (ActlistConfig) SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG);
 	}
 	
+	public static double getStageWidth() {
+		Object stageWidth = getActlistConfig().get("stageWidth");
+		if (stageWidth instanceof Integer) {
+			return ((int) stageWidth) + 0.0;
+		}
+		return ((double) stageWidth);
+	}
+	
+	public static void setStageWidth(double width) throws Exception {
+		getActlistConfig().put("stageWidth", width);
+	}
+	
+	public static double getStageHeight() {
+		Object stageHeight = getActlistConfig().get("stageHeight");
+		if (stageHeight instanceof Integer) {
+			return ((int) stageHeight) + 0.0;
+		}
+		return ((double) stageHeight);
+	}
+	
+	public static void setStageHeight(double height) throws Exception {
+		getActlistConfig().put("stageHeight", height);
+	}
+	
 	public static double getStageOpacity() {
 		Object stageOpacity = getActlistConfig().get("stageOpacity");
 		if (stageOpacity instanceof Integer) {

@@ -93,6 +93,8 @@ public class App extends Application implements HotkeyListener, EventListener {
 		stage.setOnCloseRequest(event -> {
 			stage.hide();
 		});
+		stage.setWidth(ConfigUtil.getStageWidth());
+		stage.setHeight(ConfigUtil.getStageHeight());
 		stage.setOpacity(ConfigUtil.getStageOpacity());
 		stage.setAlwaysOnTop(ConfigUtil.isAlwaysOnTop());
 		
@@ -149,6 +151,8 @@ public class App extends Application implements HotkeyListener, EventListener {
 				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
 			} else {
 				actlistConfig = new ActlistConfig();
+				actlistConfig.put("stageWidth", 390.0);  // left shadow(5) + root(380) + right shadow(5)
+				actlistConfig.put("stageHeight", 240.0); // top shadow(5) + root(230) + bottom shadow(5)
 				actlistConfig.put("stageOpacity", 1.0);
 				actlistConfig.put("showHideActlistHotKeyModifier", JIntellitype.MOD_CONTROL + JIntellitype.MOD_ALT);
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');

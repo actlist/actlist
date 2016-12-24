@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jidefx.animation.AnimationType;
@@ -26,6 +27,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.actlist.plugin.PluginComponent;
+import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
@@ -71,7 +73,7 @@ public class AppController implements EventListener {
 		makeMaximizable(App.getStage(), appMaximizeBtn);
 		makeClosable(App.getStage(), appCloseBtn);
 		
-		StageDragResizer.makeResizable(App.getStage(), root);
+		makeResizable(App.getStage(), root);
 		
 		loadPlugins();
 		
@@ -174,6 +176,17 @@ public class AppController implements EventListener {
     				stage.hide();
     			});
     			animation.play();
+    		}
+    	});
+    }
+    
+    private void makeResizable(final Stage stage, final Region region) {
+    	StageDragResizer.makeResizable(stage, region, 7, () -> {
+    		try {
+    			ConfigUtil.setStageWidth(App.getStage().getWidth());
+    			ConfigUtil.setStageHeight(App.getStage().getHeight());
+    		} catch (Exception e) {
+    			
     		}
     	});
     }
