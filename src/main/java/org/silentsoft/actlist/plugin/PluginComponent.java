@@ -123,6 +123,7 @@ public class PluginComponent implements EventListener {
 					label.setOnMouseClicked(mouseEvent -> {
 						Alert alert = new Alert(AlertType.INFORMATION);
 						((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
+						alert.initOwner(App.getStage());
 						alert.setTitle("About");
 						alert.setHeaderText(plugin.getPluginName());
 						if (plugin.getPluginDescription() != null) {

@@ -13,7 +13,7 @@
    <children>
 		<AnchorPane fx:id="root" minHeight="90.0" minWidth="380.0" prefHeight="230.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
-		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
 		         <children>
 		            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		               <children>
@@ -44,7 +44,7 @@
 		            </HBox>
 		         </children>
 		      </AnchorPane>
-		      <AnchorPane styleClass="body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+		      <AnchorPane styleClass="body" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
 		         <children>
 		    		  <ScrollPane fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 				         <content>

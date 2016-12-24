@@ -65,6 +65,7 @@
 .scroll-bar:horizontal,
 .scroll-bar:vertical {
     -fx-background-color: transparent;
+    -fx-padding: 0.1em;
 }
 /* The main scrollbar **track** CSS class  */
 .scroll-bar:horizontal .track,
