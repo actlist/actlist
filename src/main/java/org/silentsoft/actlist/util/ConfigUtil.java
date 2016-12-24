@@ -12,6 +12,30 @@ public class ConfigUtil {
 		return (ActlistConfig) SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG);
 	}
 	
+	public static double getRootWidth() {
+		Object rootWidth = getActlistConfig().get("rootWidth");
+		if (rootWidth instanceof Integer) {
+			return ((int) rootWidth) + 0.0;
+		}
+		return ((double) rootWidth);
+	}
+	
+	public static void setRootWidth(double width) throws Exception {
+		getActlistConfig().put("rootWidth", width);
+	}
+	
+	public static double getRootHeight() {
+		Object rootHeight = getActlistConfig().get("rootHeight");
+		if (rootHeight instanceof Integer) {
+			return ((int) rootHeight) + 0.0;
+		}
+		return ((double) rootHeight);
+	}
+	
+	public static void setRootHeight(double height) throws Exception {
+		getActlistConfig().put("rootHeight", height);
+	}
+	
 	public static double getStageWidth() {
 		Object stageWidth = getActlistConfig().get("stageWidth");
 		if (stageWidth instanceof Integer) {
@@ -48,6 +72,22 @@ public class ConfigUtil {
 		getActlistConfig().put("stageOpacity", opacity);
 	}
 	
+	public static boolean isAlwaysOnTop() {
+		return (boolean) getActlistConfig().get("alwaysOnTop");
+	}
+	
+	public static void setAlwaysOnTop(boolean value) throws Exception {
+		getActlistConfig().put("alwaysOnTop", value);
+	}
+	
+	public static boolean isAnimationEffect() {
+		return (boolean) getActlistConfig().get("animationEffect");
+	}
+	
+	public static void setAnimationEffect(boolean value) throws Exception {
+		getActlistConfig().put("animationEffect", value);
+	}
+	
 	public static int getShowHideActlistHotKeyModifier() {
 		return (int) getActlistConfig().get("showHideActlistHotKeyModifier");
 	}
@@ -79,22 +119,6 @@ public class ConfigUtil {
 		}
 		
 		return hotKeyText.concat(String.valueOf((char) getShowHideActlistHotKeyCode()));
-	}
-	
-	public static boolean isAnimationEffect() {
-		return (boolean) getActlistConfig().get("animationEffect");
-	}
-	
-	public static void setAnimationEffect(boolean value) throws Exception {
-		getActlistConfig().put("animationEffect", value);
-	}
-	
-	public static boolean isAlwaysOnTop() {
-		return (boolean) getActlistConfig().get("alwaysOnTop");
-	}
-	
-	public static void setAlwaysOnTop(boolean value) throws Exception {
-		getActlistConfig().put("alwaysOnTop", value);
 	}
 	
 }
