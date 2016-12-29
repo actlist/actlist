@@ -4,7 +4,9 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.animation.Transition;
@@ -251,38 +253,80 @@ public class AppController implements EventListener {
     	}
     }
 	
-	@SuppressWarnings("unchecked")
+    private List<String> readPriorityOfPlugins() {
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true);
+    }
+    
+    private void savePriorityOfPlugins() {
+    	try {
+    		StringBuffer buffer = new StringBuffer();
+    		
+    		List<String> priorityOfPlugins;
+    		if (componentBox.getChildren().isEmpty()) {
+    			priorityOfPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PRIORITY_OF_PLUGINS);
+        	} else {
+        		priorityOfPlugins = new ArrayList<String>();
+        		for (Node node : componentBox.getChildrenUnmodifiable()) {
+        			priorityOfPlugins.add(((PluginComponent) node.getUserData()).getPluginFileName());
+        		}
+        	}
+    		
+    		for (String priorityOfPlugin : priorityOfPlugins) {
+    			buffer.append(priorityOfPlugin);
+    			buffer.append("\r\n");
+    		}
+    		
+            FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), buffer.toString());
+    	} catch (Exception e) {
+    		
+    	}
+    }
+    
 	private void loadPlugins() {
 		componentBox.getChildren().clear();
 		try {
 			List<String> deactivatedPlugins = readDeactivatedPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 			
+			List<String> priorityOfPlugins = readPriorityOfPlugins();
+			SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
+			
 			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
 			
+			// extract plugins
+			List<String> plugins = new ArrayList<String>();
 			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
+				if (isAssignableFromJarFile(path)) {
+					plugins.add(path.getFileName().toString());
+				}
+			});
+			
+			// transform priority
+			for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
+				String plugin = priorityOfPlugins.get(i);
+				
+				if (plugins.contains(plugin)) {
+					plugins.remove(plugin);
+					plugins.add(0, plugin);
+				} else {
+					priorityOfPlugins.remove(i);
+				}
+			}
+			priorityOfPlugins.clear();
+			priorityOfPlugins.addAll(plugins);
+			savePriorityOfPlugins();
+			
+			// load plugins
+			for (String plugin : plugins) {
 				try {
-					File file = path.toFile();
-					if (file.isFile()) {
-						String name = file.getName();
-						if (name.contains(".")) {
-							String extension = name.substring(name.lastIndexOf("."), name.length());
-							if (CommonConst.EXTENSION_JAR.equalsIgnoreCase(extension)) {
-								URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ path.toUri().toURL() });
-								Class<?> pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
-								if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
-									FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
-									Node component = fxmlLoader.load();
-									((PluginComponent) fxmlLoader.getController()).initialize((Class<? extends ActlistPlugin>) pluginClass, name, !deactivatedPlugins.contains(name));
-									componentBox.getChildren().add(component);
-								}
-							}
-						}
+					Path path = Paths.get(System.getProperty("user.dir"), "plugins", plugin);
+					if (isAssignableFromJarFile(path)) {
+						loadPlugin(path);
 					}
 				} catch (Exception e) {
 					
 				}
-			});
+			}
 			
 			if (componentBox.getChildren().isEmpty()) {
 				Label label = new Label();
@@ -314,12 +358,52 @@ public class AppController implements EventListener {
 			}
 		});
 	}
+	
+	private boolean isAssignableFromJarFile(Path path) {
+		File file = path.toFile();
+		if (file.isFile()) {
+			String fileName = file.getName();
+			if (fileName.contains(".")) {
+				String extension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+				if (CommonConst.EXTENSION_JAR.equalsIgnoreCase(extension)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private void loadPlugin(Path path) throws Exception {
+		@SuppressWarnings("resource") // Do not close the urlClassLoader for control their graphic things on each plugin.
+		URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ path.toUri().toURL() });
+		Class<?> pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+		
+		if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
+			FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
+			Node component = fxmlLoader.load();
+			PluginComponent pluginComponent = ((PluginComponent) fxmlLoader.getController());
+			
+			String fileName = path.getFileName().toString();
+			List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+			pluginComponent.initialize(fileName, (Class<? extends ActlistPlugin>) pluginClass, !deactivatedPlugins.contains(fileName));
+			
+			component.setUserData(pluginComponent);
+			
+			componentBox.getChildren().add(component);
+		}
+	}
 
 	@Override
 	public void onEvent(String event) {
 		switch (event) {
 		case BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS:
 			saveDeactivatedPlugins();
+			
+			break;
+		case BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS:
+			savePriorityOfPlugins();
+			
 			break;
 		}
 	}
