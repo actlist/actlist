@@ -34,6 +34,7 @@ import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
+import org.silentsoft.core.util.ObjectUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -67,18 +68,26 @@ public class PluginComponent implements EventListener {
 	private VBox contentBox;
 	
 	private String pluginFileName;
+	public String getPluginFileName() {
+		return pluginFileName;
+	}
 	
 	private ActlistPlugin plugin;
 	
 	private PopOver popOver;
 	
+	
 	public void initialize() {
 		// This method is automatically called by FXMLLoader.
 	}
 	
-	public void initialize(Class<? extends ActlistPlugin> pluginClass, String pluginFileName, boolean activated) {
+	public void initialize(String pluginFileName, Class<? extends ActlistPlugin> pluginClass, boolean activated) {
+		this.pluginFileName = pluginFileName;
+		
 		new Thread(() -> {
 			try {
+				makeDraggable();
+				
 				plugin = pluginClass.newInstance();
 				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
@@ -93,15 +102,12 @@ public class PluginComponent implements EventListener {
 				
 				plugin.initialize();
 				
-				this.pluginFileName = pluginFileName;
 				String pluginName = plugin.getPluginName();
 				String pluginDescription = plugin.getPluginDescription();
 				
 				Platform.runLater(() -> {
-					makeDraggable();
-
 					lblPluginName.setText(pluginName);
-					if (pluginDescription != null && "".equals(pluginDescription) == false) {
+					if (ObjectUtil.isNotEmpty(pluginDescription)) {
 						lblPluginName.setTooltip(new Tooltip(pluginDescription));
 					}
 					
@@ -119,7 +125,7 @@ public class PluginComponent implements EventListener {
 									function.action.run();
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								
 							}
 						});
 						
@@ -137,15 +143,42 @@ public class PluginComponent implements EventListener {
 						alert.initOwner(App.getStage());
 						alert.setTitle("About");
 						alert.setHeaderText(plugin.getPluginName());
-						if (plugin.getPluginDescription() != null) {
-							StringBuffer contentText = new StringBuffer();
-							contentText.append(plugin.getPluginDescription());
-							if (plugin.getPluginAuthor() != null) {
-								contentText.append("\r\n\r\n");
-								contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
+						
+						if (plugin.existsIcon()) {
+							try {
+								alert.setGraphic(plugin.getIcon());
+							} catch (Exception e) {
+								
 							}
-							alert.setContentText(contentText.toString());
 						}
+						
+						StringBuffer contentText = new StringBuffer();
+						if (plugin.getPluginDescription() != null) {
+							contentText.append(plugin.getPluginDescription());
+							
+							if (plugin.getPluginVersion() != null || plugin.getPluginAuthor() != null) {
+								contentText.append("\r\n");
+							}
+						}
+						
+						if (plugin.getPluginVersion() != null) {
+							if (plugin.getPluginDescription() != null) {
+								contentText.append("\r\n");
+							}
+							
+							contentText.append(String.join("", "ver ", plugin.getPluginVersion()));
+						}
+						
+						if (plugin.getPluginAuthor() != null) {
+							if (plugin.getPluginDescription() != null) {
+								contentText.append("\r\n");
+							}
+							
+							contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
+						}
+						
+						alert.setContentText(contentText.toString());
+						
 						
 						alert.showAndWait();
 					});
@@ -165,19 +198,37 @@ public class PluginComponent implements EventListener {
 					
 					EventHandler.addListener(this);
 				});
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Throwable e) {
 				Platform.runLater(() -> {
 					lblPluginName.setText(pluginFileName);
-					togActivator.setUnToggleLineColor(Paint.valueOf("#da4242"));
-					togActivator.setDisable(true);
-					togActivator.setOpacity(1.0); // remove disable effect.
 					
-					EventHandler.removeListener(this);
+					makeDisable();
 				});
 			} finally {
 				pluginLoadingBox.setVisible(false);
 			}
+		}).start();
+	}
+	
+	private void makeDisable() {
+		new Thread(() -> {
+			if (togActivator.selectedProperty().get()) {
+				try {
+					// wait for animation to the end.
+					Thread.sleep(100);
+				} catch (Exception e) {
+					
+				}
+			}
+			
+			Platform.runLater(() -> {
+				togActivator.setUnToggleLineColor(Paint.valueOf("#da4242"));
+				togActivator.setDisable(true);
+				togActivator.setOpacity(1.0); // remove disable effect.
+				togActivator.setSelected(false);
+				
+				EventHandler.removeListener(this);
+			});
 		}).start();
 	}
 	
@@ -203,6 +254,8 @@ public class PluginComponent implements EventListener {
 				final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
 				componentBox.getChildren().add(indexOfDropTarget, node);
 			}
+			
+			EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 			
 			mouseDragEvent.consume();
 		});
@@ -253,45 +306,6 @@ public class PluginComponent implements EventListener {
 		((VBox) popOver.getContentNode()).getChildren().add(hBox);
 	}
 	
-	private void loadPluginGraphic() {
-		/*
-		  <VBox fx:id="contentBox" layoutX="35.0" layoutY="50.0" prefWidth="380.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0">
-		     <children>
-		        <!-- Generate by code. 
-		        <BorderPane fx:id="contentPane" />
-		        <Separator prefWidth="215.0">
-		           <padding>
-		              <Insets top="5.0" />
-		           </padding>
-		        </Separator>
-		        -->
-		     </children>
-		  </VBox>
-		  <VBox fx:id="contentLoadingBox" visible="false" alignment="CENTER" layoutX="35.0" layoutY="50.0" prefWidth="380.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0">
-		     <children>
-		        <!-- Generate by code. 
-		        <JFXSpinner />
-		        -->
-		     </children>
-		  </VBox>
-		 */
-		
-		try {
-			if (plugin.existsGraphic()) {
-				Node pluginContent = plugin.getGraphic();
-				if (pluginContent != null) {
-					contentBox.getChildren().add(new BorderPane(pluginContent));
-					Separator contentLine = new Separator();
-					contentLine.setPrefWidth(215.0);
-					contentLine.setPadding(new Insets(5.0, 0.0, 0.0, 0.0));
-					contentBox.getChildren().add(contentLine);
-				}
-			}
-		} catch (Exception e) {
-			
-		}
-	}
-	
 	private void displayLoadingBar(boolean shouldShowLoadingBar) {
 		if (plugin.existsGraphic()) {
 			Runnable runnable = new Runnable() {
@@ -336,6 +350,45 @@ public class PluginComponent implements EventListener {
 		}
 	}
 	
+	private void loadPluginGraphic() {
+		/*
+		  <VBox fx:id="contentBox" layoutX="35.0" layoutY="50.0" prefWidth="380.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0">
+		     <children>
+		        <!-- Generate by code. 
+		        <BorderPane fx:id="contentPane" />
+		        <Separator prefWidth="215.0">
+		           <padding>
+		              <Insets top="5.0" />
+		           </padding>
+		        </Separator>
+		        -->
+		     </children>
+		  </VBox>
+		  <VBox fx:id="contentLoadingBox" visible="false" alignment="CENTER" layoutX="35.0" layoutY="50.0" prefWidth="380.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0">
+		     <children>
+		        <!-- Generate by code. 
+		        <JFXSpinner />
+		        -->
+		     </children>
+		  </VBox>
+		 */
+		
+		try {
+			if (plugin.existsGraphic()) {
+				Node pluginContent = plugin.getGraphic();
+				if (pluginContent != null) {
+					contentBox.getChildren().add(new BorderPane(pluginContent));
+					Separator contentLine = new Separator();
+					contentLine.setPrefWidth(215.0);
+					contentLine.setPadding(new Insets(5.0, 0.0, 0.0, 0.0));
+					contentBox.getChildren().add(contentLine);
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
 	private void activated() {
 		displayLoadingBar(true);
 		
@@ -345,13 +398,13 @@ public class PluginComponent implements EventListener {
 					plugin.pluginActivated();
 					loadPluginGraphic();
 					
-					displayLoadingBar(false);
-					
 					List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
 					deactivatedPlugins.remove(pluginFileName);
 					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
-				} catch (Exception e) {
-					
+				} catch (Throwable e) {
+					makeDisable();
+				} finally {
+					displayLoadingBar(false);
 				}
 			});
 		}).start();
@@ -367,15 +420,15 @@ public class PluginComponent implements EventListener {
 					
 					contentBox.getChildren().clear();
 					contentLoadingBox.getChildren().clear();
-					popOver.hide();
 					plugin.pluginDeactivated();
-				} catch (Exception e) {
-					
+					popOver.hide();
+				} catch (Throwable e) {
+					makeDisable();
 				}
 			});
 		}).start();
 	}
-
+	
 	@Override
 	public void onEvent(String event) {
 		if (togActivator.selectedProperty().get()) {
