@@ -244,21 +244,25 @@ public class App extends Application implements HotkeyListener, EventListener {
 	
 	private void showOrHide() {
 		Platform.runLater(() -> {
-			if (stage.isShowing()) {
-				if (ConfigUtil.isAnimationEffect()) {
-					Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
-	    			animation.setOnFinished(actionEvent -> {
-	    				stage.hide();
-	    			});
-	    			animation.play();
-				} else {
-					stage.hide();
-				}
+			if (stage.isIconified()) {
+				stage.setIconified(false); // just bring it up to front from taskbar.
 			} else {
-				if (ConfigUtil.isAnimationEffect()) {
-					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+				if (stage.isShowing()) {
+					if (ConfigUtil.isAnimationEffect()) {
+						Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
+		    			animation.setOnFinished(actionEvent -> {
+		    				stage.hide();
+		    			});
+		    			animation.play();
+					} else {
+						stage.hide();
+					}
+				} else {
+					if (ConfigUtil.isAnimationEffect()) {
+						AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+					}
+					stage.show();
 				}
-				stage.show();
 			}
 		});
 	}
