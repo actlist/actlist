@@ -117,6 +117,9 @@ public class ConfigUtil {
 		if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
 			hotKeyText = hotKeyText.concat("Shift + ");
 		}
+		if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
+			hotKeyText = hotKeyText.concat("Win + ");
+		}
 		
 		return hotKeyText.concat(String.valueOf((char) getShowHideActlistHotKeyCode()));
 	}

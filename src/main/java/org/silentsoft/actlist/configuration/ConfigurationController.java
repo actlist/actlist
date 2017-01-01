@@ -78,6 +78,11 @@ public class ConfigurationController extends AbstractViewerController {
 						modifier += JIntellitype.MOD_SHIFT;
 						hotKeyText = hotKeyText.concat("Shift + ");
 					}
+					if (keyEvent.isMetaDown()) {
+						modifier += JIntellitype.MOD_WIN;
+						hotKeyText = hotKeyText.concat("Win + ");
+					}
+					
 					hotKeyText = hotKeyText.concat(keyEvent.getCode().getName());
 					
 					ConfigUtil.setShowHideActlistHotKeyModifier(modifier);

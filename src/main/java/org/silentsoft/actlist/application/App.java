@@ -1,6 +1,8 @@
 package org.silentsoft.actlist.application;
 
 import java.awt.Desktop;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -112,9 +114,9 @@ public class App extends Application implements HotkeyListener, EventListener {
 		EventHandler.addListener(this);
 		
 		// WARNING : DO NOT MODIFY FUNCTION CALL PRIORITY
+		loadConfiguration();
 		initIntellitype();
 		checkSingleInstance();
-		loadConfiguration();
 		displayStageIcon();
 		registerTrayIcon();
 		registerHotkey();
@@ -125,20 +127,6 @@ public class App extends Application implements HotkeyListener, EventListener {
 		Platform.runLater(() -> {
 			appController.initialize();
 		});
-	}
-	
-	private void initIntellitype() {
-		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "libs", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), CommonConst.EXTENSION_DLL)).toString());
-		
-		if (JIntellitype.isJIntellitypeSupported() == false) {
-			System.exit(1); // Abnormal termination.
-		}
-	}
-	
-	private void checkSingleInstance() {
-		if (SystemUtil.findProcessByImageName(String.join("", BizConst.APPLICATION_NAME, CommonConst.EXTENSION_EXE), SystemUtil.getCurrentProcessId())) {
-			System.exit(0); // Just termination.
-		}
 	}
 	
 	private void loadConfiguration() {
@@ -165,6 +153,60 @@ public class App extends Application implements HotkeyListener, EventListener {
 			SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
 		} catch (Exception e) {
 			
+		}
+	}
+	
+	private void initIntellitype() {
+		JIntellitype.setLibraryLocation(Paths.get(System.getProperty("user.dir"), "libs", String.join("", "JIntellitype-", SystemUtil.getOSArchitecture(), CommonConst.EXTENSION_DLL)).toString());
+		
+		if (JIntellitype.isJIntellitypeSupported() == false) {
+			System.exit(1); // Abnormal termination.
+		}
+	}
+	
+	private void checkSingleInstance() {
+		if (SystemUtil.findProcessByImageName(String.join("", BizConst.APPLICATION_NAME, CommonConst.EXTENSION_EXE), SystemUtil.getCurrentProcessId())) {
+			// Fire hot key to showing up the already running process.
+			try {
+				Robot robot = new Robot();
+				
+				int keyCode = ConfigUtil.getShowHideActlistHotKeyCode();
+				int modifier = ConfigUtil.getShowHideActlistHotKeyModifier();
+				
+				// Press Key
+				if ((modifier & JIntellitype.MOD_CONTROL) == JIntellitype.MOD_CONTROL) {
+					robot.keyPress(KeyEvent.VK_CONTROL);
+				}
+				if ((modifier & JIntellitype.MOD_ALT) == JIntellitype.MOD_ALT) {
+					robot.keyPress(KeyEvent.VK_ALT);
+				}
+				if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
+					robot.keyPress(KeyEvent.VK_SHIFT);
+				}
+				if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
+					robot.keyPress(KeyEvent.VK_WINDOWS);
+				}
+				robot.keyPress(keyCode);
+				
+				// Release Key
+				if ((modifier & JIntellitype.MOD_CONTROL) == JIntellitype.MOD_CONTROL) {
+					robot.keyRelease(KeyEvent.VK_CONTROL);
+				}
+				if ((modifier & JIntellitype.MOD_ALT) == JIntellitype.MOD_ALT) {
+					robot.keyRelease(KeyEvent.VK_ALT);
+				}
+				if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
+					robot.keyRelease(KeyEvent.VK_SHIFT);
+				}
+				if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
+					robot.keyRelease(KeyEvent.VK_WINDOWS);
+				}
+				robot.keyRelease(keyCode);
+			} catch (Exception e) {
+				
+			}
+			
+			System.exit(0); // Just termination.
 		}
 	}
 	
@@ -248,14 +290,18 @@ public class App extends Application implements HotkeyListener, EventListener {
 				stage.setIconified(false); // just bring it up to front from taskbar.
 			} else {
 				if (stage.isShowing()) {
-					if (ConfigUtil.isAnimationEffect()) {
-						Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
-		    			animation.setOnFinished(actionEvent -> {
-		    				stage.hide();
-		    			});
-		    			animation.play();
+					if (stage.isFocused()) {
+						if (ConfigUtil.isAnimationEffect()) {
+							Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
+			    			animation.setOnFinished(actionEvent -> {
+			    				stage.hide();
+			    			});
+			    			animation.play();
+						} else {
+							stage.hide();
+						}
 					} else {
-						stage.hide();
+						stage.requestFocus(); // do not hide. just bring it up to front.
 					}
 				} else {
 					if (ConfigUtil.isAnimationEffect()) {
