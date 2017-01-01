@@ -150,7 +150,12 @@ public class AppController implements EventListener {
     private void makeMinimizable(final Stage stage, final Node byNode) {
     	byNode.setOnMouseClicked(mouseEvent -> {
     		if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-    			EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_SHOW_HIDE);
+    			/**
+    			 * EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_SHOW_HIDE);
+    			 * 
+    			 * Do not call the above event. make sure to stay on taskbar.
+    			 */
+    			stage.setIconified(true);
     		}
     	});
     }
