@@ -1,6 +1,8 @@
 package org.silentsoft.actlist.plugin;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -22,7 +25,9 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -98,6 +103,15 @@ public class PluginComponent implements EventListener {
 					if (pluginConfig != null) {
 						plugin.setPluginConfig(pluginConfig);
 					}
+				}
+				
+				/**
+				 * Exception will raised when if control their graphic node on initialize() method.
+				 * so, need to mapping controller to plugin before call initialize method.
+				 * below getGraphic() method will mapping controller to plugin.
+				 */
+				if (plugin.existsGraphic()) {
+					plugin.getGraphic();
 				}
 				
 				plugin.initialize();
@@ -202,7 +216,7 @@ public class PluginComponent implements EventListener {
 				Platform.runLater(() -> {
 					lblPluginName.setText(pluginFileName);
 					
-					makeDisable();
+					makeDisable(e);
 				});
 			} finally {
 				pluginLoadingBox.setVisible(false);
@@ -210,7 +224,7 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
-	private void makeDisable() {
+	private void makeDisable(Throwable throwable) {
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
 				try {
@@ -222,6 +236,37 @@ public class PluginComponent implements EventListener {
 			}
 			
 			Platform.runLater(() -> {
+				lblPluginName.setTooltip(new Tooltip("Double click to show the exception log."));
+				lblPluginName.setOnMouseClicked(mouseEvent -> {
+					if (mouseEvent.getClickCount() >= 2) {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Exception Dialog");
+						alert.setHeaderText(pluginFileName);
+
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						throwable.printStackTrace(pw);
+						String exceptionText = sw.toString();
+
+						TextArea textArea = new TextArea(exceptionText);
+						textArea.setEditable(false);
+						textArea.setWrapText(true);
+
+						textArea.setMaxWidth(Double.MAX_VALUE);
+						textArea.setMaxHeight(Double.MAX_VALUE);
+						GridPane.setVgrow(textArea, Priority.ALWAYS);
+						GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+						GridPane content = new GridPane();
+						content.setMaxWidth(Double.MAX_VALUE);
+						content.add(textArea, 0, 0);
+
+						alert.getDialogPane().setContent(content);
+
+						alert.showAndWait();
+					}
+				});
+				
 				togActivator.setUnToggleLineColor(Paint.valueOf("#da4242"));
 				togActivator.setDisable(true);
 				togActivator.setOpacity(1.0); // remove disable effect.
@@ -402,7 +447,7 @@ public class PluginComponent implements EventListener {
 					deactivatedPlugins.remove(pluginFileName);
 					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
 				} catch (Throwable e) {
-					makeDisable();
+					makeDisable(e);
 				} finally {
 					displayLoadingBar(false);
 				}
@@ -423,7 +468,7 @@ public class PluginComponent implements EventListener {
 					plugin.pluginDeactivated();
 					popOver.hide();
 				} catch (Throwable e) {
-					makeDisable();
+					makeDisable(e);
 				}
 			});
 		}).start();
