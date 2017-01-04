@@ -2,7 +2,6 @@ package org.silentsoft.actlist.application;
 
 import java.awt.Desktop;
 import java.awt.Robot;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -20,6 +19,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,6 +40,7 @@ import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
+import org.silentsoft.ui.hotkey.HotkeyHandler;
 import org.silentsoft.ui.tray.TrayIconHandler;
 import org.silentsoft.ui.util.StageUtil;
 
@@ -175,31 +176,31 @@ public class App extends Application implements HotkeyListener, EventListener {
 				
 				// Press Key
 				if ((modifier & JIntellitype.MOD_CONTROL) == JIntellitype.MOD_CONTROL) {
-					robot.keyPress(KeyEvent.VK_CONTROL);
+					robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
 				}
 				if ((modifier & JIntellitype.MOD_ALT) == JIntellitype.MOD_ALT) {
-					robot.keyPress(KeyEvent.VK_ALT);
+					robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
 				}
 				if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
-					robot.keyPress(KeyEvent.VK_SHIFT);
+					robot.keyPress(java.awt.event.KeyEvent.VK_SHIFT);
 				}
 				if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
-					robot.keyPress(KeyEvent.VK_WINDOWS);
+					robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
 				}
 				robot.keyPress(keyCode);
 				
 				// Release Key
 				if ((modifier & JIntellitype.MOD_CONTROL) == JIntellitype.MOD_CONTROL) {
-					robot.keyRelease(KeyEvent.VK_CONTROL);
+					robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
 				}
 				if ((modifier & JIntellitype.MOD_ALT) == JIntellitype.MOD_ALT) {
-					robot.keyRelease(KeyEvent.VK_ALT);
+					robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
 				}
 				if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
-					robot.keyRelease(KeyEvent.VK_SHIFT);
+					robot.keyRelease(java.awt.event.KeyEvent.VK_SHIFT);
 				}
 				if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
-					robot.keyRelease(KeyEvent.VK_WINDOWS);
+					robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
 				}
 				robot.keyRelease(keyCode);
 			} catch (Exception e) {
@@ -245,7 +246,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 			Platform.runLater(() -> {
 				StringBuffer message = new StringBuffer();
 				// TODO need to change to use BuildVersion class file instead hard-coding. but, I dont have time.
-				message.append("Version  : 1.1.0\r\n");
+				message.append("Version  : 1.2.0\r\n");
 				message.append("\r\n");
 				message.append("Homepage : silentsoft.org\r\n");
 				message.append("\r\n");
@@ -282,6 +283,12 @@ public class App extends Application implements HotkeyListener, EventListener {
 	private void registerHotkey() {
 		JIntellitype.getInstance().addHotKeyListener(this);
 		JIntellitype.getInstance().registerHotKey(BizConst.HOTKEY_SHOW_HIDE_ACTLIST, ConfigUtil.getShowHideActlistHotKeyModifier(), ConfigUtil.getShowHideActlistHotKeyCode());
+		
+		HotkeyHandler.getInstance().registerHotkey(KeyCode.ESCAPE, false, false, false, () -> {
+			showOrHide();
+		});
+		
+		stage.addEventHandler(javafx.scene.input.KeyEvent.KEY_RELEASED, HotkeyHandler.getInstance());
 	}
 	
 	private void showOrHide() {
