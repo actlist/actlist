@@ -229,6 +229,7 @@
 	
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="actlist.jar"/>
+			<fx:fileset dir="dist" includes="actlist.jar.config"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
 			<fx:fileset dir="dist" includes="plugins/*"/>
 			<fx:fileset dir="dist" includes="resources/*"/>
@@ -237,7 +238,7 @@
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
-			version="1.1.0"
+			version="1.2.0"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -253,7 +254,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Silentsoft"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
-				<attribute name="Implementation-Version" value="1.1.0"/>
+				<attribute name="Implementation-Version" value="1.2.0"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
