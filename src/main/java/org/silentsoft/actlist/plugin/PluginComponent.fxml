@@ -51,7 +51,7 @@
             -->
          </children>
       </VBox>
-      <VBox fx:id="contentLoadingBox" alignment="CENTER" layoutX="35.0" layoutY="51.0" prefWidth="380.0" style="-fx-background-color: white;" visible="false" AnchorPane.topAnchor="51.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="35.0">
+      <VBox fx:id="contentLoadingBox" alignment="CENTER" layoutX="35.0" layoutY="51.0" prefWidth="380.0" style="-fx-background-color: white;" visible="false" AnchorPane.topAnchor="51.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="35.0">
          <children>
             <!-- Generate by code. 
             <JFXSpinner />
