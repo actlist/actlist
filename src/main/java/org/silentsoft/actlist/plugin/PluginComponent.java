@@ -210,6 +210,12 @@ public class PluginComponent implements EventListener {
 						displayLoadingBar(newValue);
 					});
 					
+					plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
+						if (newValue != null) {
+							makeDisable(newValue);
+						}
+					});
+					
 					EventHandler.addListener(this);
 				});
 			} catch (Throwable e) {
