@@ -278,6 +278,8 @@ public class PluginComponent implements EventListener {
 				togActivator.setOpacity(1.0); // remove disable effect.
 				togActivator.setSelected(false);
 				
+				clearPluginGraphic();
+				
 				EventHandler.removeListener(this);
 			});
 		}).start();
@@ -440,6 +442,12 @@ public class PluginComponent implements EventListener {
 		}
 	}
 	
+	private void clearPluginGraphic() {
+		contentBox.getChildren().clear();
+		contentLoadingBox.getChildren().clear();
+		popOver.hide();
+	}
+	
 	private void activated() {
 		displayLoadingBar(true);
 		
@@ -469,10 +477,8 @@ public class PluginComponent implements EventListener {
 					deactivatedPlugins.add(pluginFileName);
 					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
 					
-					contentBox.getChildren().clear();
-					contentLoadingBox.getChildren().clear();
+					clearPluginGraphic();
 					plugin.pluginDeactivated();
-					popOver.hide();
 				} catch (Throwable e) {
 					makeDisable(e);
 				}
