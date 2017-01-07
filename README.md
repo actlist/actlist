@@ -3,6 +3,7 @@
 
 
 Actlist will helps you to execute your desire things.
+
 Just do focus only on coding to create what you want then share with others to make the world better.
 
 ![](http://silentsoft.org/actlist/preview.png)
@@ -23,7 +24,6 @@ To create an Actlist plugin, you need to do some of the following:
 git clone https://github.com/silentsoft/silentsoft-io.git
 git clone https://github.com/silentsoft/silentsoft-core.git
 git clone https://github.com/silentsoft/actlist-plugin.git
-
 ```
 * Create a new Java project and configure to Maven project.
 * Add dependency as like below:
