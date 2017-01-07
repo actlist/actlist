@@ -3,12 +3,9 @@
 
 
 Actlist will helps you to execute your desire things.
-
 Just do focus only on coding to create what you want then share with others to make the world better.
 
-
 ![](http://silentsoft.org/actlist/preview.png)
-
 
 ## Installation
 
@@ -18,18 +15,25 @@ Windows:
 OS X & Linux:
 > not support yet.
 
-
-
 ## Development setup
 
 To create an Actlist plugin, you need to do some of the following:
 * Clone projects as following command or clone via GUI.
 ```
-git clone https://github.com/silentsoft/actlist-plugin.git
-git clone https://github.com/silentsoft/silentsoft-core.git
 git clone https://github.com/silentsoft/silentsoft-io.git
+git clone https://github.com/silentsoft/silentsoft-core.git
+git clone https://github.com/silentsoft/actlist-plugin.git
+
 ```
 * Create a new Java project and configure to Maven project.
+* Add dependency as like below:
+```
+<dependency>
+	<groupId>org.silentsoft</groupId>
+	<artifactId>actlist-plugin</artifactId>
+	<version>1.0.0</version>
+</dependency>
+```
 * Generate executable main class called `Plugin` where in default package (please do not assign package).
 * Inherit the `ActlistPlugin` class in your `Plugin` class.
 * (Option) to make a plugin that contains graphic things, you can write the `Plugin.fxml` file where in the same location.
@@ -69,8 +73,6 @@ public class Plugin extends ActlistPlugin {
 
 }
 ```
-
-
 
 ## Release History
 
