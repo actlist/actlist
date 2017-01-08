@@ -445,7 +445,11 @@ public class PluginComponent implements EventListener {
 	private void clearPluginGraphic() {
 		contentBox.getChildren().clear();
 		contentLoadingBox.getChildren().clear();
-		popOver.hide();
+		
+		// it could be null if occur error during initialize
+		if (popOver != null) {
+			popOver.hide();
+		}
 	}
 	
 	private void activated() {
