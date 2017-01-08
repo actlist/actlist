@@ -76,6 +76,10 @@ public class Plugin extends ActlistPlugin {
 
 ## Release History
 
+* 1.2.1
+    * exception throwing feature
+    * minor design changes
+    * fixed a minor bug
 * 1.2.0
     * configure plugin's priority via drag and drop
     * save plugin's priority
