@@ -6,7 +6,7 @@ Actlist will helps you to execute your desire things.
 
 Just do focus only on coding to create what you want then share with others to make the world better.
 
-![](http://silentsoft.org/actlist/preview.png)
+![](http://silentsoft.org/actlist/images/preview.png)
 
 ## Installation
 
@@ -37,7 +37,7 @@ git clone https://github.com/silentsoft/actlist-plugin.git
 * Generate executable main class called `Plugin` where in default package (please do not assign package).
 * Inherit the `ActlistPlugin` class in your `Plugin` class.
 * (Option) to make a plugin that contains graphic things, you can write the `Plugin.fxml` file where in the same location.
-* (Option) you can set the plugin's icon image that display where in about section(Right click-About) through `Plugin.png`
+* (Option) you can set the plugin's icon image that display where in about menu (Right click > About) through `Plugin.png`
 * Export your project to runnable jar file and put into `/plugins/` directory that under the Actlist installed path.
 
 Here is an example source code of `Plugin.java`
@@ -48,7 +48,7 @@ public class Plugin extends ActlistPlugin {
     
     public static void main(String args[]) throws Exception {}
     
-    public Plugin() {
+    public Plugin() throws Exception {
         super("Example Plugin");
         
         setPluginDescription("You can set the description of your plugin");
@@ -73,6 +73,8 @@ public class Plugin extends ActlistPlugin {
 
 }
 ```
+
+For more information on ActlistPlugin development, see [here](https://github.com/silentsoft/actlist-plugin)
 
 ## Release History
 
