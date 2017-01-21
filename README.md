@@ -4,7 +4,7 @@
 
 Actlist will helps you to execute your desire things.
 
-Just do focus only on coding to create what you want then share with others to make the world better.
+Just do focus only on coding to create what you want. and you can share with others to make better world.
 
 ![](http://silentsoft.org/actlist/images/preview.png)
 
