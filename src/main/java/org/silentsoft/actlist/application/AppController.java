@@ -362,6 +362,13 @@ public class AppController implements EventListener {
 				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_DEACTIVATED);
 			}
 		});
+		App.getStage().iconifiedProperty().addListener((observable, oldValue, newValue) -> {
+			if (oldValue == false && newValue == true) {
+				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_DEACTIVATED);
+			} else if (oldValue == true && newValue == false) {
+				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_ACTIVATED);
+			}
+		});
 	}
 	
 	private boolean isAssignableFromJarFile(Path path) {
