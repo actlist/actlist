@@ -369,6 +369,10 @@ public class AppController implements EventListener {
 				EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_ACTIVATED);
 			}
 		});
+		App.getStage().setOnCloseRequest(windowEvent -> {
+			EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_CLOSE_REQUESTED, false);
+			EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_EXIT);
+		});
 	}
 	
 	private boolean isAssignableFromJarFile(Path path) {
