@@ -243,7 +243,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 			Platform.runLater(() -> {
 				StringBuffer message = new StringBuffer();
 				// TODO need to change to use BuildVersion class file(by ant) instead hard-coding. but, I dont have time.
-				message.append("Version  : 1.2.1\r\n");
+				message.append("Version  : 1.2.2\r\n");
 				message.append("\r\n");
 				message.append("Homepage : silentsoft.org\r\n");
 				message.append("\r\n");
