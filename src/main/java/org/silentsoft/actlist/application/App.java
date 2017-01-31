@@ -93,9 +93,6 @@ public class App extends Application implements HotkeyListener, EventListener {
 		stage.setTitle(BizConst.APPLICATION_NAME);
 		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setScene(new Scene(app, Color.TRANSPARENT));
-		stage.setOnCloseRequest(event -> {
-			stage.hide();
-		});
 		stage.setWidth(ConfigUtil.getStageWidth());
 		stage.setHeight(ConfigUtil.getStageHeight());
 		stage.setOpacity(ConfigUtil.getStageOpacity());
@@ -365,6 +362,9 @@ public class App extends Application implements HotkeyListener, EventListener {
 			break;
 		case BizConst.EVENT_APPLICATION_SHOW_HIDE:
 			showOrHide();
+			break;
+		case BizConst.EVENT_APPLICATION_EXIT:
+			exit();
 			break;
 		}
 	}

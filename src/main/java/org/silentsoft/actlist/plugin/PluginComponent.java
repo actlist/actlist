@@ -501,6 +501,9 @@ public class PluginComponent implements EventListener {
 				case BizConst.EVENT_APPLICATION_DEACTIVATED:
 					plugin.applicationDeactivated();
 					break;
+				case BizConst.EVENT_APPLICATION_CLOSE_REQUESTED:
+					plugin.applicationCloseRequested();
+					break;
 				}
 			} catch (Exception e) {
 				
