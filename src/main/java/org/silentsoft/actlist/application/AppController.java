@@ -290,49 +290,53 @@ public class AppController implements EventListener {
 	private void loadPlugins() {
 		componentBox.getChildren().clear();
 		try {
-			List<String> deactivatedPlugins = readDeactivatedPlugins();
-			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
-			
-			List<String> priorityOfPlugins = readPriorityOfPlugins();
-			SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
-			
-			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
-			
-			// extract plugins
-			List<String> plugins = new ArrayList<String>();
-			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
-				if (isAssignableFromJarFile(path)) {
-					plugins.add(path.getFileName().toString());
-				}
-			});
-			
-			// transform priority
-			for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
-				String plugin = priorityOfPlugins.get(i);
+			if (Paths.get(System.getProperty("user.dir"), "plugins").toFile().exists()) {
+				List<String> deactivatedPlugins = readDeactivatedPlugins();
+				SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 				
-				if (plugins.contains(plugin)) {
-					plugins.remove(plugin);
-					plugins.add(0, plugin);
-				} else {
-					priorityOfPlugins.remove(i);
-				}
-			}
-			priorityOfPlugins.clear();
-			priorityOfPlugins.addAll(plugins);
-			savePriorityOfPlugins();
-			
-			// load plugins
-			for (String plugin : plugins) {
-				try {
-					Path path = Paths.get(System.getProperty("user.dir"), "plugins", plugin);
+				List<String> priorityOfPlugins = readPriorityOfPlugins();
+				SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
+				
+				// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
+				
+				// extract plugins
+				List<String> plugins = new ArrayList<String>();
+				Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
 					if (isAssignableFromJarFile(path)) {
-						loadPlugin(path);
+						plugins.add(path.getFileName().toString());
 					}
-				} catch (Exception e) {
+				});
+				
+				// transform priority
+				for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
+					String plugin = priorityOfPlugins.get(i);
 					
+					if (plugins.contains(plugin)) {
+						plugins.remove(plugin);
+						plugins.add(0, plugin);
+					} else {
+						priorityOfPlugins.remove(i);
+					}
+				}
+				priorityOfPlugins.clear();
+				priorityOfPlugins.addAll(plugins);
+				savePriorityOfPlugins();
+				
+				// load plugins
+				for (String plugin : plugins) {
+					try {
+						Path path = Paths.get(System.getProperty("user.dir"), "plugins", plugin);
+						if (isAssignableFromJarFile(path)) {
+							loadPlugin(path);
+						}
+					} catch (Exception e) {
+						
+					}
 				}
 			}
+		} catch (Exception e) {
 			
+		} finally {
 			if (componentBox.getChildren().isEmpty()) {
 				Label label = new Label();
 				label.setText("No plugins available.");
@@ -351,8 +355,6 @@ public class AppController implements EventListener {
 
 				componentBox.getChildren().add(pane);
 			}
-		} catch (Exception e) {
-			
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
