@@ -290,7 +290,8 @@ public class AppController implements EventListener {
 	private void loadPlugins() {
 		componentBox.getChildren().clear();
 		try {
-			if (Paths.get(System.getProperty("user.dir"), "plugins").toFile().exists()) {
+			File pluginsDirectory = Paths.get(System.getProperty("user.dir"), "plugins").toFile();
+			if (pluginsDirectory.exists()) {
 				List<String> deactivatedPlugins = readDeactivatedPlugins();
 				SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 				
@@ -333,6 +334,8 @@ public class AppController implements EventListener {
 						
 					}
 				}
+			} else {
+				pluginsDirectory.mkdirs();
 			}
 		} catch (Exception e) {
 			
