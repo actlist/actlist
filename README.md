@@ -78,6 +78,12 @@ For more information on ActlistPlugin development, see [here](https://github.com
 
 ## Release History
 
+* 1.2.2
+    * minor feature has been improved. (function priority)
+    * minor feature has been modified.
+      * applicationActivated() / applicationDeactivated() method will called even if the application is minimized.
+    * minor feature has been added. (applicationCloseRequested method)
+      * each plugins can defining an action that called when the application is receives a close request.
 * 1.2.1
     * exception throwing feature
     * minor design changes
