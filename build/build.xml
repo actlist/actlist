@@ -231,8 +231,10 @@
 			<fx:fileset dir="dist" includes="actlist.jar"/>
 			<fx:fileset dir="dist" includes="actlist.jar.config"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
+			<!--
 			<fx:fileset dir="dist" includes="plugins/*"/>
 			<fx:fileset dir="dist" includes="resources/*"/>
+			-->
 		</fx:resources>
 	
 		<fx:application id="fxApplication"
