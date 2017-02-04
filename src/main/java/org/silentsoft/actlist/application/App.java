@@ -20,6 +20,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -33,6 +34,7 @@ import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.configuration.Configuration;
+import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
@@ -115,6 +117,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 		loadConfiguration();
 		initIntellitype();
 		checkSingleInstance();
+		initConsole();
 		displayStageIcon();
 		registerTrayIcon();
 		registerHotkey();
@@ -208,6 +211,29 @@ public class App extends Application implements HotkeyListener, EventListener {
 		}
 	}
 	
+	private Stage consoleStage;
+	private void initConsole() throws Exception {
+		if (consoleStage == null) {
+			consoleStage = new Stage();
+			consoleStage.setTitle("Console");
+			consoleStage.initStyle(StageStyle.TRANSPARENT);
+			{
+				FXMLLoader fxmlLoader = new FXMLLoader(Console.class.getResource(Console.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
+				Parent app = fxmlLoader.load();
+				Console console = fxmlLoader.getController();
+				console.initialize(consoleStage);
+				
+				System.setOut(console.getPrintStream());
+				System.setErr(console.getPrintStream());
+				
+				consoleStage.setScene(new Scene(app, Color.TRANSPARENT));
+			}
+			consoleStage.setWidth(400.0);
+			consoleStage.setHeight(500.0);
+			consoleStage.getIcons().addAll(getIcons());
+		}
+	}
+	
 	private void displayStageIcon() {
 		// taskbar
 		stage.getIcons().addAll(getIcons());
@@ -221,6 +247,10 @@ public class App extends Application implements HotkeyListener, EventListener {
 		
 		TrayIconHandler.addItem(String.join("", "Show/Hide ", "(", ConfigUtil.getShowHideActlistHotKeyText().replaceAll(" ", ""), ")"), actionEvent -> {
 			showOrHide();
+		});
+		
+		TrayIconHandler.addItem("Console", actionEvent -> {
+			showConsole();
 		});
 		
 		TrayIconHandler.addItem("Configuration", actionEvent -> {
@@ -285,7 +315,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 			showOrHide();
 		});
 		
-		stage.addEventHandler(javafx.scene.input.KeyEvent.KEY_RELEASED, HotkeyHandler.getInstance());
+		stage.addEventHandler(KeyEvent.KEY_RELEASED, HotkeyHandler.getInstance());
 	}
 	
 	private void showOrHide() {
@@ -317,6 +347,12 @@ public class App extends Application implements HotkeyListener, EventListener {
 		});
 	}
 	
+	private void showConsole() {
+		Platform.runLater(() -> {
+			consoleStage.show();
+		});
+	}
+	
 	private Stage configurationStage;
 	private void showConfiguration() {
 		Platform.runLater(() -> {
@@ -325,16 +361,7 @@ public class App extends Application implements HotkeyListener, EventListener {
 				configurationStage.setTitle("Actlist Configuration");
 				configurationStage.setScene(new Scene(new Configuration().getViewer()));
 				configurationStage.setResizable(false);
-				configurationStage.getIcons().addAll(new Function<int[], List<Image>>() {
-					@Override
-					public List<Image> apply(int[] values) {
-						ArrayList<Image> images = new ArrayList<Image>();
-						for (int size : values) {
-							images.add(new Image(String.join("", "/images/icon/actlist_", String.valueOf(size), CommonConst.EXTENSION_PNG)));
-						}
-						return images;
-					}
-				}.apply(new int[]{24, 32, 48, 64, 128, 256}));
+				configurationStage.getIcons().addAll(getIcons());
 			}
 			configurationStage.show();
 		});

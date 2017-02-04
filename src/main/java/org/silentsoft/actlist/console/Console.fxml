@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.console.Console">
+   <children>
+		<AnchorPane fx:id="root" minHeight="90.0" minWidth="190.0" prefHeight="490.0" prefWidth="390.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+		   <children>
+		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+		         <children>
+		            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		               <children>
+                          <Pane prefWidth="3.0" />
+                          <Label prefHeight="24.0" prefWidth="24.0" styleClass="app-icon">
+                             <effect>
+						        <DropShadow />
+						     </effect>
+                          </Label>
+                          <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+		                  <Label text="Console" textAlignment="CENTER" textFill="#f4f4f4">
+		                     <font>
+							    <Font name="Verdana" size="13.0" />
+						     </font>
+						     <padding>
+						     	<Insets left="10.0" />
+						     </padding>
+		                  </Label>
+		                  <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+			              <HBox alignment="BOTTOM_RIGHT" minHeight="25.0" prefHeight="25.0" styleClass="controls">
+			                 <children>
+			            	    <Button fx:id="appMinimizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-minimize-button" />
+							    <Button fx:id="appMaximizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-maximize-button" />
+							    <Button fx:id="appCloseBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-close-button" />
+			            	 </children>
+			              </HBox>
+		               </children>
+		            </HBox>
+		         </children>
+		      </AnchorPane>
+		      <AnchorPane fx:id="body" styleClass="body" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
+		         <children>
+		    		  <ScrollPane fitToHeight="true" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <content>
+                        <TextArea fx:id="console" editable="false" focusTraversable="true">
+                           <font>
+                              <Font name="Consolas" size="13.0" />
+                           </font>
+                        </TextArea>
+                     </content>
+				      </ScrollPane>
+		         </children>
+		      </AnchorPane>
+		   </children>
+           <stylesheets>
+              <URL value="@../application/App.css" />
+              <URL value="@Console.css" />
+           </stylesheets>
+		</AnchorPane>
+   </children>
+   <effect>
+      <DropShadow />
+   </effect>
+</AnchorPane>

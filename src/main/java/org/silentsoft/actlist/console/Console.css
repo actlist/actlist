@@ -1,0 +1,10 @@
+.body {
+	-fx-background-color: rgb(30, 30, 30);
+	-fx-opacity: 0.75;
+}
+
+.text-area {
+    -fx-control-inner-background: rgb(30, 30, 30);
+    -fx-background-color: -fx-control-inner-background;
+    -fx-faint-focus-color: transparent;
+}
