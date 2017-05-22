@@ -48,6 +48,4 @@ public class BizConst {
 	
 	public static final String PLUGIN_CLASS_NAME = "Plugin";
 	
-	public static final int HOTKEY_SHOW_HIDE_ACTLIST = 1;
-	
 }

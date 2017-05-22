@@ -1,10 +1,11 @@
 package org.silentsoft.actlist.util;
 
+import java.awt.event.InputEvent;
+
 import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
+import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.memory.SharedMemory;
-
-import com.melloware.jintellitype.JIntellitype;
 
 public class ConfigUtil {
 
@@ -108,17 +109,23 @@ public class ConfigUtil {
 		String hotKeyText = "";
 		
 		int modifier = getShowHideActlistHotKeyModifier();
-		if ((modifier & JIntellitype.MOD_CONTROL) == JIntellitype.MOD_CONTROL) {
+		if ((modifier & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
 			hotKeyText = hotKeyText.concat("Ctrl + ");
 		}
-		if ((modifier & JIntellitype.MOD_ALT) == JIntellitype.MOD_ALT) {
+		if ((modifier & InputEvent.ALT_DOWN_MASK) == InputEvent.ALT_DOWN_MASK) {
 			hotKeyText = hotKeyText.concat("Alt + ");
 		}
-		if ((modifier & JIntellitype.MOD_SHIFT) == JIntellitype.MOD_SHIFT) {
+		if ((modifier & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {
 			hotKeyText = hotKeyText.concat("Shift + ");
 		}
-		if ((modifier & JIntellitype.MOD_WIN) == JIntellitype.MOD_WIN) {
-			hotKeyText = hotKeyText.concat("Win + ");
+		if ((modifier & InputEvent.META_DOWN_MASK) == InputEvent.META_DOWN_MASK) {
+			if (SystemUtil.isWindows()) {
+				hotKeyText = hotKeyText.concat("Win + ");
+			} else if (SystemUtil.isMac()) {
+				hotKeyText = hotKeyText.concat("Cmd + ");
+			} else {
+				hotKeyText = hotKeyText.concat("Meta + ");
+			}
 		}
 		
 		return hotKeyText.concat(String.valueOf((char) getShowHideActlistHotKeyCode()));

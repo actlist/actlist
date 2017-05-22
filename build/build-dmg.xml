@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<target name="init-fx-tasks">
+		<path id="fxant">
+			<filelist>
+				<file name="${java.home}\..\lib\ant-javafx.jar"/>
+				<file name="${java.home}\lib\jfxrt.jar"/>
+				<file name="${basedir}"/>
+			</filelist>
+		</path>
+	
+		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+			uri="javafx:com.sun.javafx.tools.ant"
+			classpathref="fxant"/>
+	</target>
+	<target name="setup-staging-area">
+		<delete dir="externalLibs" />
+		<delete dir="project" />
+		<delete dir="projectRefs" />
+	
+		<mkdir dir="externalLibs" />
+	
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/silentsoft/actlist-plugin/1.0.0">
+				<filename name="actlist-plugin-1.0.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/silentsoft/silentsoft-core/1.0.2">
+				<filename name="silentsoft-core-1.0.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/silentsoft/silentsoft-io/1.0.0">
+				<filename name="silentsoft-io-1.0.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/silentsoft/silentsoft-ui/1.0.0">
+				<filename name="silentsoft-ui-1.0.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/slf4j/slf4j-log4j12/1.7.5">
+				<filename name="slf4j-log4j12-1.7.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.4.2">
+				<filename name="jackson-databind-2.4.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/net/java/dev/jna/jna/4.2.1">
+				<filename name="jna-4.2.1.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/github/tulskiy/jkeymaster/1.2">
+				<filename name="jkeymaster-1.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.4.2">
+				<filename name="jackson-core-2.4.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/jidesoft/jidefx-common/0.9.1">
+				<filename name="jidefx-common-0.9.1.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/de/codecentric/centerdevice/centerdevice-nsmenufx/2.1.5">
+				<filename name="centerdevice-nsmenufx-2.1.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.4.2">
+				<filename name="jackson-annotations-2.4.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/slf4j/slf4j-api/1.7.5">
+				<filename name="slf4j-api-1.7.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/junit/junit/4.8.1">
+				<filename name="junit-4.8.1.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/controlsfx/controlsfx/8.40.10">
+				<filename name="controlsfx-8.40.10.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/log4j/log4j/1.2.17">
+				<filename name="log4j-1.2.17.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/commons-net/commons-net/3.3">
+				<filename name="commons-net-3.3.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/org/json/json/20141113">
+				<filename name="json-20141113.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/commons-lang/commons-lang/2.6">
+				<filename name="commons-lang-2.6.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/commons-daemon/commons-daemon/1.0.10">
+				<filename name="commons-daemon-1.0.10.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/com/jfoenix/jfoenix/1.0.0">
+				<filename name="jfoenix-1.0.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/net/java/dev/jna/jna-platform/4.1.0">
+				<filename name="jna-platform-4.1.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="/Users/silentsoft/.m2/repository/commons-io/commons-io/2.4">
+				<filename name="commons-io-2.4.jar"/>
+			</fileset>
+		</copy>
+	
+		<mkdir dir="project" />
+		<copy todir="project">
+			<fileset dir="/Users/silentsoft/git/actlist">
+				<include name="src/main/resources/**" />
+			</fileset>
+		</copy>
+		<copy todir="project">
+			<fileset dir="/Users/silentsoft/git/actlist">
+				<include name="src/main/java/**" />
+			</fileset>
+		</copy>
+	
+		<mkdir dir="projectRefs" />
+	</target>
+	<target name='do-compile'>
+		<delete dir="build" />
+		<mkdir dir="build/src" />
+		<mkdir dir="build/libs" />
+		<mkdir dir="build/classes" />
+	
+		<!-- Copy project-libs references -->
+		<copy todir="build/libs">
+			<fileset dir="externalLibs">
+				<include name="actlist-plugin-1.0.0.jar"/>
+				<include name="silentsoft-core-1.0.2.jar"/>
+				<include name="silentsoft-io-1.0.0.jar"/>
+				<include name="silentsoft-ui-1.0.0.jar"/>
+				<include name="jackson-databind-2.4.2.jar"/>
+				<include name="commons-net-3.3.jar"/>
+				<include name="junit-4.8.1.jar"/>
+				<include name="slf4j-api-1.7.5.jar"/>
+				<include name="jackson-core-2.4.2.jar"/>
+				<include name="jidefx-common-0.9.1.jar"/>
+				<include name="log4j-1.2.17.jar"/>
+				<include name="commons-lang-2.6.jar"/>
+				<include name="centerdevice-nsmenufx-2.1.5.jar"/>
+				<include name="controlsfx-8.40.10.jar"/>
+				<include name="jfoenix-1.0.0.jar"/>
+				<include name="jkeymaster-1.2.jar"/>
+				<include name="commons-io-2.4.jar"/>
+				<include name="jna-4.2.1.jar"/>
+				<include name="jna-platform-4.1.0.jar"/>
+				<include name="slf4j-log4j12-1.7.5.jar"/>
+				<include name="commons-daemon-1.0.10.jar"/>
+				<include name="jackson-annotations-2.4.2.jar"/>
+				<include name="json-20141113.jar"/>
+			</fileset>
+		</copy>
+	
+		<!-- Copy project references -->
+	
+		<!-- Copy project sources itself -->
+		<copy todir="build/src">
+			<fileset dir="project/src/main/resources">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<copy todir="build/src">
+			<fileset dir="project/src/main/java">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	
+		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="UTF-8">
+			<classpath>
+				<fileset dir="build/libs">
+					<include name="*"/>
+				</fileset>
+			</classpath>
+		</javac>
+	
+		<!-- Copy over none Java-Files -->
+		<copy todir="build/classes">
+		<fileset dir="project/src/main/resources">
+			<exclude name="**/*.java"/>
+		</fileset>
+		<fileset dir="project/src/main/java">
+			<exclude name="**/*.java"/>
+		</fileset>
+		</copy>
+	
+	
+	</target>
+	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
+		<delete file="dist"/>
+		<delete file="deploy" />
+	
+		<mkdir dir="dist" />
+		<mkdir dir="dist/libs" />
+	
+		<copy todir="dist/libs">
+			<fileset dir="externalLibs">
+				<include name="*" />
+			</fileset>
+		</copy>
+	
+	
+		<fx:resources id="appRes">
+			<fx:fileset dir="dist" includes="actlist.jar"/>
+			<fx:fileset dir="dist" includes="actlist.jar.config"/>
+			<fx:fileset dir="dist" includes="libs/*"/>
+			<!--
+			<fx:fileset dir="dist" includes="plugins/*"/>
+			<fx:fileset dir="dist" includes="resources/*"/>
+			-->
+		</fx:resources>
+	
+		<fx:application id="fxApplication"
+			name="Actlist"
+			mainClass="org.silentsoft.actlist.application.App"
+			version="1.2.3"
+		/>
+	
+		<mkdir dir="build/classes/META-INF" />
+	
+	
+	
+		<fx:jar destfile="dist/actlist.jar">
+			<fx:application refid="fxApplication"/>
+			<fileset dir="build/classes">
+			</fileset>
+			<fx:resources refid="appRes"/>
+	
+			<manifest>
+				<attribute name="Implementation-Vendor" value="Silentsoft"/>
+				<attribute name="Implementation-Title" value="Actlist"/>
+				<attribute name="Implementation-Version" value="1.2.3"/>
+				<attribute name="JavaFX-Feature-Proxy" value="None"/>
+			</manifest>
+		</fx:jar>
+	
+	
+		<mkdir dir="deploy" />
+		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
+		<fx:deploy
+			embedJNLP="false"
+			extension="false"
+			includeDT="false"
+			offlineAllowed="true"
+			outdir="${basedir}/deploy"
+			outfile="actlist" nativeBundles="dmg"
+			updatemode="background" >
+	
+			<fx:platform basedir="${java.home}"/>
+			<fx:info title="actlist" vendor="Silentsoft"/>
+	
+			<fx:application refId="fxApplication"/>
+			<fx:resources refid="appRes"/>
+		</fx:deploy>
+	
+	
+	</target>
+</project>
