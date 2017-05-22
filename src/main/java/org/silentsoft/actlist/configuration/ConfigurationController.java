@@ -1,20 +1,25 @@
 package org.silentsoft.actlist.configuration;
 
+import java.awt.event.InputEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javafx.fxml.FXML;
-import javafx.scene.Parent;
+import javax.swing.KeyStroke;
 
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.ui.viewer.AbstractViewerController;
 
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextField;
-import com.melloware.jintellitype.JIntellitype;
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+
+import javafx.fxml.FXML;
+import javafx.scene.Parent;
 
 public class ConfigurationController extends AbstractViewerController {
 
@@ -67,20 +72,26 @@ public class ConfigurationController extends AbstractViewerController {
 					int modifier = 0;
 					String hotKeyText = "";
 					if (keyEvent.isControlDown()) {
-						modifier += JIntellitype.MOD_CONTROL;
+						modifier += InputEvent.CTRL_DOWN_MASK;
 						hotKeyText = hotKeyText.concat("Ctrl + ");
 					}
 					if (keyEvent.isAltDown()) {
-						modifier += JIntellitype.MOD_ALT;
+						modifier += InputEvent.ALT_DOWN_MASK;
 						hotKeyText = hotKeyText.concat("Alt + ");
 					}
 					if (keyEvent.isShiftDown()) {
-						modifier += JIntellitype.MOD_SHIFT;
+						modifier += InputEvent.SHIFT_DOWN_MASK;
 						hotKeyText = hotKeyText.concat("Shift + ");
 					}
 					if (keyEvent.isMetaDown()) {
-						modifier += JIntellitype.MOD_WIN;
-						hotKeyText = hotKeyText.concat("Win + ");
+						modifier += InputEvent.META_DOWN_MASK;
+						if (SystemUtil.isWindows()) {
+							hotKeyText = hotKeyText.concat("Win + ");
+						} else if (SystemUtil.isMac()) {
+							hotKeyText = hotKeyText.concat("Cmd + ");
+						} else {
+							hotKeyText = hotKeyText.concat("Meta + ");
+						}
 					}
 					
 					hotKeyText = hotKeyText.concat(keyEvent.getCode().getName());
@@ -88,8 +99,13 @@ public class ConfigurationController extends AbstractViewerController {
 					ConfigUtil.setShowHideActlistHotKeyModifier(modifier);
 					ConfigUtil.setShowHideActlistHotKeyCode(keyEvent.getCode().getName().charAt(0));
 					
-					JIntellitype.getInstance().unregisterHotKey(BizConst.HOTKEY_SHOW_HIDE_ACTLIST);
-					JIntellitype.getInstance().registerHotKey(BizConst.HOTKEY_SHOW_HIDE_ACTLIST, modifier, keyEvent.getCode().getName().charAt(0));
+					App.getProvider().reset();
+					App.getProvider().register(KeyStroke.getKeyStroke(keyEvent.getCode().getName().charAt(0), modifier), new HotKeyListener() {
+						@Override
+						public void onHotKey(HotKey arg0) {
+							EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_SHOW_HIDE);
+						}
+					});
 					
 					showHideActlistHotKey.setText(hotKeyText);
 					hotKeyMakingMode.set(false);
