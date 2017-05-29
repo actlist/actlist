@@ -41,43 +41,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.4.2">
-				<filename name="jackson-core-2.4.2.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\json\json\20141113">
-				<filename name="json-20141113.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\melloware\jintellitype\1.3.9">
-				<filename name="jintellitype-1.3.9.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-io\commons-io\2.4">
-				<filename name="commons-io-2.4.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\net\java\dev\jna\jna-platform\4.1.0">
-				<filename name="jna-platform-4.1.0.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\net\java\dev\jna\jna\4.1.0">
-				<filename name="jna-4.1.0.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\junit\junit\4.8.1">
-				<filename name="junit-4.8.1.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-net\commons-net\3.3">
-				<filename name="commons-net-3.3.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\slf4j\slf4j-log4j12\1.7.5">
+				<filename name="slf4j-log4j12-1.7.5.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -86,23 +51,18 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-lang\commons-lang\2.6">
-				<filename name="commons-lang-2.6.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\net\java\dev\jna\jna\4.2.1">
+				<filename name="jna-4.2.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\log4j\log4j\1.2.17">
-				<filename name="log4j-1.2.17.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\github\tulskiy\jkeymaster\1.2">
+				<filename name="jkeymaster-1.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\slf4j\slf4j-log4j12\1.7.5">
-				<filename name="slf4j-log4j12-1.7.5.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.4.2">
-				<filename name="jackson-annotations-2.4.2.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.4.2">
+				<filename name="jackson-core-2.4.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -111,8 +71,23 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-daemon\commons-daemon\1.0.10">
-				<filename name="commons-daemon-1.0.10.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\de\codecentric\centerdevice\centerdevice-nsmenufx\2.1.5">
+				<filename name="centerdevice-nsmenufx-2.1.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.4.2">
+				<filename name="jackson-annotations-2.4.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\slf4j\slf4j-api\1.7.5">
+				<filename name="slf4j-api-1.7.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\junit\junit\4.8.1">
+				<filename name="junit-4.8.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -121,13 +96,43 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\log4j\log4j\1.2.17">
+				<filename name="log4j-1.2.17.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-net\commons-net\3.3">
+				<filename name="commons-net-3.3.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\json\json\20141113">
+				<filename name="json-20141113.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-lang\commons-lang\2.6">
+				<filename name="commons-lang-2.6.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-daemon\commons-daemon\1.0.10">
+				<filename name="commons-daemon-1.0.10.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
 			<fileset dir="C:\Users\Silentsoft\.m2\repository\com\jfoenix\jfoenix\1.0.0">
 				<filename name="jfoenix-1.0.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="C:\Users\Silentsoft\.m2\repository\org\slf4j\slf4j-api\1.7.5">
-				<filename name="slf4j-api-1.7.5.jar"/>
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\net\java\dev\jna\jna-platform\4.1.0">
+				<filename name="jna-platform-4.1.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="C:\Users\Silentsoft\.m2\repository\commons-io\commons-io\2.4">
+				<filename name="commons-io-2.4.jar"/>
 			</fileset>
 		</copy>
 	
@@ -165,17 +170,18 @@
 				<include name="jackson-core-2.4.2.jar"/>
 				<include name="jidefx-common-0.9.1.jar"/>
 				<include name="log4j-1.2.17.jar"/>
-				<include name="jintellitype-1.3.9.jar"/>
 				<include name="commons-lang-2.6.jar"/>
+				<include name="centerdevice-nsmenufx-2.1.5.jar"/>
 				<include name="controlsfx-8.40.10.jar"/>
 				<include name="jfoenix-1.0.0.jar"/>
+				<include name="jkeymaster-1.2.jar"/>
 				<include name="commons-io-2.4.jar"/>
-				<include name="jna-4.1.0.jar"/>
+				<include name="jna-4.2.1.jar"/>
 				<include name="jna-platform-4.1.0.jar"/>
 				<include name="slf4j-log4j12-1.7.5.jar"/>
 				<include name="commons-daemon-1.0.10.jar"/>
-				<include name="json-20141113.jar"/>
 				<include name="jackson-annotations-2.4.2.jar"/>
+				<include name="json-20141113.jar"/>
 			</fileset>
 		</copy>
 	
@@ -240,7 +246,7 @@
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
-			version="1.2.2"
+			version="1.2.3"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -256,7 +262,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Silentsoft"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
-				<attribute name="Implementation-Version" value="1.2.2"/>
+				<attribute name="Implementation-Version" value="1.2.3"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>

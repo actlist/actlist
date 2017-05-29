@@ -78,11 +78,16 @@ For more information on ActlistPlugin development, see [here](https://github.com
 
 ## Release History
 
+* 1.2.3
+    * supports Mac OS X
+    * supports console viewer for logging
+    * application executing speed have been improved
+    * the menu have been added for open the plugins directory
 * 1.2.2
-    * minor feature has been improved. (function priority)
-    * minor feature has been modified.
+    * minor feature have been improved. (function priority)
+    * minor feature have been modified.
       * applicationActivated() / applicationDeactivated() method will called even if the application is minimized.
-    * minor feature has been added. (applicationCloseRequested method)
+    * minor feature have been added. (applicationCloseRequested method)
       * each plugins can defining an action that called when the application is receives a close request.
 * 1.2.1
     * exception throwing feature
