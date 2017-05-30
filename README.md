@@ -11,10 +11,10 @@ Just do focus only on coding to create what you want. and you can share with oth
 ## Installation
 
 Windows:
-> [download setup file](http://silentsoft.org/actlist/archives/) and launch.
+> [download exe or zip file](http://silentsoft.org/actlist/archives/) and launch.
 
-OS X & Linux:
-> not support yet.
+Mac OS X:
+> [download dmg file](http://silentsoft.org/actlist/archives/) and launch.
 
 ## Development setup
 
