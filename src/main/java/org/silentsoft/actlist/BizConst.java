@@ -17,6 +17,10 @@ public class BizConst {
 	 */
 	public static final String EVENT_APPLICATION_SHOW_HIDE       = "EVENT_APPLICATION_SHOW_HIDE";
 	/**
+	 * Actlist application will bring to front when this event is called.
+	 */
+	public static final String EVENT_APPLICATION_BRING_TO_FRONT  = "EVENT_APPLICATION_BRING_TO_FRONT";
+	/**
 	 * Actlist application will exit when this event is called.
 	 */
 	public static final String EVENT_APPLICATION_EXIT            = "EVENT_APPLICATION_EXIT";

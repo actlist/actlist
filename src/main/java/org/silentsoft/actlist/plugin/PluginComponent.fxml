@@ -19,7 +19,7 @@
       </JFXHamburger>
       <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblPluginName" prefHeight="16.0" prefWidth="302.0" text="Plugin name here" HBox.hgrow="SOMETIMES">
+            <Label fx:id="lblPluginName" prefHeight="16.0" prefWidth="302.0" text="" HBox.hgrow="SOMETIMES">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>

@@ -32,6 +32,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import jidefx.animation.AnimationUtils;
 
 import org.controlsfx.control.PopOver;
 import org.silentsoft.actlist.BizConst;
@@ -43,6 +44,9 @@ import org.silentsoft.core.util.ObjectUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
+
+import tray.animations.AnimationType;
+import tray.notification.TrayNotification;
 
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.controls.JFXSpinner;
@@ -213,6 +217,40 @@ public class PluginComponent implements EventListener {
 					plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
 						if (newValue != null) {
 							makeDisable(newValue);
+						}
+					});
+					
+					plugin.trayNotificationObject().addListener((observable, oldValue, newValue) -> {
+						if (newValue != null) {
+							TrayNotification trayNotification = new TrayNotification();
+							
+							trayNotification.setRectangleFill(Paint.valueOf("#222222"));
+							trayNotification.setImage(App.getIcons().get(4)); // 128x128
+							trayNotification.setAnimationType(AnimationType.POPUP);
+							
+							if (newValue.getTitle() == null) {
+								trayNotification.setTitle("The Actlist message has been arrived.");
+							} else {
+								trayNotification.setTitle(newValue.getTitle());
+							}
+							
+							if (newValue.getMessage() == null) {
+								trayNotification.setMessage(pluginName);
+							} else {
+								trayNotification.setMessage(newValue.getMessage());
+							}
+							
+							if (newValue.getDuration() == null) {
+								trayNotification.setOnDismiss((actionEvent) -> {
+									EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
+									AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();
+									// TODO : scrollTo
+								});
+								
+								trayNotification.showAndWait();
+							} else {
+								trayNotification.showAndDismiss(newValue.getDuration());
+							}
 						}
 					});
 					
