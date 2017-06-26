@@ -411,17 +411,42 @@ public class App extends Application implements EventListener {
 				showConfiguration();
 			});
 			
-			Menu menu = new Menu(appName, null, 
-						aboutMenuItem,
-						new SeparatorMenuItem(),
-						preferencesMenuItem,
-						new SeparatorMenuItem(),
-						menuToolkit.createHideMenuItem(appName),
-						menuToolkit.createHideOthersMenuItem(),
-						menuToolkit.createUnhideAllMenuItem(),
-						new SeparatorMenuItem(),
-						menuToolkit.createQuitMenuItem(appName));
-			menuToolkit.setApplicationMenu(menu);
+			Menu appMenu = new Menu(appName, null, 
+							   aboutMenuItem,
+							   new SeparatorMenuItem(),
+							   preferencesMenuItem,
+							   new SeparatorMenuItem(),
+							   menuToolkit.createHideMenuItem(appName),
+							   menuToolkit.createHideOthersMenuItem(),
+							   menuToolkit.createUnhideAllMenuItem(),
+							   new SeparatorMenuItem(),
+							   menuToolkit.createQuitMenuItem(appName));
+			menuToolkit.setApplicationMenu(appMenu);
+			
+			// File Menu
+			Menu fileMenu = new Menu("File");
+			fileMenu.getItems().addAll(menuToolkit.createCloseWindowMenuItem());
+
+			// Edit
+			Menu editMenu = new Menu("Edit");
+			// Format
+			Menu formatMenu = new Menu("Format");
+			// View Menu
+			Menu viewMenu = new Menu("View");
+
+			// Window Menu
+			Menu windowMenu = new Menu("Window", null,
+								  menuToolkit.createMinimizeMenuItem(),
+								  menuToolkit.createZoomMenuItem(),
+								  menuToolkit.createCycleWindowsItem(),
+								  new SeparatorMenuItem(),
+								  menuToolkit.createBringAllToFrontItem());
+			menuToolkit.autoAddWindowMenuItems(windowMenu);
+			
+			// Help Menu
+			Menu helpMenu = new Menu("Help");
+			
+			menuToolkit.setGlobalMenuBar(new MenuBar(appMenu, fileMenu, editMenu, formatMenu, viewMenu, windowMenu, helpMenu));
 		}
 	}
 	
