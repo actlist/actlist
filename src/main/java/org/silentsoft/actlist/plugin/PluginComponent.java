@@ -4,7 +4,25 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
+import org.controlsfx.control.PopOver;
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.application.App;
+import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
+import org.silentsoft.actlist.plugin.tray.TrayNotification;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.JSONUtil;
+import org.silentsoft.core.util.ObjectUtil;
+import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.event.EventListener;
+import org.silentsoft.io.memory.SharedMemory;
+
+import com.jfoenix.controls.JFXHamburger;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXToggleButton;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -33,24 +51,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import jidefx.animation.AnimationUtils;
-
-import org.controlsfx.control.PopOver;
-import org.silentsoft.actlist.BizConst;
-import org.silentsoft.actlist.application.App;
-import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
-import org.silentsoft.core.util.FileUtil;
-import org.silentsoft.core.util.JSONUtil;
-import org.silentsoft.core.util.ObjectUtil;
-import org.silentsoft.io.event.EventHandler;
-import org.silentsoft.io.event.EventListener;
-import org.silentsoft.io.memory.SharedMemory;
-
 import tray.animations.AnimationType;
-import tray.notification.TrayNotification;
-
-import com.jfoenix.controls.JFXHamburger;
-import com.jfoenix.controls.JFXSpinner;
-import com.jfoenix.controls.JFXToggleButton;
 
 
 public class PluginComponent implements EventListener {
@@ -85,6 +86,7 @@ public class PluginComponent implements EventListener {
 	
 	private PopOver popOver;
 	
+	private HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification> trayNotifications = new HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification>();
 	
 	public void initialize() {
 		// This method is automatically called by FXMLLoader.
@@ -220,9 +222,13 @@ public class PluginComponent implements EventListener {
 						}
 					});
 					
-					plugin.trayNotificationObject().addListener((observable, oldValue, newValue) -> {
+					plugin.showTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
 						if (newValue != null) {
-							TrayNotification trayNotification = new TrayNotification();
+							tray.notification.TrayNotification trayNotification = new tray.notification.TrayNotification();
+							
+							synchronized (trayNotifications) {
+								trayNotifications.put(newValue, trayNotification);
+							}
 							
 							trayNotification.setRectangleFill(Paint.valueOf("#222222"));
 							trayNotification.setImage(App.getIcons().get(4)); // 128x128
@@ -242,6 +248,10 @@ public class PluginComponent implements EventListener {
 							
 							if (newValue.getDuration() == null) {
 								trayNotification.setOnDismiss((actionEvent) -> {
+									synchronized (trayNotifications) {
+										trayNotifications.remove(trayNotification);
+									}
+									
 									EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
 									AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();
 									// TODO : scrollTo
@@ -250,6 +260,34 @@ public class PluginComponent implements EventListener {
 								trayNotification.showAndWait();
 							} else {
 								trayNotification.showAndDismiss(newValue.getDuration());
+							}
+						}
+					});
+					plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
+						if (newValue != null) {
+							synchronized (trayNotifications) {
+								if (trayNotifications.containsKey(newValue)) {
+									tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
+									trayNotification.setOnDismiss((actionEvent) -> {
+										trayNotifications.remove(newValue);
+									});
+									trayNotification.dismiss();
+								}
+							}
+						}
+					});
+					plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
+						if (newValue) {
+							synchronized (trayNotifications) {
+								for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
+									tray.notification.TrayNotification trayNotification = entrySet.getValue();
+									trayNotification.setOnDismiss((actionEvent) -> {
+										trayNotifications.remove(newValue);
+									});
+									trayNotification.dismiss();
+								}
+								
+								plugin.shouldDismissTrayNotifications().set(false);
 							}
 						}
 					});
