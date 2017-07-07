@@ -10,6 +10,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
+
+import org.silentsoft.actlist.ActlistConfig;
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.CommonConst;
+import org.silentsoft.actlist.configuration.Configuration;
+import org.silentsoft.actlist.console.Console;
+import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.JSONUtil;
+import org.silentsoft.core.util.SystemUtil;
+import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.event.EventListener;
+import org.silentsoft.io.memory.SharedMemory;
+import org.silentsoft.ui.hotkey.HotkeyHandler;
+import org.silentsoft.ui.tray.TrayIconHandler;
+import org.silentsoft.ui.util.StageUtil;
+
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
+
+import de.codecentric.centerdevice.MenuToolkit;
 import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -32,34 +57,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import javax.swing.ImageIcon;
-import javax.swing.KeyStroke;
-
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
-
-import org.silentsoft.actlist.ActlistConfig;
-import org.silentsoft.actlist.BizConst;
-import org.silentsoft.actlist.CommonConst;
-import org.silentsoft.actlist.configuration.Configuration;
-import org.silentsoft.actlist.console.Console;
-import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.core.util.FileUtil;
-import org.silentsoft.core.util.JSONUtil;
-import org.silentsoft.core.util.SystemUtil;
-import org.silentsoft.io.event.EventHandler;
-import org.silentsoft.io.event.EventListener;
-import org.silentsoft.io.memory.SharedMemory;
-import org.silentsoft.ui.hotkey.HotkeyHandler;
-import org.silentsoft.ui.tray.TrayIconHandler;
-import org.silentsoft.ui.util.StageUtil;
-
-import com.tulskiy.keymaster.common.HotKey;
-import com.tulskiy.keymaster.common.HotKeyListener;
-import com.tulskiy.keymaster.common.Provider;
-
-import de.codecentric.centerdevice.MenuToolkit;
 
 public class App extends Application implements EventListener {
 
@@ -109,8 +108,7 @@ public class App extends Application implements EventListener {
 	
 	private Alert getAboutAlert() {
 		StringBuffer message = new StringBuffer();
-		// TODO need to change to use BuildVersion class file(by ant) instead hard-coding. but, I dont have time.
-		message.append("Version  : 1.2.3\r\n");
+		message.append("Version  : " + BuildVersion.VERSION + "\r\n");
 		message.append("\r\n");
 		message.append("Homepage : silentsoft.org\r\n");
 		message.append("\r\n");

@@ -21,6 +21,7 @@
 
 		<!-- Silentsoft -->
 		<silentsoft.ui.version>1.0.0</silentsoft.ui.version>
+		<silentsoft.net.version>1.0.0</silentsoft.net.version>
 
 		<!-- Actlist -->
 		<actlist.plugin.version>1.0.0</actlist.plugin.version>
@@ -41,6 +42,79 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.11</version>
+				<executions>
+					<execution>
+						<id>timestamp-property</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<name>buildtime</name>
+							<pattern>yyyyMMdd-HHmmss</pattern>
+							<timeZone>GMT+9</timeZone>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>generate-version-class</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build-version.xml" inheritAll="false" inheritRefs="false">
+									<property name="version" value="${project.version}" />
+									<property name="buildtime" value="${buildtime}" />
+									<property name="gensrc.dir" value="${project.build.directory}/version/generated-sources" />
+								</ant>
+							</target>
+							<sourceRoot>${project.build.directory}/version/generated-sources</sourceRoot>
+						</configuration>
+					</execution>
+					<!-- below two executions(exe, dmg) cannot be run within one platform. so I need run 'maven generate-sources' manually before compile each xml files -->
+					<!-- 
+					<execution>
+						<id>compile-exe</id>
+						<phase>compile</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build/build-exe.xml">
+									<target name="do-compile" />
+								</ant>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>compile-dmg</id>
+						<phase>compile</phase>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build/build-dmg.xml">
+									<target name="do-compile" />
+								</ant>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					-->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -66,6 +140,11 @@
 			<groupId>org.silentsoft</groupId>
 			<artifactId>silentsoft-ui</artifactId>
 			<version>${silentsoft.ui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.silentsoft</groupId>
+			<artifactId>silentsoft-net</artifactId>
+			<version>${silentsoft.net.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.silentsoft</groupId>

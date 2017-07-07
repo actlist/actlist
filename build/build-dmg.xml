@@ -147,6 +147,11 @@
 				<include name="src/main/java/**" />
 			</fileset>
 		</copy>
+		<copy todir="project">
+			<fileset dir="/Users/silentsoft/git/actlist">
+				<include name="target/version/generated-sources/**" />
+			</fileset>
+		</copy>
 	
 		<mkdir dir="projectRefs" />
 	</target>
@@ -198,6 +203,11 @@
 				<include name="**/*"/>
 			</fileset>
 		</copy>
+		<copy todir="build/src">
+			<fileset dir="project/target/version/generated-sources">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
 	
 		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="UTF-8">
 			<classpath>
@@ -216,7 +226,6 @@
 			<exclude name="**/*.java"/>
 		</fileset>
 		</copy>
-	
 	
 	</target>
 	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
