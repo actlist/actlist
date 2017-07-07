@@ -1,18 +1,47 @@
 package org.silentsoft.actlist.application;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.CommonConst;
+import org.silentsoft.actlist.plugin.ActlistPlugin;
+import org.silentsoft.actlist.plugin.PluginComponent;
+import org.silentsoft.actlist.rest.RESTfulAPI;
+import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.SystemUtil;
+import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.event.EventListener;
+import org.silentsoft.io.memory.SharedMemory;
+import org.silentsoft.ui.model.Delta;
+import org.silentsoft.ui.model.MaximizeProperty;
+import org.silentsoft.ui.util.StageDragResizer;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXButton.ButtonType;
+
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,22 +50,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
-
-import org.silentsoft.actlist.BizConst;
-import org.silentsoft.actlist.CommonConst;
-import org.silentsoft.actlist.plugin.ActlistPlugin;
-import org.silentsoft.actlist.plugin.PluginComponent;
-import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.core.util.FileUtil;
-import org.silentsoft.io.event.EventHandler;
-import org.silentsoft.io.event.EventListener;
-import org.silentsoft.io.memory.SharedMemory;
-import org.silentsoft.ui.model.Delta;
-import org.silentsoft.ui.model.MaximizeProperty;
-import org.silentsoft.ui.util.StageDragResizer;
 
 public class AppController implements EventListener {
 
@@ -50,13 +70,16 @@ public class AppController implements EventListener {
 	private AnchorPane body;
 	
 	@FXML
-	private Button appMinimizeBtn;
+	private HBox controlBox;
 	
 	@FXML
-	private Button appMaximizeBtn;
+	private Button appMinimizeButton;
 	
 	@FXML
-	private Button appCloseBtn;
+	private Button appMaximizeButton;
+	
+	@FXML
+	private Button appCloseButton;
 	
 	@FXML
 	private VBox componentBox;
@@ -74,11 +97,13 @@ public class AppController implements EventListener {
 		makeDraggable(App.getStage(), head);
 		makeNormalizable(App.getStage(), head);
 		
-		makeMinimizable(App.getStage(), appMinimizeBtn);
-		makeMaximizable(App.getStage(), appMaximizeBtn);
-		makeClosable(App.getStage(), appCloseBtn);
+		makeMinimizable(App.getStage(), appMinimizeButton);
+		makeMaximizable(App.getStage(), appMaximizeButton);
+		makeClosable(App.getStage(), appCloseButton);
 		
 		makeResizable(App.getStage(), root);
+		
+		checkUpdate();
 		
 		loadPlugins();
 		
@@ -239,52 +264,106 @@ public class AppController implements EventListener {
 		}
     }
     
-    private List<String> readDeactivatedPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true);
-    }
-    
-    private void saveDeactivatedPlugins() {
-    	try {
-    		StringBuffer buffer = new StringBuffer();
-    		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
-    		for (String deactivatedPlugin : deactivatedPlugins) {
-    			buffer.append(deactivatedPlugin);
-    			buffer.append("\r\n");
+    private void checkUpdate() {
+    	new Thread(() -> {
+    		try {
+    			boolean isAvailableNewActlist = false;
+    			
+    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+    			param.add(new BasicNameValuePair("version", BuildVersion.VERSION));
+    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+    			
+    			HashMap<String, String> result = RESTfulAPI.doPost("/update/check", param, HashMap.class);
+    			if (result == null) {
+    				return;
+    			}
+    			
+    			if (result.containsKey("available")) {
+    				isAvailableNewActlist = Boolean.parseBoolean(result.get("available"));
+    			}
+    			
+    			if (isAvailableNewActlist) {
+    				Platform.runLater(() -> {
+    					PopOver popOver = new PopOver();
+        				
+        				Label appUpdateAlarmLabel = new Label();
+        				appUpdateAlarmLabel.setCursor(Cursor.HAND);
+        				appUpdateAlarmLabel.setStyle("-fx-background-color: red; -fx-background-radius: 5em;");
+        				appUpdateAlarmLabel.setMinWidth(6.0);
+        				appUpdateAlarmLabel.setMinHeight(6.0);
+        				appUpdateAlarmLabel.setMaxWidth(6.0);
+        				appUpdateAlarmLabel.setMaxHeight(6.0);
+        				HBox.setMargin(appUpdateAlarmLabel, new Insets(0.0, 10.0, 0.0, 0.0));
+        				appUpdateAlarmLabel.setOnMouseClicked(mouseEvent -> {
+        					if (popOver.isShowing() == false) {
+        						popOver.show(appUpdateAlarmLabel);
+        					}
+        				});
+        				
+        				controlBox.getChildren().add(0, appUpdateAlarmLabel);
+        				
+        				Label title = new Label("Actlist Update Alarm");
+        				title.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+        				title.setPadding(new Insets(10.0, 0.0, 0.0, 0.0));
+        				
+        				Label message = new Label("New Actlist is available. Would you like to browse now ?");
+        				message.setWrapText(true);
+        				message.setFont(Font.font("Verdana", 12.0));
+        				message.setTextAlignment(TextAlignment.CENTER);
+        				message.setPrefWidth(194.0);
+        				message.setPrefHeight(40.0);
+        				
+        				JFXButton notNowButton = new JFXButton("Not Now");
+        				notNowButton.setCursor(Cursor.HAND);
+        				notNowButton.setPrefWidth(97.0);
+        				notNowButton.setButtonType(ButtonType.RAISED);
+        				notNowButton.setRipplerFill(Paint.valueOf("#eeeeee"));
+        				notNowButton.setFont(Font.font("Verdana", 12.0));
+        				notNowButton.setTextFill(Paint.valueOf("#0b7aea"));
+        				notNowButton.setOnMouseClicked(mouseEvent -> {
+        					appUpdateAlarmLabel.setOnMouseClicked(null);
+        					controlBox.getChildren().remove(appUpdateAlarmLabel);
+        					popOver.hide();
+        				});
+        				
+        				JFXButton browseButton = new JFXButton("Browse");
+        				browseButton.setCursor(Cursor.HAND);
+        				browseButton.setPrefWidth(97.0);
+        				browseButton.setButtonType(ButtonType.RAISED);
+        				browseButton.setRipplerFill(Paint.valueOf("#eeeeee"));
+        				browseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+        				browseButton.setTextFill(Paint.valueOf("#1c81f9"));
+        				browseButton.setOnMouseClicked(mouseEvent -> {
+        					try {
+        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+        					} catch (Exception e) {
+        						
+        					}
+        					appUpdateAlarmLabel.setOnMouseClicked(null);
+        					controlBox.getChildren().remove(appUpdateAlarmLabel);
+        					popOver.hide();
+        				});
+        				
+        				HBox hBox = new HBox(notNowButton, browseButton);
+        				hBox.setAlignment(Pos.CENTER);
+        				hBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1 0 0 0;");
+        				
+        				VBox vBox = new VBox(title, message, hBox);
+        				vBox.setAlignment(Pos.CENTER);
+        				vBox.setStyle("-fx-background-color: white;");
+        				vBox.setSpacing(5.0);
+        				vBox.setPrefWidth(214.0);
+        				vBox.setPrefHeight(103.0);
+        				
+        				popOver.setContentNode(vBox);
+        				popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+    				});
+    			}
+    		} catch (Exception e) {
+    			
     		}
-    		
-            FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), buffer.toString());
-    	} catch (Exception e) {
-    		
-    	}
-    }
-	
-    private List<String> readPriorityOfPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true);
-    }
-    
-    private void savePriorityOfPlugins() {
-    	try {
-    		StringBuffer buffer = new StringBuffer();
-    		
-    		List<String> priorityOfPlugins;
-    		if (componentBox.getChildren().isEmpty()) {
-    			priorityOfPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PRIORITY_OF_PLUGINS);
-        	} else {
-        		priorityOfPlugins = new ArrayList<String>();
-        		for (Node node : componentBox.getChildrenUnmodifiable()) {
-        			priorityOfPlugins.add(((PluginComponent) node.getUserData()).getPluginFileName());
-        		}
-        	}
-    		
-    		for (String priorityOfPlugin : priorityOfPlugins) {
-    			buffer.append(priorityOfPlugin);
-    			buffer.append("\r\n");
-    		}
-    		
-            FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), buffer.toString());
-    	} catch (Exception e) {
-    		
-    	}
+    	}).start();
     }
     
 	private void loadPlugins() {
@@ -394,6 +473,54 @@ public class AppController implements EventListener {
 		
 		return false;
 	}
+	
+	private List<String> readDeactivatedPlugins() {
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true);
+    }
+    
+    private void saveDeactivatedPlugins() {
+    	try {
+    		StringBuffer buffer = new StringBuffer();
+    		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+    		for (String deactivatedPlugin : deactivatedPlugins) {
+    			buffer.append(deactivatedPlugin);
+    			buffer.append("\r\n");
+    		}
+    		
+            FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), buffer.toString());
+    	} catch (Exception e) {
+    		
+    	}
+    }
+	
+    private List<String> readPriorityOfPlugins() {
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true);
+    }
+    
+    private void savePriorityOfPlugins() {
+    	try {
+    		StringBuffer buffer = new StringBuffer();
+    		
+    		List<String> priorityOfPlugins;
+    		if (componentBox.getChildren().isEmpty()) {
+    			priorityOfPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PRIORITY_OF_PLUGINS);
+        	} else {
+        		priorityOfPlugins = new ArrayList<String>();
+        		for (Node node : componentBox.getChildrenUnmodifiable()) {
+        			priorityOfPlugins.add(((PluginComponent) node.getUserData()).getPluginFileName());
+        		}
+        	}
+    		
+    		for (String priorityOfPlugin : priorityOfPlugins) {
+    			buffer.append(priorityOfPlugin);
+    			buffer.append("\r\n");
+    		}
+    		
+            FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), buffer.toString());
+    	} catch (Exception e) {
+    		
+    	}
+    }
 	
 	private void loadPlugin(Path path) throws Exception {
 		@SuppressWarnings("resource") // Do not close the urlClassLoader for control their graphic things on each plugin.

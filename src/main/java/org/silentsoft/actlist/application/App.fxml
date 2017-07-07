@@ -13,7 +13,7 @@
    <children>
 		<AnchorPane fx:id="root" minHeight="90.0" minWidth="380.0" prefHeight="230.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
-		      <AnchorPane fx:id="head" styleClass="head" maxHeight="25.0" prefHeight="25.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+		      <AnchorPane fx:id="head" maxHeight="25.0" prefHeight="25.0" styleClass="head" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
 		         <children>
 		            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		               <children>
@@ -33,11 +33,11 @@
 						     </padding>
 		                  </Label>
 		                  <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-			              <HBox alignment="BOTTOM_RIGHT" minHeight="25.0" prefHeight="25.0" styleClass="controls">
+			              <HBox fx:id="controlBox" alignment="CENTER_RIGHT" minHeight="25.0" prefHeight="25.0" styleClass="controls">
 			                 <children>
-			            	    <Button fx:id="appMinimizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-minimize-button" />
-							    <Button fx:id="appMaximizeBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-maximize-button" />
-							    <Button fx:id="appCloseBtn" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-close-button" />
+			            	    <Button fx:id="appMinimizeButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-minimize-button" />
+							    <Button fx:id="appMaximizeButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-maximize-button" />
+							    <Button fx:id="appCloseButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-close-button" />
 			            	 </children>
 			              </HBox>
 		               </children>
