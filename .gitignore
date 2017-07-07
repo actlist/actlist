@@ -1,1 +1,13 @@
-/target/
+/target/.gitignore
+/target/antrun
+/target/maven-status
+/target/generated-sources
+/target/test-classes
+/build/build
+/build/deploy
+/build/dist/libs
+/build/dist/actlist.jar
+/build/externalLibs
+/build/project
+/build/projectRefs
+/plugins
