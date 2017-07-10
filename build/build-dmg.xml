@@ -345,8 +345,10 @@
 	
 			<fx:platform basedir="${java.home}">
 				<fx:jvmarg value="-XX:+UseG1GC"/>
+				<!-- Why doesn't supports below options on Mac ?
 				<fx:jvmuserarg name="-XX:InitiatingHeapOccupancyPercent" value="30"/>
 				<fx:jvmuserarg name="-XX:ConcGCThread" value="20"/>
+				-->
 			</fx:platform>
 			
 			<fx:info title="actlist" vendor="Silentsoft"/>
