@@ -1,18 +1,24 @@
 package org.silentsoft.actlist.plugin;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.controlsfx.control.PopOver;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
+import org.silentsoft.actlist.comparator.VersionComparator;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
+import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.ObjectUtil;
@@ -31,9 +37,11 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
@@ -100,10 +108,36 @@ public class PluginComponent implements EventListener {
 		this.pluginFileName = pluginFileName;
 		
 		new Thread(() -> {
+			AtomicBoolean shouldTraceException = new AtomicBoolean(true);
 			try {
 				makeDraggable();
 				
 				plugin = pluginClass.newInstance();
+				
+				String minimumCompatibleVersion = plugin.getMinimumCompatibleVersion();
+				if (minimumCompatibleVersion != null) {
+					if (VersionComparator.getInstance().compare(BuildVersion.VERSION, minimumCompatibleVersion) < 0) {
+						String errorMessage = String.join("", "This plugin requires at least Actlist ", minimumCompatibleVersion);
+						shouldTraceException.set(false);
+						lblPluginName.setOnMouseClicked(mouseEvent -> {
+							if (mouseEvent.getClickCount() >= 2) {
+								Alert alert = new Alert(AlertType.CONFIRMATION);
+								alert.setTitle("Confirmation");
+								alert.setHeaderText(errorMessage);
+								alert.setContentText("Would you like to check latest Actlist now ?");
+								Optional<ButtonType> result = alert.showAndWait();
+								if (result.isPresent() && result.get() == ButtonType.OK) {
+									try {
+		        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+		        					} catch (Exception e) {
+		        						
+		        					}
+								}
+							}
+						});
+						throw new Exception(errorMessage);
+					}
+				}
 				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
@@ -160,7 +194,7 @@ public class PluginComponent implements EventListener {
 					
 					plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
 						if (newValue != null) {
-							makeDisable(newValue);
+							makeDisable(newValue, true);
 						}
 					});
 					
@@ -240,7 +274,7 @@ public class PluginComponent implements EventListener {
 				Platform.runLater(() -> {
 					lblPluginName.setText(pluginFileName);
 					
-					makeDisable(e);
+					makeDisable(e, shouldTraceException.get());
 				});
 			} finally {
 				pluginLoadingBox.setVisible(false);
@@ -248,7 +282,7 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
-	private void makeDisable(Throwable throwable) {
+	private void makeDisable(Throwable throwable, boolean shouldTraceException) {
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
 				try {
@@ -260,36 +294,42 @@ public class PluginComponent implements EventListener {
 			}
 			
 			Platform.runLater(() -> {
-				lblPluginName.setTooltip(new Tooltip("Double click to show the exception log."));
-				lblPluginName.setOnMouseClicked(mouseEvent -> {
-					if (mouseEvent.getClickCount() >= 2) {
-						Alert alert = new Alert(AlertType.ERROR);
-						alert.setTitle("Exception Dialog");
-						alert.setHeaderText(pluginFileName);
+				lblPluginName.setCursor(Cursor.HAND);
+				
+				if (shouldTraceException) {
+					lblPluginName.setTooltip(new Tooltip("Double click to show the exception log."));
+					lblPluginName.setOnMouseClicked(mouseEvent -> {
+						if (mouseEvent.getClickCount() >= 2) {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Exception Dialog");
+							alert.setHeaderText(pluginFileName);
 
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
-						throwable.printStackTrace(pw);
-						String exceptionText = sw.toString();
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							throwable.printStackTrace(pw);
+							String exceptionText = sw.toString();
 
-						TextArea textArea = new TextArea(exceptionText);
-						textArea.setEditable(false);
-						textArea.setWrapText(true);
+							TextArea textArea = new TextArea(exceptionText);
+							textArea.setEditable(false);
+							textArea.setWrapText(true);
 
-						textArea.setMaxWidth(Double.MAX_VALUE);
-						textArea.setMaxHeight(Double.MAX_VALUE);
-						GridPane.setVgrow(textArea, Priority.ALWAYS);
-						GridPane.setHgrow(textArea, Priority.ALWAYS);
+							textArea.setMaxWidth(Double.MAX_VALUE);
+							textArea.setMaxHeight(Double.MAX_VALUE);
+							GridPane.setVgrow(textArea, Priority.ALWAYS);
+							GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-						GridPane content = new GridPane();
-						content.setMaxWidth(Double.MAX_VALUE);
-						content.add(textArea, 0, 0);
+							GridPane content = new GridPane();
+							content.setMaxWidth(Double.MAX_VALUE);
+							content.add(textArea, 0, 0);
 
-						alert.getDialogPane().setContent(content);
+							alert.getDialogPane().setContent(content);
 
-						alert.showAndWait();
-					}
-				});
+							alert.showAndWait();
+						}
+					});
+				} else {
+					lblPluginName.setTooltip(new Tooltip(throwable.getMessage()));
+				}
 				
 				togActivator.setUnToggleLineColor(Paint.valueOf("#da4242"));
 				togActivator.setDisable(true);
@@ -562,7 +602,7 @@ public class PluginComponent implements EventListener {
 					deactivatedPlugins.remove(pluginFileName);
 					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
 				} catch (Throwable e) {
-					makeDisable(e);
+					makeDisable(e, true);
 				} finally {
 					displayLoadingBar(false);
 				}
@@ -581,7 +621,7 @@ public class PluginComponent implements EventListener {
 					clearPluginGraphic();
 					plugin.pluginDeactivated();
 				} catch (Throwable e) {
-					makeDisable(e);
+					makeDisable(e, true);
 				}
 			});
 		}).start();
