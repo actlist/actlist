@@ -78,42 +78,45 @@ For more information on ActlistPlugin development, see [here](https://github.com
 
 ## Release History
 
+* 1.2.4
+    * supports Actlist latest update alarm.
+    * minor feature has been added. (minimum compatible version / tray notification / G1GC option)
 * 1.2.3
-    * supports Mac OS X
-    * supports console viewer for logging
-    * application executing speed have been improved
-    * the menu have been added for open the plugins directory
+    * supports Mac OS X.
+    * supports console viewer for logging.
+    * application executing speed has been improved.
+    * the menu has been added for open the plugins directory.
 * 1.2.2
-    * minor feature have been improved. (function priority)
-    * minor feature have been modified.
+    * minor feature has been improved. (function priority)
+    * minor feature has been modified.
       * applicationActivated() / applicationDeactivated() method will called even if the application is minimized.
-    * minor feature have been added. (applicationCloseRequested method)
+    * minor feature has been added. (applicationCloseRequested method)
       * each plugins can defining an action that called when the application is receives a close request.
 * 1.2.1
-    * exception throwing feature
-    * minor design changes
-    * fixed a minor bug
+    * exception throwing feature.
+    * minor design changes.
+    * minor bug has been fixed.
 * 1.2.0
-    * configure plugin's priority via drag and drop
-    * save plugin's priority
-    * provide About menu to each plugin
-    * scroll bar design
-    * ESC key to hide the Actlist
-    * save application window size
-    * windows key can be configured by hotkey
-    * improved a minor feature
-    * fixed a minor bug
+    * configure plugin's priority via drag and drop.
+    * save plugin's priority.
+    * supports About menu to each plugin.
+    * scroll bar design.
+    * ESC key to hide the Actlist.
+    * save application window size.
+    * windows key can be configured by hotkey.
+    * minor feature has been improved.
+    * minor bug has been fixed.
 * 1.1.0
-    * load plugins by parallel and improved speed
-    * provide Configuration dialog
-    * hotkey change feature
-    * opacity change feature
-    * always on top feature
-    * enable/disable to animation effect
+    * load plugins by parallel and speed has been improved.
+    * supports Configuration dialog.
+    * hotkey change feature.
+    * opacity change feature.
+    * always on top feature.
+    * enable/disable to animation effect.
     * fixed bug
-      * terminate Actlist when some plugin raised exception
-      * not showing up when after first minimize to Actlist
-      * application single instance
-      * change application window size
+      * terminate Actlist when some plugin raised exception.
+      * not showing up when after first minimize to Actlist.
+      * application single instance.
+      * change application window size.
 * 1.0.0
     * The first proper release
