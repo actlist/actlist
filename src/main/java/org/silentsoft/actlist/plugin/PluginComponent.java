@@ -25,6 +25,8 @@ import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -86,6 +88,8 @@ public class PluginComponent implements EventListener {
 	
 	private PopOver popOver;
 	
+	private ObservableList<Node> functions;
+	
 	private HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification> trayNotifications = new HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification>();
 	
 	public void initialize() {
@@ -137,72 +141,10 @@ public class PluginComponent implements EventListener {
 					((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 					popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
 					
+					functions = FXCollections.observableArrayList();
 					for (Function function : plugin.getFunctionMap().values()) {
-						Label label = new Label("", function.graphic);
-						label.setOnMouseClicked(mouseEvent -> {
-							try {
-								if (function.action != null) {
-									function.action.run();
-								}
-							} catch (Exception e) {
-								
-							}
-						});
-						
-						addNodeToPopOver(label);
+						addFunction(function);
 					}
-					
-					if (plugin.getFunctionMap().size() > 0) {
-						((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-					}
-					
-					Label label = new Label("About");
-					label.setOnMouseClicked(mouseEvent -> {
-						Alert alert = new Alert(AlertType.INFORMATION);
-						((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
-						alert.initOwner(App.getStage());
-						alert.setTitle("About");
-						alert.setHeaderText(plugin.getPluginName());
-						
-						if (plugin.existsIcon()) {
-							try {
-								alert.setGraphic(plugin.getIcon());
-							} catch (Exception e) {
-								
-							}
-						}
-						
-						StringBuffer contentText = new StringBuffer();
-						if (plugin.getPluginDescription() != null) {
-							contentText.append(plugin.getPluginDescription());
-							
-							if (plugin.getPluginVersion() != null || plugin.getPluginAuthor() != null) {
-								contentText.append("\r\n");
-							}
-						}
-						
-						if (plugin.getPluginVersion() != null) {
-							if (plugin.getPluginDescription() != null) {
-								contentText.append("\r\n");
-							}
-							
-							contentText.append(String.join("", "ver ", plugin.getPluginVersion()));
-						}
-						
-						if (plugin.getPluginAuthor() != null) {
-							if (plugin.getPluginDescription() != null) {
-								contentText.append("\r\n");
-							}
-							
-							contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
-						}
-						
-						alert.setContentText(contentText.toString());
-						
-						
-						alert.showAndWait();
-					});
-					addNodeToPopOver(label);
 					
 					if (activated) {
 						activated();
@@ -421,7 +363,24 @@ public class PluginComponent implements EventListener {
 		componentBox.setUserData(null);
 	}
 	
-	private void addNodeToPopOver(Node node) {
+	private void addFunction(Function function) {
+		Label label = new Label("", function.graphic);
+		label.setOnMouseClicked(mouseEvent -> {
+			try {
+				if (function.action != null) {
+					function.action.run();
+				}
+			} catch (Exception e) {
+				
+			} finally {
+				popOver.hide();
+			}
+		});
+		
+		functions.add(createFunctionBox(label));
+	}
+	
+	private HBox createFunctionBox(Node node) {
 		HBox hBox = new HBox(node);
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setPadding(new Insets(3, 3, 3, 3));
@@ -432,7 +391,59 @@ public class PluginComponent implements EventListener {
 		hBox.setOnMouseExited(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: white;");
 		});
-		((VBox) popOver.getContentNode()).getChildren().add(hBox);
+		
+		return hBox;
+	}
+	
+	private HBox createAboutFunction() {
+		Label label = new Label("About");
+		label.setOnMouseClicked(mouseEvent -> {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
+			alert.initOwner(App.getStage());
+			alert.setTitle("About");
+			alert.setHeaderText(plugin.getPluginName());
+			
+			if (plugin.existsIcon()) {
+				try {
+					alert.setGraphic(plugin.getIcon());
+				} catch (Exception e) {
+					
+				}
+			}
+			
+			StringBuffer contentText = new StringBuffer();
+			if (plugin.getPluginDescription() != null) {
+				contentText.append(plugin.getPluginDescription());
+				
+				if (plugin.getPluginVersion() != null || plugin.getPluginAuthor() != null) {
+					contentText.append("\r\n");
+				}
+			}
+			
+			if (plugin.getPluginVersion() != null) {
+				if (plugin.getPluginDescription() != null) {
+					contentText.append("\r\n");
+				}
+				
+				contentText.append(String.join("", "ver ", plugin.getPluginVersion()));
+			}
+			
+			if (plugin.getPluginAuthor() != null) {
+				if (plugin.getPluginDescription() != null) {
+					contentText.append("\r\n");
+				}
+				
+				contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
+			}
+			
+			alert.setContentText(contentText.toString());
+			
+			
+			alert.showAndWait();
+		});
+		
+		return createFunctionBox(label);
 	}
 	
 	private void displayLoadingBar(boolean shouldShowLoadingBar) {
@@ -463,10 +474,20 @@ public class PluginComponent implements EventListener {
 	@FXML
 	private void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseButton.SECONDARY) {
+			((VBox) popOver.getContentNode()).getChildren().clear();
+			
 			if (togActivator.selectedProperty().get()) {
-				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
+				((VBox) popOver.getContentNode()).getChildren().addAll(functions);
+				
+				if (plugin.getFunctionMap().size() > 0) {
+					((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+				}
 			}
+			
+			((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
+			
+			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
+			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 		}
 	}
 	
