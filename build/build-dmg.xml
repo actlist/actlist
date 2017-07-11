@@ -310,7 +310,7 @@
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
-			version="1.2.4"
+			version="1.2.5"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -326,7 +326,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Silentsoft"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
-				<attribute name="Implementation-Version" value="1.2.4"/>
+				<attribute name="Implementation-Version" value="1.2.5"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
@@ -344,11 +344,13 @@
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}">
-				<fx:jvmarg value="-XX:+UseG1GC"/>
-				<!-- Why doesn't supports below options on Mac ?
-				<fx:jvmuserarg name="-XX:InitiatingHeapOccupancyPercent" value="30"/>
-				<fx:jvmuserarg name="-XX:ConcGCThread" value="20"/>
-				-->
+				<fx:jvmarg value="-client"/>
+				<fx:jvmarg value="-Xms64m"/>
+				<fx:jvmarg value="-XX:+UseParNewGC"/>
+				<fx:jvmarg value="-XX:+UseConcMarkSweepGC"/>
+				<fx:jvmarg value="-XX:InitiatingHeapOccupancyPercent=20"/>
+				<fx:jvmarg value="-XX:MinHeapFreeRatio=10"/>
+				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
 			</fx:platform>
 			
 			<fx:info title="actlist" vendor="Silentsoft"/>
