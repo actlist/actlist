@@ -344,11 +344,13 @@
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}">
+				<fx:jvmarg value="-client"/>
 				<fx:jvmarg value="-Xms64m"/>
-				<fx:jvmarg value="-XX:+UseG1GC"/>
-				<fx:jvmuserarg name="-XX:InitiatingHeapOccupancyPercent" value="20"/>
-				<fx:jvmuserarg name="-XX:MinHeapFreeRatio" value="10"/>
-				<fx:jvmuserarg name="-XX:MaxHeapFreeRatio" value="20"/>
+				<fx:jvmarg value="-XX:+UseParNewGC"/>
+				<fx:jvmarg value="-XX:+UseConcMarkSweepGC"/>
+				<fx:jvmarg value="-XX:InitiatingHeapOccupancyPercent=20"/>
+				<fx:jvmarg value="-XX:MinHeapFreeRatio=10"/>
+				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
 			</fx:platform>
 			
 			<fx:info title="actlist" vendor="Silentsoft"/>
