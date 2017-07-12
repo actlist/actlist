@@ -78,6 +78,8 @@ For more information on ActlistPlugin development, see [here](https://github.com
 
 ## Release History
 
+* 1.2.5
+    * JVM tuning options has been modified.
 * 1.2.4
     * supports Actlist latest update alarm.
     * minor feature has been added. (minimum compatible version / tray notification / G1GC option)
