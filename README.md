@@ -46,7 +46,9 @@ import org.silentsoft.actlist.plugin.ActlistPlugin;
 
 public class Plugin extends ActlistPlugin {
     
-    public static void main(String args[]) throws Exception {}
+    public static void main(String args[]) throws Exception {
+        debug();
+    }
     
     public Plugin() throws Exception {
         super("Example Plugin");
