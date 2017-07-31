@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="370.0" prefWidth="550.0" stylesheets="@../application/App.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.about.AboutController">
+   <children>
+      <HBox alignment="CENTER" layoutX="30.0" layoutY="22.0" spacing="50.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fitHeight="192.0" fitWidth="192.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/images/icon/actlist_256.png" />
+               </image>
+               <effect>
+                  <DropShadow />
+               </effect>
+            </ImageView>
+            <VBox spacing="10.0">
+               <children>
+                  <Label text="Actlist">
+                     <font>
+                        <Font size="45.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="version" />
+                  <Hyperlink fx:id="homepageLink" focusTraversable="false" onAction="#browseHomepage" style="-fx-padding: 0;" text="silentsoft.org" />
+                  <Label text="Apache License 2.0" />
+                  <VBox>
+                     <children>
+                        <Label text="sources" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="60.0" prefWidth="220.0" style="-fx-border-color: white; -fx-border-width: 1; -fx-padding: 0 0 0 15; -fx-background-color: white;">
+                          <content>
+                              <VBox fx:id="sources" spacing="5.0" style="-fx-background-color: white;" />
+                          </content>
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <Label text="3rd party libraries" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="60.0" prefWidth="220.0" style="-fx-border-color: white; -fx-border-width: 1; -fx-padding: 0 0 0 15; -fx-background-color: white;">
+                           <content>
+                              <VBox fx:id="libraries" spacing="5.0" style="-fx-background-color: white;" />
+                           </content>
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </ScrollPane>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="30.0" top="30.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

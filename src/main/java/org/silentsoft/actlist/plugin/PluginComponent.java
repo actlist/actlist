@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.comparator.VersionComparator;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
+import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
 import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.FileUtil;
@@ -59,6 +61,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import jidefx.animation.AnimationUtils;
 import tray.animations.AnimationType;
@@ -110,6 +114,7 @@ public class PluginComponent implements EventListener {
 		new Thread(() -> {
 			AtomicBoolean shouldTraceException = new AtomicBoolean(true);
 			try {
+				makeConsumable();
 				makeDraggable();
 				
 				plugin = pluginClass.newInstance();
@@ -138,6 +143,9 @@ public class PluginComponent implements EventListener {
 						throw new Exception(errorMessage);
 					}
 				}
+				
+				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
 				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
@@ -282,6 +290,19 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
+	void clear() {
+		if (isActivated()) {
+			try {
+				clearPluginGraphicAndDeactivate();
+			} catch (Exception e) {
+				
+			}
+		}
+		
+		plugin.classLoaderObject().set(null);
+		plugin = null;
+	}
+	
 	private void makeDisable(Throwable throwable, boolean shouldTraceException) {
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
@@ -341,6 +362,13 @@ public class PluginComponent implements EventListener {
 				EventHandler.removeListener(this);
 			});
 		}).start();
+	}
+	
+	private void makeConsumable() {
+		// This code prevents mouse events from going to the bottom scroll pane component.
+		root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+			mouseEvent.consume();
+		});
 	}
 	
 	private void makeDraggable() {
@@ -404,8 +432,7 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void addFunction(Function function) {
-		Label label = new Label("", function.graphic);
-		label.setOnMouseClicked(mouseEvent -> {
+		functions.add(createFunctionBox(new Label("", function.graphic), mouseEvent -> {
 			try {
 				if (function.action != null) {
 					function.action.run();
@@ -415,12 +442,10 @@ public class PluginComponent implements EventListener {
 			} finally {
 				popOver.hide();
 			}
-		});
-		
-		functions.add(createFunctionBox(label));
+		}));
 	}
 	
-	private HBox createFunctionBox(Node node) {
+	private HBox createFunctionBox(Node node, javafx.event.EventHandler<? super MouseEvent> action) {
 		HBox hBox = new HBox(node);
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setPadding(new Insets(3, 3, 3, 3));
@@ -431,13 +456,13 @@ public class PluginComponent implements EventListener {
 		hBox.setOnMouseExited(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: white;");
 		});
+		hBox.setOnMouseClicked(action);
 		
 		return hBox;
 	}
 	
 	private HBox createAboutFunction() {
-		Label label = new Label("About");
-		label.setOnMouseClicked(mouseEvent -> {
+		return createFunctionBox(new Label("About"), mouseEvent -> {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
 			alert.initOwner(App.getStage());
@@ -482,8 +507,70 @@ public class PluginComponent implements EventListener {
 			
 			alert.showAndWait();
 		});
+	}
+	
+	private HBox createUpgradeFunction() {
+		return createFunctionBox(new Label("Upgrade"), mouseEvent -> {
+			ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
+			
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select a new Actlist plugin file to upgrade");
+			fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
+			fileChooser.getExtensionFilters().add(jarFilter);
+			fileChooser.setSelectedExtensionFilter(jarFilter);
+			
+			File file = fileChooser.showOpenDialog(App.getStage());
+			
+			if (file == null) {
+				return;
+			}
+			
+			if (file.getName().equals(pluginFileName) == false && Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
+				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+				if (pluginMap.containsKey(file.getName())) {
+					MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
+					return;
+				}
+			}
+			
+			try {
+				pluginLoadingBox.setVisible(true);
+				
+				boolean succeedToInstall = PluginManager.install(file);
+				if (succeedToInstall) {
+					VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+					int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
+					
+					PluginManager.delete(pluginFileName);
+					
+					PluginManager.load(file.getName(), true, indexOfThisPlugin);
+					
+					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				MessageBox.showError(App.getStage(), "Oops... something is weird !");
+			} finally {
+				pluginLoadingBox.setVisible(false);
+			}
+		});
+	}
+	
+	private HBox createDeleteFunction() {
+		Label label = new Label("Delete");
+		label.setTextFill(Paint.valueOf("#db0018"));
 		
-		return createFunctionBox(label);
+		return createFunctionBox(label, mouseEvent -> {
+			Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Are you sure you want to delete this plugin ?");
+			if (result.isPresent() && result.get() == ButtonType.OK) {
+				try {
+					PluginManager.delete(pluginFileName);
+				} catch (Exception e) {
+					e.printStackTrace();
+					MessageBox.showError(App.getStage(), e.getMessage());
+				}
+			}
+		});
 	}
 	
 	private void displayLoadingBar(boolean shouldShowLoadingBar) {
@@ -516,7 +603,12 @@ public class PluginComponent implements EventListener {
 		if (e.getButton() == MouseButton.SECONDARY) {
 			((VBox) popOver.getContentNode()).getChildren().clear();
 			
-			if (togActivator.selectedProperty().get()) {
+			((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
+			((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
+			
+			((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+			
+			if (isActivated()) {
 				((VBox) popOver.getContentNode()).getChildren().addAll(functions);
 				
 				if (plugin.getFunctionMap().size() > 0) {
@@ -524,7 +616,7 @@ public class PluginComponent implements EventListener {
 				}
 			}
 			
-			((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
+			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 			
 			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
 			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
@@ -533,7 +625,7 @@ public class PluginComponent implements EventListener {
 	
 	@FXML
 	private void toggleOnAction() {
-		if (togActivator.selectedProperty().get()) {
+		if (isActivated()) {
 			activated();
 		} else {
 			deactivated();
@@ -575,7 +667,7 @@ public class PluginComponent implements EventListener {
 				}
 			}
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -587,6 +679,15 @@ public class PluginComponent implements EventListener {
 		if (popOver != null) {
 			popOver.hide();
 		}
+	}
+	
+	boolean isActivated() {
+		return togActivator.selectedProperty().get();
+	}
+	
+	void clearPluginGraphicAndDeactivate() throws Exception {
+		clearPluginGraphic();
+		plugin.pluginDeactivated();
 	}
 	
 	private void activated() {
@@ -618,8 +719,7 @@ public class PluginComponent implements EventListener {
 					deactivatedPlugins.add(pluginFileName);
 					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
 					
-					clearPluginGraphic();
-					plugin.pluginDeactivated();
+					clearPluginGraphicAndDeactivate();
 				} catch (Throwable e) {
 					makeDisable(e, true);
 				}
@@ -629,7 +729,7 @@ public class PluginComponent implements EventListener {
 	
 	@Override
 	public void onEvent(String event) {
-		if (togActivator.selectedProperty().get()) {
+		if (isActivated()) {
 			try {
 				switch (event) {
 				case BizConst.EVENT_APPLICATION_ACTIVATED:

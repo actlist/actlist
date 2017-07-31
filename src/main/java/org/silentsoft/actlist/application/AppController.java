@@ -3,7 +3,6 @@ package org.silentsoft.actlist.application;
 import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,8 +17,9 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
-import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.actlist.plugin.PluginComponent;
+import org.silentsoft.actlist.plugin.PluginManager;
+import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.version.BuildVersion;
@@ -38,13 +38,15 @@ import com.jfoenix.controls.JFXButton.ButtonType;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -54,6 +56,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import jidefx.animation.AnimationType;
 import jidefx.animation.AnimationUtils;
@@ -68,6 +72,9 @@ public class AppController implements EventListener {
 	
 	@FXML
 	private AnchorPane body;
+	
+	@FXML
+	private ScrollPane scrollPane;
 	
 	@FXML
 	private HBox controlBox;
@@ -86,6 +93,8 @@ public class AppController implements EventListener {
 	
 	private MaximizeProperty maximizeProperty;
 	
+	private HashMap<String, URLClassLoader> pluginMap;
+	
 	protected void initialize() {
 		EventHandler.addListener(this);
 		
@@ -93,6 +102,7 @@ public class AppController implements EventListener {
 		root.setPrefHeight(ConfigUtil.getRootHeight());
 		
 		maximizeProperty = new MaximizeProperty(App.getStage());
+		pluginMap = new HashMap<String, URLClassLoader>();
 		
 		makeDraggable(App.getStage(), head);
 		makeNormalizable(App.getStage(), head);
@@ -105,9 +115,10 @@ public class AppController implements EventListener {
 		
 		checkUpdate();
 		
-		loadPlugins();
-		
+		SharedMemory.getDataMap().put(BizConst.KEY_PLUGIN_MAP, pluginMap);
 		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
+		
+		loadPlugins();
 	}
 	
 	/**
@@ -410,7 +421,7 @@ public class AppController implements EventListener {
 							loadPlugin(path);
 						}
 					} catch (Exception e) {
-						
+						e.printStackTrace();
 					}
 				}
 			} else {
@@ -437,6 +448,49 @@ public class AppController implements EventListener {
 
 				componentBox.getChildren().add(pane);
 			}
+			
+			MenuItem menuItem = new MenuItem("Add a new plugin");
+			menuItem.setOnAction(actionEvent -> {
+				ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
+				
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Select a new Actlist plugin file");
+				fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
+				fileChooser.getExtensionFilters().add(jarFilter);
+				fileChooser.setSelectedExtensionFilter(jarFilter);
+				
+				File file = fileChooser.showOpenDialog(App.getStage());
+				
+				if (file == null) {
+					return;
+				}
+				
+				if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
+					HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+					if (pluginMap.containsKey(file.getName())) {
+						MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
+						return;
+					}
+				}
+				
+				try {
+					boolean succeedToInstall = PluginManager.install(file);
+					if (succeedToInstall) {
+						PluginManager.load(file.getName(), true);
+						
+						EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					MessageBox.showError(App.getStage(), "Oops... something is weird !");
+				}
+			});
+			ContextMenu contextMenu = new ContextMenu(menuItem);
+			scrollPane.setOnMouseReleased(mouseEvent -> {
+				if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+					contextMenu.show(App.getStage(), mouseEvent.getScreenX(), mouseEvent.getScreenY());
+				}
+			});
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
@@ -523,23 +577,9 @@ public class AppController implements EventListener {
     }
 	
 	private void loadPlugin(Path path) throws Exception {
-		@SuppressWarnings("resource") // Do not close the urlClassLoader for control their graphic things on each plugin.
-		URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ path.toUri().toURL() });
-		Class<?> pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
-		
-		if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
-			FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
-			Node component = fxmlLoader.load();
-			PluginComponent pluginComponent = ((PluginComponent) fxmlLoader.getController());
-			
-			String fileName = path.getFileName().toString();
-			List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
-			pluginComponent.initialize(fileName, (Class<? extends ActlistPlugin>) pluginClass, !deactivatedPlugins.contains(fileName));
-			
-			component.setUserData(pluginComponent);
-			
-			componentBox.getChildren().add(component);
-		}
+		String fileName = path.getFileName().toString();
+		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+		PluginManager.load(fileName, !deactivatedPlugins.contains(fileName));
 	}
 
 	@Override

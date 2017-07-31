@@ -16,10 +16,10 @@ import javax.swing.KeyStroke;
 import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
+import org.silentsoft.actlist.about.About;
 import org.silentsoft.actlist.configuration.Configuration;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
@@ -41,14 +41,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -104,40 +101,6 @@ public class App extends Application implements EventListener {
 		}
 		
 		return provider;
-	}
-	
-	private Alert getAboutAlert() {
-		StringBuffer message = new StringBuffer();
-		message.append("Version  : " + BuildVersion.VERSION + "\r\n");
-		message.append("\r\n");
-		message.append("Homepage : silentsoft.org\r\n");
-		message.append("\r\n");
-		message.append("3rd party library\r\n");
-		message.append(" Apache-commons\r\n");
-		message.append(" JKeyMaster\r\n");
-		message.append(" Jidefx-common\r\n");
-		message.append(" JFoenix\r\n");
-		message.append(" ControlsFx\r\n");
-		message.append(" Centerdevice-nsmenufx\r\n");
-		message.append(" Jackson\r\n");
-		message.append(" Json\r\n");
-		message.append(" JNA\r\n");
-		message.append(" Junit\r\n");
-		message.append(" Log4j\r\n");
-		message.append(" PlusHaze-TrayNotification\r\n");
-		message.append("\r\n");
-		message.append("Open Source License\r\n");
-		// TODO specify open source licenses here.
-		message.append(" Apache License 2.0\r\n");
-		
-		Alert aboutAlert = new Alert(AlertType.INFORMATION);
-		((Stage) aboutAlert.getDialogPane().getScene().getWindow()).getIcons().addAll(getIcons());
-		aboutAlert.setTitle("About");
-		aboutAlert.setHeaderText("Actlist");
-		aboutAlert.setGraphic(new ImageView("/images/icon/actlist_48.png"));
-		aboutAlert.setContentText(message.toString());
-		
-		return aboutAlert;
 	}
 	
 	@SuppressWarnings("static-access")
@@ -370,7 +333,7 @@ public class App extends Application implements EventListener {
 		});
 		TrayIconHandler.addItem("About", actionEvent -> {
 			Platform.runLater(() -> {
-				getAboutAlert().showAndWait();
+				showAbout();
 			});
 		});
 		
@@ -403,7 +366,7 @@ public class App extends Application implements EventListener {
 			
 			MenuItem aboutMenuItem = new MenuItem("About " + appName);
 			aboutMenuItem.setOnAction(actionEvent -> {
-				getAboutAlert().showAndWait();
+				showAbout();
 			});
 			
 			MenuItem preferencesMenuItem = new MenuItem("Preferences");
@@ -450,32 +413,30 @@ public class App extends Application implements EventListener {
 	}
 	
 	private void showOrHide() {
-		Platform.runLater(() -> {
-			if (stage.isIconified()) {
-				stage.setIconified(false); // just bring it up to front from taskbar.
-			} else {
-				if (stage.isShowing()) {
-					if (stage.isFocused()) {
-						if (ConfigUtil.isAnimationEffect()) {
-							Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
-			    			animation.setOnFinished(actionEvent -> {
-			    				stage.hide();
-			    			});
-			    			animation.play();
-						} else {
-							stage.hide();
-						}
+		if (stage.isIconified()) {
+			Platform.runLater(() -> { stage.setIconified(false); }); // just bring it up to front from taskbar.
+		} else {
+			if (stage.isShowing()) {
+				if (stage.isFocused()) {
+					if (ConfigUtil.isAnimationEffect()) {
+						Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
+		    			animation.setOnFinished(actionEvent -> {
+		    				stage.hide();
+		    			});
+		    			animation.play();
 					} else {
-						stage.requestFocus(); // do not hide. just bring it up to front.
+						Platform.runLater(() -> { stage.hide(); });
 					}
 				} else {
-					if (ConfigUtil.isAnimationEffect()) {
-						AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
-					}
-					stage.show();
+					Platform.runLater(() -> { stage.requestFocus(); }); // do not hide. just bring it up to front.
 				}
+			} else {
+				if (ConfigUtil.isAnimationEffect()) {
+					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+				}
+				Platform.runLater(() -> { stage.show(); });
 			}
-		});
+		}
 	}
 	
 	private void bringToFront() {
@@ -484,6 +445,25 @@ public class App extends Application implements EventListener {
 		    (stage.isShowing() == true && stage.isFocused() == false)) {
 			showOrHide(); // in this case the Actlist will definitely showing up.
 		}
+	}
+	
+	private Stage aboutStage;
+	private void showAbout() {
+		Platform.runLater(() -> {
+			if (aboutStage == null) {
+				aboutStage = new Stage();
+				{
+					BorderPane scene = new BorderPane();
+					scene.setTop(createMenuBar());
+					scene.setCenter(new About().getViewer());
+					
+					aboutStage.setScene(new Scene(scene));
+				}
+				aboutStage.initStyle(StageStyle.UTILITY);
+				aboutStage.setResizable(false);
+			}
+			aboutStage.show();
+		});
 	}
 	
 	private void showConsole() {
