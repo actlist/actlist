@@ -46,7 +46,7 @@
 		      </AnchorPane>
 		      <AnchorPane fx:id="body" styleClass="body" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
 		         <children>
-		    		  <ScrollPane fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		    		  <ScrollPane fx:id="scrollPane" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 				         <content>
 				            <VBox fx:id="componentBox" />
 				         </content>
