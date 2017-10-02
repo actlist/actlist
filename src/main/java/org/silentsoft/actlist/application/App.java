@@ -66,6 +66,9 @@ public class App extends Application implements EventListener {
 	private AppController appController;
 	
 	public static void main(String[] args) {
+		loadConfiguration();
+		checkSingleInstance();
+		
 		launch(args);
 	}
 			
@@ -133,9 +136,6 @@ public class App extends Application implements EventListener {
 		EventHandler.addListener(this);
 		
 		// WARNING : DO NOT MODIFY FUNCTION CALL PRIORITY
-		loadConfiguration();
-
-		checkSingleInstance();
 		
 		initConsole();
 		displayStageIcon();
@@ -170,7 +170,7 @@ public class App extends Application implements EventListener {
 		return null;
 	}
 	
-	private void loadConfiguration() {
+	private static void loadConfiguration() {
 		try {
 			ActlistConfig actlistConfig = null;
 			
@@ -197,7 +197,7 @@ public class App extends Application implements EventListener {
 		}
 	}
 	
-	private void checkSingleInstance() {
+	private static void checkSingleInstance() {
 		String imageName = BizConst.APPLICATION_NAME;
 		if (SystemUtil.isWindows()) {
 			imageName = imageName + CommonConst.EXTENSION_EXE;
