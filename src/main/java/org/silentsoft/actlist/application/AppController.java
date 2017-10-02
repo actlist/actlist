@@ -74,6 +74,12 @@ public class AppController implements EventListener {
 	private AnchorPane body;
 	
 	@FXML
+	private VBox splashBox;
+	
+	@FXML
+	private Label splashDescription;
+	
+	@FXML
 	private ScrollPane scrollPane;
 	
 	@FXML
@@ -117,6 +123,8 @@ public class AppController implements EventListener {
 		
 		SharedMemory.getDataMap().put(BizConst.KEY_PLUGIN_MAP, pluginMap);
 		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
+		
+		hideSplashImage();
 		
 		loadPlugins();
 	}
@@ -375,6 +383,17 @@ public class AppController implements EventListener {
     			
     		}
     	}).start();
+    }
+    
+    private void hideSplashImage() {
+    	new Thread(() -> {
+			try {
+				Thread.sleep(1500);
+			} catch (Exception e) {
+				
+			}
+			splashBox.setVisible(false);
+		}).start();
     }
     
 	private void loadPlugins() {
