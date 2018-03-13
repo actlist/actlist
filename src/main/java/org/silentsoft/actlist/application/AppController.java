@@ -293,7 +293,7 @@ public class AppController implements EventListener {
     			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
     			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
     			
-    			HashMap<String, String> result = RESTfulAPI.doPost("/update/check", param, HashMap.class);
+    			HashMap<String, String> result = RESTfulAPI.doGet("/update/check", param, HashMap.class);
     			if (result == null) {
     				return;
     			}
