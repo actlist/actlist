@@ -17,8 +17,8 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 		// DO NOT WRITE CODE HERE.
 	}
 	
-	public static <T> T doGet(String api, Class<T> returnType) throws Exception {
-		return doGet(api, returnType, (request) -> {
+	public static <T> T doGet(String api, Object param, Class<T> returnType) throws Exception {
+		return doGet(api, param, returnType, (request) -> {
 			request.setHeaders(createHeaders());
 		});
 	}
