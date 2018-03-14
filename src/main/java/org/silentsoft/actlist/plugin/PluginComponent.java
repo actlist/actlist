@@ -298,6 +298,8 @@ public class PluginComponent implements EventListener {
 					lblPluginName.setText(pluginFileName);
 					
 					makeDisable(e, shouldTraceException.get());
+					
+					pluginLoadingBox.setVisible(false);
 				});
 			}
 		}).start();
