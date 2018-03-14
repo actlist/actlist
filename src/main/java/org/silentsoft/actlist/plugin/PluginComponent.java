@@ -157,126 +157,141 @@ public class PluginComponent implements EventListener {
 					}
 				}
 				
-				/**
-				 * Exception will raised when if control their graphic node on initialize() method.
-				 * so, need to mapping controller to plugin before call initialize method.
-				 * below getGraphic() method will mapping controller to plugin.
-				 */
-				if (plugin.existsGraphic()) {
-					plugin.getGraphic();
-				}
-				
-				plugin.initialize();
-				
-				String pluginName = plugin.getPluginName();
-				String pluginDescription = plugin.getPluginDescription();
-				
 				Platform.runLater(() -> {
-					lblPluginName.setText(pluginName);
-					if (ObjectUtil.isNotEmpty(pluginDescription)) {
-						lblPluginName.setTooltip(new Tooltip(pluginDescription));
-					}
-					
-					togActivator.setSelected(activated);
-					
-					popOver = new PopOver(new VBox());
-					((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
-					popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-					
-					functions = FXCollections.observableArrayList();
-					for (Function function : plugin.getFunctionMap().values()) {
-						addFunction(function);
-					}
-					
-					if (activated) {
-						activated();
-					}
-					
-					plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
-						if (oldValue == newValue) {
-							return;
+					try {
+						String pluginName = plugin.getPluginName();
+						String pluginDescription = plugin.getPluginDescription();
+						
+						lblPluginName.setText(pluginName);
+						if (ObjectUtil.isNotEmpty(pluginDescription)) {
+							lblPluginName.setTooltip(new Tooltip(pluginDescription));
 						}
 						
-						displayLoadingBar(newValue);
-					});
-					
-					plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							makeDisable(newValue, true);
-						}
-					});
-					
-					plugin.showTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							tray.notification.TrayNotification trayNotification = new tray.notification.TrayNotification();
-							
-							synchronized (trayNotifications) {
-								trayNotifications.put(newValue, trayNotification);
+						togActivator.setSelected(activated);
+						
+						popOver = new PopOver(new VBox());
+						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
+						popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+						
+						plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
+							if (oldValue == newValue) {
+								return;
 							}
 							
-							trayNotification.setRectangleFill(Paint.valueOf("#222222"));
-							trayNotification.setImage(App.getIcons().get(4)); // 128x128
-							trayNotification.setAnimationType(AnimationType.POPUP);
-							
-							if (newValue.getTitle() == null) {
-								trayNotification.setTitle("The Actlist message has been arrived.");
-							} else {
-								trayNotification.setTitle(newValue.getTitle());
+							displayLoadingBar(newValue);
+						});
+						plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
+							if (newValue != null) {
+								makeDisable(newValue, true);
 							}
-							
-							if (newValue.getMessage() == null) {
-								trayNotification.setMessage(pluginName);
-							} else {
-								trayNotification.setMessage(newValue.getMessage());
+						});
+						plugin.showTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
+							if (newValue != null) {
+								tray.notification.TrayNotification trayNotification = new tray.notification.TrayNotification();
+								
+								synchronized (trayNotifications) {
+									trayNotifications.put(newValue, trayNotification);
+								}
+								
+								trayNotification.setRectangleFill(Paint.valueOf("#222222"));
+								trayNotification.setImage(App.getIcons().get(4)); // 128x128
+								trayNotification.setAnimationType(AnimationType.POPUP);
+								
+								if (newValue.getTitle() == null) {
+									trayNotification.setTitle("The Actlist message has been arrived.");
+								} else {
+									trayNotification.setTitle(newValue.getTitle());
+								}
+								
+								if (newValue.getMessage() == null) {
+									trayNotification.setMessage(pluginName);
+								} else {
+									trayNotification.setMessage(newValue.getMessage());
+								}
+								
+								if (newValue.getDuration() == null) {
+									trayNotification.setOnDismiss((actionEvent) -> {
+										synchronized (trayNotifications) {
+											trayNotifications.remove(trayNotification);
+										}
+										
+										EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
+										AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();
+										// TODO : scrollTo
+									});
+									
+									trayNotification.showAndWait();
+								} else {
+									trayNotification.showAndDismiss(newValue.getDuration());
+								}
 							}
-							
-							if (newValue.getDuration() == null) {
-								trayNotification.setOnDismiss((actionEvent) -> {
-									synchronized (trayNotifications) {
-										trayNotifications.remove(trayNotification);
+						});
+						plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
+							if (newValue != null) {
+								synchronized (trayNotifications) {
+									if (trayNotifications.containsKey(newValue)) {
+										tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
+										trayNotification.setOnDismiss((actionEvent) -> {
+											trayNotifications.remove(newValue);
+										});
+										trayNotification.dismiss();
+									}
+								}
+							}
+						});
+						plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
+							if (newValue) {
+								synchronized (trayNotifications) {
+									for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
+										tray.notification.TrayNotification trayNotification = entrySet.getValue();
+										trayNotification.setOnDismiss((actionEvent) -> {
+											trayNotifications.remove(newValue);
+										});
+										trayNotification.dismiss();
 									}
 									
-									EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
-									AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();
-									// TODO : scrollTo
-								});
-								
-								trayNotification.showAndWait();
-							} else {
-								trayNotification.showAndDismiss(newValue.getDuration());
-							}
-						}
-					});
-					plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
-						if (newValue != null) {
-							synchronized (trayNotifications) {
-								if (trayNotifications.containsKey(newValue)) {
-									tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
-									trayNotification.setOnDismiss((actionEvent) -> {
-										trayNotifications.remove(newValue);
-									});
-									trayNotification.dismiss();
+									plugin.shouldDismissTrayNotifications().set(false);
 								}
 							}
-						}
-					});
-					plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
-						if (newValue) {
-							synchronized (trayNotifications) {
-								for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
-									tray.notification.TrayNotification trayNotification = entrySet.getValue();
-									trayNotification.setOnDismiss((actionEvent) -> {
-										trayNotifications.remove(newValue);
-									});
-									trayNotification.dismiss();
-								}
-								
-								plugin.shouldDismissTrayNotifications().set(false);
+						});
+						plugin.shouldBrowseActlistArchives().addListener((observable, oldValue, newValue) -> {
+							if (newValue) {
+								try {
+	        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+	        					} catch (Exception e) {
+	        						
+	        					}
 							}
+						});
+						
+						/**
+						 * Exception will raised when if control their graphic node on initialize() method.
+						 * so, need to mapping controller to plugin before call initialize method.
+						 * below getGraphic() method will mapping controller to plugin.
+						 */
+						if (plugin.existsGraphic()) {
+							plugin.getGraphic();
 						}
-					});
-					
-					EventHandler.addListener(this);
+						
+						plugin.initialize();
+						
+						functions = FXCollections.observableArrayList();
+						for (Function function : plugin.getFunctionMap().values()) {
+							addFunction(function);
+						}
+						
+						if (activated) {
+							activated();
+						}
+						
+						EventHandler.addListener(this);
+					} catch (Throwable e) {
+						lblPluginName.setText(pluginFileName);
+						
+						makeDisable(e, shouldTraceException.get());
+					} finally {
+						pluginLoadingBox.setVisible(false);
+					}
 				});
 			} catch (Throwable e) {
 				Platform.runLater(() -> {
@@ -284,8 +299,6 @@ public class PluginComponent implements EventListener {
 					
 					makeDisable(e, shouldTraceException.get());
 				});
-			} finally {
-				pluginLoadingBox.setVisible(false);
 			}
 		}).start();
 	}
