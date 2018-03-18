@@ -131,4 +131,27 @@ public class ConfigUtil {
 		return hotKeyText.concat(String.valueOf((char) getShowHideActlistHotKeyCode()));
 	}
 	
+	// Do not make as enum type. It must be a string for simple json serialize/deserialize.
+	public class ProxyMode {
+		public static final String NONE = "NONE";
+		public static final String AUTOMATIC = "AUTOMATIC";
+		public static final String MANUAL = "MANUAL";
+	}
+	
+	public static String getProxyMode() {
+		return (String) getActlistConfig().get("proxyMode");
+	}
+	
+	public static void setProxyMode(String proxyMode) throws Exception {
+		getActlistConfig().put("proxyMode", proxyMode);
+	}
+	
+	public static String getProxyHost() {
+		return (String) getActlistConfig().get("proxyHost");
+	}
+	
+	public static void setProxyHost(String proxyHost) throws Exception {
+		getActlistConfig().put("proxyHost", proxyHost);
+	}
+
 }

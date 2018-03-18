@@ -1,33 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
-<?import com.jfoenix.controls.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="210.0" prefWidth="280.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.configuration.ConfigurationController">
+<AnchorPane prefHeight="240.0" prefWidth="370.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.configuration.ConfigurationController">
    <children>
-      <VBox layoutX="31.0" layoutY="159.0" prefHeight="200.0" prefWidth="100.0" spacing="30.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-         <children>
-            <JFXSlider fx:id="stageOpacity" majorTickUnit="10.0" max="100.0" min="0.0" prefHeight="14.0" prefWidth="62.0" value="100.0">
-               <VBox.margin>
-                  <Insets left="200.0" />
-               </VBox.margin>
-            </JFXSlider>
-            <VBox prefHeight="40.0">
-               <children>
-                  <Label text="Show/Hide Actlist (Global HotKey)" />
-                  <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A" />
-               </children>
-               <VBox.margin>
-                  <Insets left="10.0" />
-               </VBox.margin>
-            </VBox>
-            <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" />
-            <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
-         </children>
-      </VBox>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="General">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+                     <children>
+                        <JFXSlider fx:id="stageOpacity" majorTickUnit="10.0" max="100.0" min="0.0" prefHeight="14.0" prefWidth="62.0" value="100.0">
+                           <VBox.margin>
+                              <Insets left="270.0" />
+                           </VBox.margin>
+                        </JFXSlider>
+                        <VBox prefHeight="40.0">
+                           <children>
+                              <Label text="Show/Hide Actlist (Global HotKey)" />
+                              <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
+                        </VBox>
+                        <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" />
+                        <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="15.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </content>
+          </Tab>
+          <Tab text="Proxy">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                     </padding>
+                     <children>
+                        <JFXRadioButton fx:id="noneProxy" onAction="#proxy" text="None">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="proxy" />
+                           </toggleGroup>
+                        </JFXRadioButton>
+                        <JFXRadioButton fx:id="automaticProxy" onAction="#proxy" selected="true" text="Automatic detect" toggleGroup="$proxy" />
+                        <VBox spacing="5.0">
+                           <children>
+                              <JFXRadioButton fx:id="manualProxy" onAction="#proxy" text="Manual" toggleGroup="$proxy" />
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <JFXComboBox fx:id="proxyScheme" disable="true" promptText="http">
+                                       <padding>
+                                          <Insets bottom="7.0" />
+                                       </padding>
+                                    </JFXComboBox>
+                                    <JFXTextField fx:id="proxyAddress" disable="true" focusColor="#50cd84" maxWidth="130.0" minWidth="130.0" prefHeight="33.0" prefWidth="130.0" promptText="Address" />
+                                    <Label ellipsisString="" text=":" textAlignment="CENTER" textFill="#838383" />
+                                    <JFXTextField fx:id="proxyPort" disable="true" focusColor="#50cd84" minWidth="64.0" prefHeight="33.0" prefWidth="64.0" promptText="Port" />
+                                    <JFXCheckBox fx:id="manualProxyValidator" focusTraversable="false" minWidth="28.0" mouseTransparent="true" prefWidth="28.0" text=" " unCheckedColor="#59595900">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </JFXCheckBox>
+                                 </children>
+                                 <padding>
+                                    <Insets left="33.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+               </content>
+          </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>
