@@ -20,6 +20,7 @@ import org.silentsoft.actlist.about.About;
 import org.silentsoft.actlist.configuration.Configuration;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
@@ -189,6 +190,8 @@ public class App extends Application implements EventListener {
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
 				actlistConfig.put("animationEffect", true);
 				actlistConfig.put("alwaysOnTop", false);
+				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
+				actlistConfig.put("proxyHost", "");
 			}
 			
 			SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
