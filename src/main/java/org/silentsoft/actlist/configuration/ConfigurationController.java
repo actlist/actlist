@@ -39,8 +39,7 @@ public class ConfigurationController extends AbstractViewerController {
 	@FXML
 	private JFXTextField showHideActlistHotKey;
 	
-	@FXML
-	private JFXCheckBox animationEffect;
+	/* @FXML private JFXCheckBox animationEffect;*/
 	
 	@FXML
 	private JFXCheckBox alwaysOnTop;
@@ -81,7 +80,7 @@ public class ConfigurationController extends AbstractViewerController {
 			
 			stageOpacity.setValue(ConfigUtil.getStageOpacity() * 100);
 			showHideActlistHotKey.setText(ConfigUtil.getShowHideActlistHotKeyText());
-			animationEffect.setSelected(ConfigUtil.isAnimationEffect());
+			/* animationEffect.setSelected(ConfigUtil.isAnimationEffect()); */
 			alwaysOnTop.setSelected(ConfigUtil.isAlwaysOnTop());
 			
 			hotKeyMakingMode = new AtomicBoolean(false);
@@ -274,10 +273,12 @@ public class ConfigurationController extends AbstractViewerController {
 		}
 	}
 	
+	/*
 	@FXML
 	private void animationEffect() throws Exception {
 		ConfigUtil.setAnimationEffect(animationEffect.selectedProperty().get());
 	}
+	*/
 	
 	@FXML
 	private void alwaysOnTop() throws Exception {

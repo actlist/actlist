@@ -29,7 +29,6 @@
 		<!-- 3rd party -->
 		<centerdevice-nsmenufx.version>2.1.5</centerdevice-nsmenufx.version>
 		<jkeymaster.version>1.2</jkeymaster.version>
-		<jidefx-common.version>0.9.1</jidefx-common.version>
 		<jfoenix.version>1.0.0</jfoenix.version>
 	</properties>
 
@@ -160,11 +159,6 @@
 			<groupId>com.github.tulskiy</groupId>
 			<artifactId>jkeymaster</artifactId>
 			<version>${jkeymaster.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jidesoft</groupId>
-			<artifactId>jidefx-common</artifactId>
-			<version>${jidefx-common.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jfoenix</groupId>

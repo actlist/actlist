@@ -81,6 +81,7 @@ public class ConfigUtil {
 		getActlistConfig().put("alwaysOnTop", value);
 	}
 	
+	/*
 	public static boolean isAnimationEffect() {
 		return (boolean) getActlistConfig().get("animationEffect");
 	}
@@ -88,6 +89,7 @@ public class ConfigUtil {
 	public static void setAnimationEffect(boolean value) throws Exception {
 		getActlistConfig().put("animationEffect", value);
 	}
+	*/
 	
 	public static int getShowHideActlistHotKeyModifier() {
 		return (int) getActlistConfig().get("showHideActlistHotKeyModifier");

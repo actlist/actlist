@@ -35,7 +35,6 @@ import org.silentsoft.ui.util.StageDragResizer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXButton.ButtonType;
 
-import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -59,8 +58,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import jidefx.animation.AnimationType;
-import jidefx.animation.AnimationUtils;
 
 public class AppController implements EventListener {
 
@@ -225,11 +222,11 @@ public class AppController implements EventListener {
     private void makeClosable(final Stage stage, final Node byNode) {
     	byNode.setOnMouseClicked(mouseEvent -> {
     		if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-    			Transition animation = AnimationUtils.createTransition(App.getParent(), AnimationType.BOUNCE_OUT_DOWN);
-    			animation.setOnFinished(actionEvent -> {
+//    			Transition animation = AnimationUtils.createTransition(App.getParent(), AnimationType.BOUNCE_OUT_DOWN);
+//    			animation.setOnFinished(actionEvent -> {
     				stage.hide();
-    			});
-    			animation.play();
+//    			});
+//    			animation.play();
     		}
     	});
     }

@@ -36,7 +36,6 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 import de.codecentric.centerdevice.MenuToolkit;
-import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -55,8 +54,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jidefx.animation.AnimationType;
-import jidefx.animation.AnimationUtils;
 
 public class App extends Application implements EventListener {
 
@@ -122,9 +119,9 @@ public class App extends Application implements EventListener {
 		stage.setOpacity(ConfigUtil.getStageOpacity());
 		stage.setAlwaysOnTop(ConfigUtil.isAlwaysOnTop());
 		
-		if (ConfigUtil.isAnimationEffect()) {
-			AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
-		}
+//		if (ConfigUtil.isAnimationEffect()) {
+//			AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+//		}
 		
 		stage.show();
 	}
@@ -188,7 +185,7 @@ public class App extends Application implements EventListener {
 				actlistConfig.put("stageOpacity", 1.0);
 				actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
-				actlistConfig.put("animationEffect", true);
+				/* actlistConfig.put("animationEffect", true); */
 				actlistConfig.put("alwaysOnTop", false);
 				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
 				actlistConfig.put("proxyHost", "");
@@ -421,22 +418,22 @@ public class App extends Application implements EventListener {
 		} else {
 			if (stage.isShowing()) {
 				if (stage.isFocused()) {
-					if (ConfigUtil.isAnimationEffect()) {
-						Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
-		    			animation.setOnFinished(actionEvent -> {
-		    				stage.hide();
-		    			});
-		    			animation.play();
-					} else {
+//					if (ConfigUtil.isAnimationEffect()) {
+//						Transition animation = AnimationUtils.createTransition(app, AnimationType.BOUNCE_OUT_DOWN);
+//		    			animation.setOnFinished(actionEvent -> {
+//		    				stage.hide();
+//		    			});
+//		    			animation.play();
+//					} else {
 						Platform.runLater(() -> { stage.hide(); });
-					}
+//					}
 				} else {
 					Platform.runLater(() -> { stage.requestFocus(); }); // do not hide. just bring it up to front.
 				}
 			} else {
-				if (ConfigUtil.isAnimationEffect()) {
-					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
-				}
+//				if (ConfigUtil.isAnimationEffect()) {
+//					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
+//				}
 				Platform.runLater(() -> { stage.show(); });
 			}
 		}

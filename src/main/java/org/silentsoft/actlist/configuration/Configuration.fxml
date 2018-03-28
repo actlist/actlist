@@ -36,7 +36,7 @@
                               <Insets left="10.0" />
                            </VBox.margin>
                         </VBox>
-                        <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" />
+						<!-- <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" /> -->
                         <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
                      </children>
                      <padding>
