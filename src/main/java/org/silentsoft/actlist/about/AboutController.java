@@ -43,7 +43,6 @@ public class AboutController extends AbstractViewerController {
 		libraries.getChildren().add(createLink("Apache-httpclient", "https://hc.apache.org"));
 		libraries.getChildren().add(createLink("Proxy-vole", "https://github.com/MarkusBernhardt/proxy-vole"));
 		libraries.getChildren().add(createLink("JKeyMaster", "https://github.com/tulskiy/jkeymaster"));
-		libraries.getChildren().add(createLink("Jidefx-common", "http://github.com/jidesoft/jidefx-oss"));
 		libraries.getChildren().add(createLink("JFoenix", "https://github.com/jfoenixadmin/JFoenix"));
 		libraries.getChildren().add(createLink("ControlsFx", "https://bitbucket.org/controlsfx/controlsfx/"));
 		libraries.getChildren().add(createLink("Centerdevice-nsmenufx", "https://github.com/codecentric/NSMenuFX"));
@@ -53,8 +52,6 @@ public class AboutController extends AbstractViewerController {
 		libraries.getChildren().add(createLink("JNA", "https://github.com/java-native-access/jna"));
 		libraries.getChildren().add(createLink("Slf4j", "https://github.com/qos-ch/slf4j"));
 		libraries.getChildren().add(createLink("Log4j", "https://github.com/apache/log4j"));
-		libraries.getChildren().add(createLink("Junit", "https://github.com/junit-team/junit4"));
-		
 	}
 	
 	private Label createLink(String name, String link) {

@@ -64,7 +64,6 @@ import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import jidefx.animation.AnimationUtils;
 import tray.animations.AnimationType;
 
 
@@ -216,7 +215,7 @@ public class PluginComponent implements EventListener {
 										}
 										
 										EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
-										AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();
+										/*AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();*/
 										// TODO : scrollTo
 									});
 									
