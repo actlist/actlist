@@ -3,16 +3,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="370.0" prefWidth="550.0" stylesheets="@../application/App.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.about.AboutController">
+<AnchorPane prefHeight="350.0" stylesheets="@../application/App.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.about.AboutController">
    <children>
       <HBox alignment="CENTER" layoutX="30.0" layoutY="22.0" spacing="50.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -23,49 +23,48 @@
                <effect>
                   <DropShadow />
                </effect>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </ImageView>
-            <VBox spacing="10.0">
+            <VBox alignment="CENTER_LEFT" spacing="15.0">
                <children>
                   <Label text="Actlist">
                      <font>
                         <Font size="45.0" />
                      </font>
                   </Label>
-                  <Label fx:id="version" />
-                  <Hyperlink fx:id="homepageLink" focusTraversable="false" onAction="#browseHomepage" style="-fx-padding: 0;" text="silentsoft.org" />
-                  <Label text="Apache License 2.0" />
-                  <VBox>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
-                        <Label text="sources" />
-                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="60.0" prefWidth="220.0" style="-fx-border-color: white; -fx-border-width: 1; -fx-padding: 0 0 0 15; -fx-background-color: white;">
-                          <content>
-                              <VBox fx:id="sources" spacing="5.0" style="-fx-background-color: white;" />
-                          </content>
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </ScrollPane>
+                        <Label fx:id="version" />
+                        <HBox fx:id="newVersionBox" alignment="CENTER_LEFT" spacing="3.0" visible="false">
+                           <children>
+                              <SVGPath content="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#4d4d4d" />
+                              <Hyperlink fx:id="archivesLink" focusTraversable="false" onAction="#browseArchives" style="-fx-padding: 0;" text="New version available" textFill="#ee7676" />
+                           </children>
+                        </HBox>
                      </children>
-                  </VBox>
-                  <VBox>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT">
                      <children>
-                        <Label text="3rd party libraries" />
-                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="60.0" prefWidth="220.0" style="-fx-border-color: white; -fx-border-width: 1; -fx-padding: 0 0 0 15; -fx-background-color: white;">
-                           <content>
-                              <VBox fx:id="libraries" spacing="5.0" style="-fx-background-color: white;" />
-                           </content>
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </ScrollPane>
+                        <Hyperlink fx:id="licenseLink" focusTraversable="false" onAction="#browseLicense" style="-fx-padding: 0;" text="Open Source License" />
+                        <Label text=" | " />
+                        <Hyperlink fx:id="changeLogLink" focusTraversable="false" onAction="#browseChangeLog" style="-fx-padding: 0;" text="Change Log" />
                      </children>
-                  </VBox>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Copyright © " />
+                        <Hyperlink fx:id="homepageLink" focusTraversable="false" onAction="#browseHomepage" style="-fx-padding: 0;" text="silentsoft.org" />
+                        <Label text=". All rights reserved." />
+                     </children>
+                  </HBox>
                </children>
-               <padding>
-                  <Insets bottom="30.0" top="30.0" />
-               </padding>
             </VBox>
          </children>
+         <padding>
+            <Insets left="50.0" right="36.0" />
+         </padding>
       </HBox>
    </children>
 </AnchorPane>

@@ -253,6 +253,7 @@ public class App extends Application implements EventListener {
 		if (consoleStage == null) {
 			consoleStage = new Stage();
 			consoleStage.setTitle("Console");
+			consoleStage.initOwner(App.getStage());
 			consoleStage.initStyle(StageStyle.TRANSPARENT);
 			{
 				FXMLLoader fxmlLoader = new FXMLLoader(Console.class.getResource(Console.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
@@ -452,6 +453,9 @@ public class App extends Application implements EventListener {
 		Platform.runLater(() -> {
 			if (aboutStage == null) {
 				aboutStage = new Stage();
+				aboutStage.initOwner(App.getStage());
+				aboutStage.initStyle(StageStyle.UTILITY);
+				aboutStage.setResizable(false);
 				{
 					BorderPane scene = new BorderPane();
 					scene.setTop(createMenuBar());
@@ -459,8 +463,6 @@ public class App extends Application implements EventListener {
 					
 					aboutStage.setScene(new Scene(scene));
 				}
-				aboutStage.initStyle(StageStyle.UTILITY);
-				aboutStage.setResizable(false);
 			}
 			aboutStage.show();
 		});
@@ -477,7 +479,9 @@ public class App extends Application implements EventListener {
 		Platform.runLater(() -> {
 			if (configurationStage == null) {
 				configurationStage = new Stage();
+				configurationStage.initOwner(App.getStage());
 				configurationStage.setTitle("Actlist Configuration");
+				configurationStage.setResizable(false);
 				{
 					BorderPane scene = new BorderPane();
 					scene.setTop(createMenuBar());
@@ -485,7 +489,6 @@ public class App extends Application implements EventListener {
 					
 					configurationStage.setScene(new Scene(scene));
 				}
-				configurationStage.setResizable(false);
 				configurationStage.getIcons().addAll(getIcons());
 			}
 			configurationStage.show();
