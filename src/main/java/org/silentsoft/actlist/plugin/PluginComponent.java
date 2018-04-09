@@ -618,19 +618,30 @@ public class PluginComponent implements EventListener {
 			((VBox) popOver.getContentNode()).getChildren().clear();
 			
 			((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
-			((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
-			
-			((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+			/**
+			 * NO ! It's not works properly on windows system yet !
+			   ((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
+			 */
 			
 			if (isActivated()) {
-				((VBox) popOver.getContentNode()).getChildren().addAll(functions);
-				
 				if (plugin.getFunctionMap().size() > 0) {
 					((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
 				}
+				
+				((VBox) popOver.getContentNode()).getChildren().addAll(functions);
+				
+				/**
+				 * NO ! It's not works properly on windows system yet !
+				   if (plugin.getFunctionMap().size() > 0) {
+				       ((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+				   }
+				 */
 			}
 			
-			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
+			/*
+			 * NO ! It's not works properly on windows system yet !
+			   ((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
+			 */
 			
 			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
 			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());

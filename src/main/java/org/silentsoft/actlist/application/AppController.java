@@ -299,6 +299,8 @@ public class AppController implements EventListener {
     				isAvailableNewActlist = Boolean.parseBoolean(result.get("available"));
     			}
     			
+    			SharedMemory.getDataMap().put(BizConst.KEY_IS_AVAILABLE_NEW_ACTLIST, isAvailableNewActlist);
+    			
     			if (isAvailableNewActlist) {
     				Platform.runLater(() -> {
     					PopOver popOver = new PopOver();

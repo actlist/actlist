@@ -8,6 +8,8 @@ public class BizConst {
 	public static final String KEY_COMPONENT_BOX = "KEY_COMPONENT_BOX";
 	public static final String KEY_PLUGIN_MAP = "KEY_PLUGIN_MAP";
 	
+	public static final String KEY_IS_AVAILABLE_NEW_ACTLIST = "KEY_IS_AVAILABLE_NEW_ACTLIST";
+	
 	
 	/**
 	 * Actlist application will register the tray icon when this event is called.
