@@ -18,6 +18,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.comparator.VersionComparator;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
+import org.silentsoft.actlist.plugin.about.PluginAbout;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
 import org.silentsoft.actlist.version.BuildVersion;
@@ -41,6 +42,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -64,6 +66,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import tray.animations.AnimationType;
 
 
@@ -475,51 +478,21 @@ public class PluginComponent implements EventListener {
 		return hBox;
 	}
 	
+	private Stage aboutStage;
 	private HBox createAboutFunction() {
 		return createFunctionBox(new Label("About"), mouseEvent -> {
-			Alert alert = new Alert(AlertType.INFORMATION);
-			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().addAll(App.getIcons());
-			alert.initOwner(App.getStage());
-			alert.setTitle("About");
-			alert.setHeaderText(plugin.getPluginName());
-			
-			if (plugin.existsIcon()) {
-				try {
-					alert.setGraphic(plugin.getIcon());
-				} catch (Exception e) {
+			if (aboutStage == null) {
+				aboutStage = new Stage();
+				aboutStage.initOwner(App.getStage());
+				aboutStage.initStyle(StageStyle.UTILITY);
+				{
+					BorderPane scene = new BorderPane();
+					scene.setCenter(new PluginAbout(this.plugin).getViewer());
 					
+					aboutStage.setScene(new Scene(scene));
 				}
 			}
-			
-			StringBuffer contentText = new StringBuffer();
-			if (plugin.getPluginDescription() != null) {
-				contentText.append(plugin.getPluginDescription());
-				
-				if (plugin.getPluginVersion() != null || plugin.getPluginAuthor() != null) {
-					contentText.append("\r\n");
-				}
-			}
-			
-			if (plugin.getPluginVersion() != null) {
-				if (plugin.getPluginDescription() != null) {
-					contentText.append("\r\n");
-				}
-				
-				contentText.append(String.join("", "ver ", plugin.getPluginVersion()));
-			}
-			
-			if (plugin.getPluginAuthor() != null) {
-				if (plugin.getPluginDescription() != null) {
-					contentText.append("\r\n");
-				}
-				
-				contentText.append(String.join("", "by ", plugin.getPluginAuthor()));
-			}
-			
-			alert.setContentText(contentText.toString());
-			
-			
-			alert.showAndWait();
+			aboutStage.show();
 		});
 	}
 	
