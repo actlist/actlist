@@ -1,8 +1,9 @@
-Actlist
+#Actlist
 Copyright (c) silentsoft.org. All rights reserved.
 
-This product includes software developed by The Apache Software
-Foundation (http://www.apache.org/).
+This product includes software developed by silentsoft.org.
+
+This product includes software developed by The Apache Software Foundation (http://www.apache.org/).
 
 __material icons__
  * https://material.io/icons/
@@ -49,11 +50,11 @@ __log4j 1.2.17__
 
 __centerdevice-nsmenufx 2.1.5__
  * https://github.com/codecentric/NSMenuFX
- * BSD 3-Clause
+ * BSD-3-Clause
 
 __controlsfx 8.40.10__
  * https://bitbucket.org/controlsfx/controlsfx
- * BSD 3-clause
+ * BSD-3-Clause
 
 __json 20141113__
  * https://github.com/douglascrockford/JSON-java
@@ -105,12 +106,11 @@ __slf4j-log4j12 1.7.5__
 
 __jkeymaster 1.2__
  * https://github.com/tulskiy/jkeymaster
- * LGPL 3.0
+ * LGPL-3.0
 
 ______
 
 __Apache License 2.0__
-
 
                                  Apache License
                            Version 2.0, January 2004
@@ -313,10 +313,10 @@ __Apache License 2.0__
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 ______
 
-__BSD 3-Clause__
+__BSD-3-Clause__
 
 Note: This license has also been called the "New BSD License" or "Modified BSD License". See also the 2-clause BSD License.
 
@@ -360,7 +360,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ______
 
-__LGPL 3.0__
+__LGPL-3.0__
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
