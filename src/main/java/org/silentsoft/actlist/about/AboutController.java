@@ -23,7 +23,7 @@ public class AboutController extends AbstractViewerController {
 	private HBox newVersionBox;
 	
 	@FXML
-	private Hyperlink archivesLink, licenseLink, changeLogLink, homepageLink;
+	private Hyperlink archivesLink, sourceCodeLink, licenseLink, changeLogLink, homepageLink;
 	
 	@Override
 	public void initialize(Parent viewer, Object... parameters) {
@@ -45,6 +45,11 @@ public class AboutController extends AbstractViewerController {
 	@FXML
 	private void browseArchives() {
 		browse(archivesLink, "http://silentsoft.org/actlist/archives/");
+	}
+	
+	@FXML
+	private void browseSourceCode() {
+		browse(sourceCodeLink, "https://github.com/silentsoft/actlist");
 	}
 	
 	@FXML
