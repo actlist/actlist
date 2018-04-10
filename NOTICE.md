@@ -76,11 +76,11 @@ __jfoenix 1.0.0__
  * https://github.com/jfoenixadmin/Jfoenix
  * Apache License 2.0
 
-__jna 4.2.1__
+__jna 4.5.1__
  * https://github.com/java-native-access/jna
  * Apache License 2.0
 
-__jna-platform 4.2.2__
+__jna-platform 4.5.1__
  * https://github.com/java-native-access/jna
  * Apache License 2.0
 
