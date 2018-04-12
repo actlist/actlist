@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.*?>
-<?import impl.org.controlsfx.skin.*?>
-<?import com.jfoenix.controls.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXHamburger?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
+<AnchorPane fx:id="root" prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
    <children>
       <JFXHamburger fx:id="hand" layoutX="13.0" layoutY="19.0" opacity="0.2" prefHeight="14.0" prefWidth="11.0">
          <cursor>
             <Cursor fx:constant="MOVE" />
          </cursor>
       </JFXHamburger>
-      <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="88.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label fx:id="lblPluginName" prefHeight="16.0" prefWidth="302.0" text="" HBox.hgrow="SOMETIMES">
                <font>
@@ -32,7 +34,16 @@
             <Insets top="5.0" />
          </padding>
       </HBox>
-      <JFXToggleButton fx:id="togActivator" layoutX="199.0" layoutY="-2.0" onAction="#toggleOnAction" selected="false" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" AnchorPane.rightAnchor="-0.203125" />
+      <HBox alignment="CENTER_LEFT" layoutX="361.0" layoutY="-2.0" spacing="8.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Label>
+            <JFXToggleButton fx:id="togActivator" onAction="#toggleOnAction" selected="false" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" />
+         </children>
+      </HBox>
       <HBox fx:id="pluginLoadingBox" alignment="CENTER" layoutY="45.0" prefHeight="45.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <JFXSpinner />
@@ -51,7 +62,7 @@
             -->
          </children>
       </VBox>
-      <VBox fx:id="contentLoadingBox" alignment="CENTER" layoutX="35.0" layoutY="51.0" prefWidth="380.0" style="-fx-background-color: white;" visible="false" AnchorPane.topAnchor="51.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="35.0">
+      <VBox fx:id="contentLoadingBox" alignment="CENTER" layoutX="35.0" layoutY="51.0" prefWidth="380.0" style="-fx-background-color: white;" visible="false" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
          <children>
             <!-- Generate by code. 
             <JFXSpinner />

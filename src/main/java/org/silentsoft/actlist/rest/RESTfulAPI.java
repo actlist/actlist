@@ -20,7 +20,13 @@ import com.github.markusbernhardt.proxy.ProxySearch;
 public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 
 	static {
-		init("http://silentsoft.org", "/actlist");
+		init("", "");
+		/**
+		 * init("http://silentsoft.org", "/actlist");
+		 * 
+		 * it must not be set because of plugin's update check URI.
+		 * that URI may not be a official silentsoft.org. it could be a private server.
+		 */
 	}
 	
 	public static void init() {

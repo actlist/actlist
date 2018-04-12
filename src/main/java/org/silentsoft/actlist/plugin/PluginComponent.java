@@ -7,12 +7,15 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.controlsfx.control.PopOver;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
@@ -21,10 +24,12 @@ import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
 import org.silentsoft.actlist.plugin.about.PluginAbout;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
+import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.ObjectUtil;
+import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -83,7 +88,9 @@ public class PluginComponent implements EventListener {
 	
 	@FXML
 	private Label lblPluginName;
-	
+
+	@FXML
+	private Label updateAlarmLabel;
 	@FXML
 	private JFXToggleButton togActivator;
 	
@@ -105,6 +112,9 @@ public class PluginComponent implements EventListener {
 	private ObservableList<Node> functions;
 	
 	private HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification> trayNotifications = new HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification>();
+	
+	private boolean isAvailableNewPlugin = false;
+	private URI newPluginURI;
 	
 	public void initialize() {
 		// This method is automatically called by FXMLLoader.
@@ -145,6 +155,49 @@ public class PluginComponent implements EventListener {
 						throw new Exception(errorMessage);
 					}
 				}
+				
+				new Thread(() -> {
+					try {
+						URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
+						if (pluginUpdateCheckURI != null) {
+			    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+			    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+			    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+			    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+			    			
+			    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
+			    			if (result == null) {
+			    				return;
+			    			}
+			    			
+			    			if (result.containsKey("available")) {
+			    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
+			    				if (isAvailableNewPlugin) {
+			    					if (result.containsKey("url")) {
+			    						try {
+			    							newPluginURI = new URI(result.get("url"));
+			        					} catch (Exception e) {
+			        						
+			        					}
+			    					} else {
+			    						URI pluginArchivesURI = plugin.getPluginArchivesURI();
+			    						if (pluginArchivesURI != null) {
+			    							newPluginURI = pluginArchivesURI;
+			    						}
+			    					}
+			    					
+			    					if (newPluginURI != null) {
+			    						updateAlarmLabel.setVisible(true);
+			    					} else {
+			    						updateAlarmLabel.setVisible(false);
+			    					}
+			    				}
+			    			}
+						}
+					} catch (Exception e) {
+						e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+					}
+				}).start();
 				
 				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
 				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
@@ -481,19 +534,32 @@ public class PluginComponent implements EventListener {
 	private Stage aboutStage;
 	private HBox createAboutFunction() {
 		return createFunctionBox(new Label("About"), mouseEvent -> {
-			if (aboutStage == null) {
-				aboutStage = new Stage();
-				aboutStage.initOwner(App.getStage());
-				aboutStage.initStyle(StageStyle.UTILITY);
-				{
-					BorderPane scene = new BorderPane();
-					scene.setCenter(new PluginAbout(this.plugin).getViewer());
-					
-					aboutStage.setScene(new Scene(scene));
-				}
-			}
-			aboutStage.show();
+			showAboutStage();
 		});
+	}
+	@FXML
+	private void showAboutStage() {
+		updateAlarmLabel.setVisible(false); // make it unvisible for update alarm label
+		
+		/**
+		 * this aboutStage must be closed when if already opened.
+		 * because the newPluginURI variable will be set by another thread.
+		 */
+		if (aboutStage != null) {
+			aboutStage.close();
+			aboutStage = null;
+		}
+		
+		aboutStage = new Stage();
+		aboutStage.initOwner(App.getStage());
+		aboutStage.initStyle(StageStyle.UTILITY);
+		{
+			BorderPane scene = new BorderPane();
+			scene.setCenter(new PluginAbout(this.plugin, this.newPluginURI).getViewer());
+			
+			aboutStage.setScene(new Scene(scene));
+		}
+		aboutStage.show();
 	}
 	
 	private HBox createUpgradeFunction() {
