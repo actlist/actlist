@@ -1,6 +1,7 @@
 package org.silentsoft.actlist.plugin.about;
 
 import java.awt.Desktop;
+import java.net.URI;
 
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.core.util.ObjectUtil;
@@ -39,6 +40,9 @@ public class PluginAboutController extends AbstractViewerController {
 	
 	@FXML
 	private HBox newVersionBox;
+	
+	@FXML
+	private Hyperlink newVersionLink;
 	
 	@FXML
 	private ScrollPane masterPane;
@@ -96,11 +100,26 @@ public class PluginAboutController extends AbstractViewerController {
 				}
 				
 				{
-					/**
-					 * TODO : plugin update check
-					 */
-					VBox parent = (VBox) newVersionBox.getParent();
-					parent.getChildren().remove(newVersionBox);
+					Object _newPluginURI = parameters[1];
+					if (_newPluginURI == null || (_newPluginURI instanceof URI) == false) {
+						newVersionBox.setVisible(false);
+						
+						VBox parent = (VBox) newVersionBox.getParent();
+						parent.getChildren().remove(newVersionBox);
+					} else {
+						newVersionBox.setVisible(true);
+						
+						URI newPluginURI = (URI) _newPluginURI;
+						newVersionLink.setOnAction(actionEvent -> {
+							newVersionLink.setVisited(false);
+							
+							try {
+								Desktop.getDesktop().browse(newPluginURI);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
+					}
 				}
 				
 				try {
