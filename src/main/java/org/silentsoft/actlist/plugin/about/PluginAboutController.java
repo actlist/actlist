@@ -1,6 +1,9 @@
 package org.silentsoft.actlist.plugin.about;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import org.silentsoft.actlist.plugin.ActlistPlugin;
@@ -122,33 +125,37 @@ public class PluginAboutController extends AbstractViewerController {
 					}
 				}
 				
-				try {
-					if (ObjectUtil.isNotEmpty(plugin.getPluginDescriptionURI())) {
-						descriptionView.getEngine().load(plugin.getPluginDescriptionURI().toString());
-					} else if (ObjectUtil.isNotEmpty(plugin.getPluginDescription())) {
-						descriptionView.getEngine().loadContent(plugin.getPluginDescription(), "text/plain");
+				setContentToWebView(descriptionView, plugin.getPluginDescriptionURI(), plugin.getPluginDescription());
+				setContentToWebView(changeLogView, plugin.getPluginChangeLogURI(), plugin.getPluginChangeLog());
+				setContentToWebView(licenseView, plugin.getPluginLicenseURI(), plugin.getPluginLicense());
+			}
+		}
+	}
+	
+	private void setContentToWebView(WebView webView, URI uri, String text) {
+		BufferedReader reader = null;
+		try {
+			if (ObjectUtil.isNotEmpty(uri)) {
+				if ("jar".equals(uri.getScheme())) {
+					reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream()));
+					StringBuffer buffer = new StringBuffer();
+					for (String value=null; (value=reader.readLine()) != null; ) {
+						buffer.append(value.concat("\r\n"));
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					webView.getEngine().loadContent(buffer.toString(), "text/plain");
+				} else {
+					webView.getEngine().load(uri.toString());
 				}
-				
+			} else if (ObjectUtil.isNotEmpty(text)) {
+				webView.getEngine().loadContent(text, "text/plain");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
 				try {
-					if (ObjectUtil.isNotEmpty(plugin.getPluginChangeLogURI())) {
-						changeLogView.getEngine().load(plugin.getPluginChangeLogURI().toString());
-					} else if (ObjectUtil.isNotEmpty(plugin.getPluginChangeLog())) {
-						changeLogView.getEngine().loadContent(plugin.getPluginChangeLog(), "text/plain");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					if (ObjectUtil.isNotEmpty(plugin.getPluginLicenseURI())) {
-						licenseView.getEngine().load(plugin.getPluginLicenseURI().toString());
-					} else if (ObjectUtil.isNotEmpty(plugin.getPluginLicense())) {
-						licenseView.getEngine().loadContent(plugin.getPluginLicense(), "text/plain");
-					}
-				} catch (Exception e) {
+					reader.close();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
