@@ -36,7 +36,7 @@
       </HBox>
       <HBox alignment="CENTER_LEFT" layoutX="361.0" layoutY="-2.0" spacing="8.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;">
+            <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
