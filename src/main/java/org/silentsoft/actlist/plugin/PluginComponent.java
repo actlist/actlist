@@ -29,7 +29,6 @@ import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.ObjectUtil;
-import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -162,8 +161,10 @@ public class PluginComponent implements EventListener {
 						if (pluginUpdateCheckURI != null) {
 			    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
 			    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+			    			/* below values are unnecessary. version value is enough.
 			    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
 			    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+			    			*/
 			    			
 			    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
 			    			if (result == null) {
