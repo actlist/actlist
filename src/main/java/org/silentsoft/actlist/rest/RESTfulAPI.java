@@ -46,7 +46,7 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 	}
 	
 	// TODO : proxy host may needs caching logic.
-	private static HttpHost getProxyHost() {
+	public static HttpHost getProxyHost() {
 		HttpHost proxyHost = null;
 		
 		try {

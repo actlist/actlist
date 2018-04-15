@@ -36,17 +36,21 @@ public class BizConst {
 	 */
 	public static final String EVENT_SAVE_PRIORITY_OF_PLUGINS    = "EVENT_SAVE_PRIORITY_OF_PLUGINS";
 
+	/**
+	 * Plugin's master proxy host information will be updated when this event is called.
+	 */
+	public static final String EVENT_UPDATE_PROXY_HOST = "EVENT_UPDATE_PROXY_HOST";
 	
 	/**
-	 * Plugin's applicationActivated() method will called when this event is called.
+	 * Plugin's applicationActivated() method will be called when this event is called.
 	 */
 	public static final String EVENT_APPLICATION_ACTIVATED       = "EVENT_APPLICATION_ACTIVATED";
 	/**
-	 * Plugin's applicationDeactivated() method will called when this event is called.
+	 * Plugin's applicationDeactivated() method will be called when this event is called.
 	 */
 	public static final String EVENT_APPLICATION_DEACTIVATED     = "EVENT_APPLICATION_DEACTIVATED";
 	/**
-	 * Plugin's applicationCloseRequested() method will called when this event is called.
+	 * Plugin's applicationCloseRequested() method will be called when this event is called.
 	 */
 	public static final String EVENT_APPLICATION_CLOSE_REQUESTED = "EVENT_APPLICATION_CLOSE_REQUESTED";
 	

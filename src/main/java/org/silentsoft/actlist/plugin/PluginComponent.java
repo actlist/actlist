@@ -202,6 +202,8 @@ public class PluginComponent implements EventListener {
 				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
 				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
 				
+				plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
 				if (configFile.exists()) {
@@ -253,7 +255,7 @@ public class PluginComponent implements EventListener {
 								trayNotification.setAnimationType(AnimationType.POPUP);
 								
 								if (newValue.getTitle() == null) {
-									trayNotification.setTitle("The Actlist message has been arrived.");
+									trayNotification.setTitle("Actlist message has been arrived.");
 								} else {
 									trayNotification.setTitle(newValue.getTitle());
 								}
@@ -804,6 +806,9 @@ public class PluginComponent implements EventListener {
 					break;
 				case BizConst.EVENT_APPLICATION_CLOSE_REQUESTED:
 					plugin.applicationCloseRequested();
+					break;
+				case BizConst.EVENT_UPDATE_PROXY_HOST:
+					plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
 					break;
 				}
 			} catch (Exception e) {
