@@ -199,6 +199,10 @@ public class ConfigurationController extends AbstractViewerController {
 					if (!newValue) {
 						isValidAddress.set(proxyAddress.validate());
 						
+						if (proxyPort.getText().isEmpty() == false) {
+							isValidPort.set(proxyPort.validate());
+						}
+						
 						if (isValidAddress.get() && isValidPort.get()) {
 							saveProxy();
 							manualProxyValidator.setSelected(true);
@@ -236,6 +240,10 @@ public class ConfigurationController extends AbstractViewerController {
 				try {
 					if (!newValue) {
 						isValidPort.set(proxyPort.validate());
+						
+						if (proxyAddress.getText().isEmpty() == false) {
+							isValidAddress.set(proxyAddress.validate());
+						}
 						
 						if (isValidAddress.get() && isValidPort.get()) {
 							saveProxy();
@@ -292,6 +300,8 @@ public class ConfigurationController extends AbstractViewerController {
 		if (isSelectedManualProxy == false) {
 			proxyAddress.setText("");
 			proxyPort.setText("");
+			isValidAddress.set(false);
+			isValidPort.set(false);
 			manualProxyValidator.setSelected(false);
 		}
 		
@@ -317,6 +327,8 @@ public class ConfigurationController extends AbstractViewerController {
 			ConfigUtil.setProxyMode(ProxyMode.MANUAL);
 			ConfigUtil.setProxyHost(String.join("", proxyScheme.getSelectionModel().getSelectedItem(), "://", proxyAddress.getText(), ":", proxyPort.getText()));
 		}
+		
+		EventHandler.callEvent(getClass(), BizConst.EVENT_UPDATE_PROXY_HOST);
 	}
 	
 }
