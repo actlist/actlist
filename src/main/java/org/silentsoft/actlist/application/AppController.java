@@ -232,7 +232,7 @@ public class AppController implements EventListener {
     }
     
     private void makeResizable(final Stage stage, final Region region) {
-    	StageDragResizer.makeResizable(stage, region, 7, () -> {
+    	StageDragResizer.makeResizable(stage, region, 7, 10, () -> {
     		try {
     			ConfigUtil.setRootWidth(region.getWidth());
     			ConfigUtil.setRootHeight(region.getHeight());
