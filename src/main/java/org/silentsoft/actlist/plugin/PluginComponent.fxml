@@ -12,16 +12,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefWidth="435.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
+<AnchorPane fx:id="root" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.plugin.PluginComponent">
    <children>
       <JFXHamburger fx:id="hand" layoutX="13.0" layoutY="19.0" opacity="0.2" prefHeight="14.0" prefWidth="11.0">
          <cursor>
             <Cursor fx:constant="MOVE" />
          </cursor>
       </JFXHamburger>
-      <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="88.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER_LEFT" onMouseClicked="#mouseClicked" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="lblPluginName" prefHeight="16.0" prefWidth="302.0" text="" HBox.hgrow="SOMETIMES">
+            <Label fx:id="lblPluginName" prefHeight="16.0" text="" HBox.hgrow="ALWAYS">
                <font>
                   <Font name="Arial" size="14.0" />
                </font>
@@ -36,11 +36,23 @@
       </HBox>
       <HBox alignment="CENTER_LEFT" layoutX="361.0" layoutY="-2.0" spacing="8.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </Label>
+            <HBox alignment="CENTER" spacing="8.0">
+               <children>
+                  <Label fx:id="warningLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showWarningText" style="-fx-background-color: orange; -fx-background-radius: 5em;" visible="false">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+                  <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </HBox>
             <JFXToggleButton fx:id="togActivator" onAction="#toggleOnAction" selected="false" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" />
          </children>
       </HBox>
