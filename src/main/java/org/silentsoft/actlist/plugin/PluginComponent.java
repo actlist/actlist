@@ -89,6 +89,8 @@ public class PluginComponent implements EventListener {
 	private Label lblPluginName;
 
 	@FXML
+	private Label warningLabel;
+	@FXML
 	private Label updateAlarmLabel;
 	@FXML
 	private JFXToggleButton togActivator;
@@ -223,6 +225,13 @@ public class PluginComponent implements EventListener {
 						lblPluginName.setText(pluginName);
 						if (ObjectUtil.isNotEmpty(pluginDescription)) {
 							lblPluginName.setTooltip(new Tooltip(pluginDescription));
+						}
+						
+						String warningText = plugin.getWarningText();
+						if (ObjectUtil.isNotEmpty(warningText)) {
+							warningLabel.setVisible(true);
+						} else {
+							warningLabel.setVisible(false);
 						}
 						
 						togActivator.setSelected(activated);
@@ -542,7 +551,8 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
-		updateAlarmLabel.setVisible(false); // make it unvisible for update alarm label
+		HBox parent = (HBox) updateAlarmLabel.getParent();
+		parent.getChildren().remove(updateAlarmLabel);
 		
 		/**
 		 * this aboutStage must be closed when if already opened.
@@ -563,6 +573,18 @@ public class PluginComponent implements EventListener {
 			aboutStage.setScene(new Scene(scene));
 		}
 		aboutStage.show();
+	}
+	
+	@FXML
+	private void showWarningText() {
+		try {
+			String warningText = plugin.getWarningText();
+			if (ObjectUtil.isNotEmpty(warningText)) {
+				MessageBox.showWarning(App.getStage(), warningText);
+			}
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	private HBox createUpgradeFunction() {
