@@ -19,7 +19,6 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.plugin.PluginComponent;
 import org.silentsoft.actlist.plugin.PluginManager;
-import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.version.BuildVersion;
@@ -42,9 +41,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -55,8 +52,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class AppController implements EventListener {
@@ -467,6 +462,7 @@ public class AppController implements EventListener {
 				componentBox.getChildren().add(pane);
 			}
 			
+			/* TODO : This function is not works properly.
 			MenuItem menuItem = new MenuItem("Add a new plugin");
 			menuItem.setOnAction(actionEvent -> {
 				ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
@@ -509,6 +505,7 @@ public class AppController implements EventListener {
 					contextMenu.show(App.getStage(), mouseEvent.getScreenX(), mouseEvent.getScreenY());
 				}
 			});
+			*/
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
