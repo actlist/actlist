@@ -121,11 +121,6 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/junit/junit/4.8.1">
-				<filename name="junit-4.8.1.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
 			<fileset dir="${user.home}/.m2/repository/commons-codec/commons-codec/1.6">
 				<filename name="commons-codec-1.6.jar"/>
 			</fileset>
