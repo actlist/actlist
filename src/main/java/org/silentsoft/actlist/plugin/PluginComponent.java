@@ -552,7 +552,9 @@ public class PluginComponent implements EventListener {
 	@FXML
 	private void showAboutStage() {
 		HBox parent = (HBox) updateAlarmLabel.getParent();
-		parent.getChildren().remove(updateAlarmLabel);
+		if (parent != null) {
+			parent.getChildren().remove(updateAlarmLabel);
+		}
 		
 		/**
 		 * this aboutStage must be closed when if already opened.
