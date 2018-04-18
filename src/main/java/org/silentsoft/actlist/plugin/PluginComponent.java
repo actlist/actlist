@@ -180,14 +180,20 @@ public class PluginComponent implements EventListener {
 			    						try {
 			    							newPluginURI = new URI(result.get("url"));
 			        					} catch (Exception e) {
-			        						
+			        						e.printStackTrace();
 			        					}
-			    					} else {
-			    						URI pluginArchivesURI = plugin.getPluginArchivesURI();
-			    						if (pluginArchivesURI != null) {
-			    							newPluginURI = pluginArchivesURI;
-			    						}
 			    					}
+			    					
+			    					try {
+			    						plugin.pluginUpdateFound();
+			    					} catch (Exception e) {
+			    						e.printStackTrace();
+			    					}
+
+			    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+		    						if (pluginArchivesURI != null) {
+		    							newPluginURI = pluginArchivesURI;
+		    						}
 			    					
 			    					if (newPluginURI != null) {
 			    						updateAlarmLabel.setVisible(true);
@@ -520,7 +526,7 @@ public class PluginComponent implements EventListener {
 					function.action.run();
 				}
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			} finally {
 				popOver.hide();
 			}
@@ -551,9 +557,11 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
-		HBox parent = (HBox) updateAlarmLabel.getParent();
-		if (parent != null) {
-			parent.getChildren().remove(updateAlarmLabel);
+		if (updateAlarmLabel.isVisible()) {
+			HBox parent = (HBox) updateAlarmLabel.getParent();
+			if (parent != null) {
+				parent.getChildren().remove(updateAlarmLabel);
+			}			
 		}
 		
 		/**
@@ -585,7 +593,7 @@ public class PluginComponent implements EventListener {
 				MessageBox.showWarning(App.getStage(), warningText);
 			}
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 	

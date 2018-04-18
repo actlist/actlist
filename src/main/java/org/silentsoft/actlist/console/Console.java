@@ -172,7 +172,7 @@ public class Console {
     }
     
     private void makeResizable(final Stage stage, final Region region) {
-    	StageDragResizer.makeResizable(stage, region, 7);
+    	StageDragResizer.makeResizable(stage, region, 7, 10);
     }
     
     private void changeMaximizeProperty(Stage stage) {
