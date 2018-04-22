@@ -1,3 +1,13 @@
+* 1.2.6
+    * finally, `debug();` method can be used in the Plugin's main method
+    * supports MessageBox owner
+    * supports proxy setting (None / Automatic / Manual)
+    * supports Plugin's update check
+    * supports warning text on Plugin
+    * minor UI changes on About dialog
+    * minor bugfix
+      * hotkey on Mac
+      * stage resize
 * 1.2.5
     * JVM tuning options has been modified.
 * 1.2.4

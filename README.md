@@ -36,8 +36,8 @@ git clone https://github.com/silentsoft/actlist-plugin.git
 ```
 * Generate executable main class called `Plugin` where in default package (please do not assign package).
 * Inherit the `ActlistPlugin` class in your `Plugin` class.
-* (Option) to make a plugin that contains graphic things, you can write the `Plugin.fxml` file where in the same location.
-* (Option) you can set the plugin's icon image that display where in about menu (Right click > About) through `Plugin.png`
+* (Optional) to make a plugin that contains graphic things, you can write the `Plugin.fxml` file where in the same location.
+* (Optional) you can set the plugin's icon image to display on about menu (Right click > About) through `Plugin.png`. if not exists `Plugin.png` then default Actlist logo image will be displayed.
 * Export your project to runnable jar file and put into `/plugins/` directory that under the Actlist installed path.
 
 Here is an example source code of `Plugin.java`
@@ -53,9 +53,25 @@ public class Plugin extends ActlistPlugin {
     public Plugin() throws Exception {
         super("Example Plugin");
         
-        setPluginDescription("You can set the description of your plugin");
         setPluginVersion("1.0.0");
-        setPluginAuthor("Silentsoft (http://silentsoft.org)");
+        /**
+         * you can induce to use the latest version of the plugin to your users via
+         * setPluginUpdateCheckURI(URI.create("http://your-server.name"), URI.create("http://location-of-archives"));
+         */
+        
+        setPluginAuthor("Silentsoft");
+        /**
+         * or you could use hyper-link via
+         * setPluginAuthor("Silentsoft", URI.create("http://silentsoft.org"));
+         */
+        
+        setPluginDescription("You can set the description of your plugin");
+        /**
+         * or you could use file via
+         * setPluginDescription(getClass().getResource("/Plugin.description").toURI());
+         *
+         * ! you can set the plugin's ChangeLog and License with same way
+         */
     }
     
     @Override
@@ -78,8 +94,18 @@ public class Plugin extends ActlistPlugin {
 
 For more information on ActlistPlugin development, see [here](https://github.com/silentsoft/actlist-plugin)
 
-## Release History
+## Change log
 
+* 1.2.6
+    * finally, `debug();` method can be used in the Plugin's main method
+    * supports MessageBox owner
+    * supports proxy setting (None / Automatic / Manual)
+    * supports Plugin's update check
+    * supports warning text on Plugin
+    * minor UI changes on About dialog
+    * minor bugfix
+      * hotkey on Mac
+      * stage resize
 * 1.2.5
     * JVM tuning options has been modified.
 * 1.2.4
@@ -124,3 +150,108 @@ For more information on ActlistPlugin development, see [here](https://github.com
       * change application window size.
 * 1.0.0
     * The first proper release
+
+## Third party
+
+__material icons__
+ * https://material.io/icons/
+ * Apache License 2.0
+
+__commons-codec 1.6__
+ * https://github.com/apache/commons-codec
+ * Apache License 2.0
+
+__commons-daemon 1.0.10__
+ * https://github.com/apache/commons-daemon
+ * Apache License 2.0
+
+__commons-io 2.4__
+ * https://github.com/apache/commons-io
+ * Apache License 2.0
+
+__commons-lang 2.6__
+ * https://github.com/apache/commons-lang
+ * Apache License 2.0
+
+__commons-logging 1.1.3__
+ * https://github.com/apache/commons-logging
+ * Apache License 2.0
+
+__commons-net 3.3__
+ * https://github.com/apache/commons-net
+ * Apache License 2.0
+
+__httpclient 4.3.6__
+ * https://github.com/apache/httpcomponents-client
+ * Apache License 2.0
+
+__httpcore 4.3.3__
+ * https://github.com/apache/httpcomponents-core
+ * Apache License 2.0
+
+__httpmime 4.3.6__
+ * Apache License 2.0
+
+__log4j 1.2.17__
+ * https://github.com/apache/log4j
+ * Apache License 2.0
+
+__centerdevice-nsmenufx 2.1.5__
+ * https://github.com/codecentric/NSMenuFX
+ * BSD-3-Clause
+
+__controlsfx 8.40.10__
+ * https://bitbucket.org/controlsfx/controlsfx
+ * BSD-3-Clause
+
+__json 20141113__
+ * https://github.com/douglascrockford/JSON-java
+ * JSON License
+
+__jackson-annotations 2.4.2__
+ * https://github.com/FasterXML/jackson-annotations
+ * Apache License 2.0
+
+__jackson-core 2.4.2__
+ * https://github.com/FasterXML/jackson-core
+ * Apache License 2.0
+
+__jackson-databind 2.4.2__
+ * https://github.com/FasterXML/jackson-databind
+ * Apache License 2.0
+
+__jfoenix 1.0.0__
+ * https://github.com/jfoenixadmin/Jfoenix
+ * Apache License 2.0
+
+__jna 4.5.1__
+ * https://github.com/java-native-access/jna
+ * Apache License 2.0
+
+__jna-platform 4.5.1__
+ * https://github.com/java-native-access/jna
+ * Apache License 2.0
+
+__proxy-vole 1.0.3__
+ * https://github.com/MarkusBernhardt/proxy-vole
+ * Apache License 2.0
+
+__ini4j 0.5.4__
+ * https://github.com/michaelPf85/ini4j
+ * Apache License 2.0
+
+__PlusHaze-TrayNotification__
+ * https://github.com/PlusHaze/TrayNotification
+ * MIT License
+
+__slf4j-api 1.7.5__
+ * https://github.com/qos-ch/slf4j
+ * MIT License
+
+__slf4j-log4j12 1.7.5__
+ * https://github.com/qos-ch/slf4j
+ * MIT License
+
+__jkeymaster 1.2__
+ * https://github.com/tulskiy/jkeymaster
+ * LGPL-3.0
