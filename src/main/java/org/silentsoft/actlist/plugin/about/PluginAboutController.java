@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.Charset;
 
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.core.util.ObjectUtil;
@@ -137,7 +138,7 @@ public class PluginAboutController extends AbstractViewerController {
 		try {
 			if (ObjectUtil.isNotEmpty(uri)) {
 				if ("jar".equals(uri.getScheme())) {
-					reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream()));
+					reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), Charset.forName("UTF-8")));
 					StringBuffer buffer = new StringBuffer();
 					for (String value=null; (value=reader.readLine()) != null; ) {
 						buffer.append(value.concat("\r\n"));
