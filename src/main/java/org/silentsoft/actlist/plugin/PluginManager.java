@@ -49,7 +49,7 @@ public class PluginManager {
 			if (ActlistPlugin.class.isAssignableFrom(pluginClass) == false) {
 				isErrorOccur = true;
 			}
-		} catch (Exception e) {
+		} catch (Exception | Error e) {
 			e.printStackTrace();
 			isErrorOccur = true;
 		}
@@ -83,6 +83,7 @@ public class PluginManager {
 		
 		if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
 			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+			boolean shouldClearPromptLabel = (pluginMap.size() == 0);
 			pluginMap.put(pluginFileName, urlClassLoader);
 			
 			FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
@@ -93,6 +94,10 @@ public class PluginManager {
 			component.setUserData(pluginComponent);
 			
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			if (shouldClearPromptLabel) {
+				// remove the 'No plugins available.' prompt label
+				componentBox.getChildren().clear();
+			}
 			if (index == null) {
 				componentBox.getChildren().add(component);
 			} else {
