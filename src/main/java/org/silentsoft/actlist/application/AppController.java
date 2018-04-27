@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -46,7 +47,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -124,6 +127,9 @@ public class AppController implements EventListener {
 		hideSplashImage();
 		
 		loadPlugins();
+		
+		enableContextMenu();
+		enableDragAndDrop();
 	}
 	
 	/**
@@ -466,49 +472,6 @@ public class AppController implements EventListener {
 
 				componentBox.getChildren().add(pane);
 			}
-			
-			MenuItem menuItem = new MenuItem("Add a new plugin");
-			menuItem.setOnAction(actionEvent -> {
-				ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
-				
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Select a new Actlist plugin file");
-				fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
-				fileChooser.getExtensionFilters().add(jarFilter);
-				fileChooser.setSelectedExtensionFilter(jarFilter);
-				
-				File file = fileChooser.showOpenDialog(App.getStage());
-				
-				if (file == null) {
-					return;
-				}
-				
-				if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
-					HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-					if (pluginMap.containsKey(file.getName())) {
-						MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
-						return;
-					}
-				}
-				
-				try {
-					boolean succeedToInstall = PluginManager.install(file);
-					if (succeedToInstall) {
-						PluginManager.load(file.getName(), true);
-						
-						EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					MessageBox.showError(App.getStage(), "Oops... something is weird !");
-				}
-			});
-			ContextMenu contextMenu = new ContextMenu(menuItem);
-			scrollPane.setOnMouseReleased(mouseEvent -> {
-				if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-					contextMenu.show(App.getStage(), mouseEvent.getScreenX(), mouseEvent.getScreenY());
-				}
-			});
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
@@ -529,6 +492,95 @@ public class AppController implements EventListener {
 			EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_CLOSE_REQUESTED, false);
 			EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_EXIT);
 		});
+	}
+	
+	private void enableContextMenu() {
+		MenuItem menuItem = new MenuItem("Add a new plugin");
+		menuItem.setOnAction(actionEvent -> {
+			ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
+			
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select a new Actlist plugin file");
+			fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
+			fileChooser.getExtensionFilters().add(jarFilter);
+			fileChooser.setSelectedExtensionFilter(jarFilter);
+			
+			File file = fileChooser.showOpenDialog(App.getStage());
+			if (file == null) {
+				return;
+			}
+			
+			if (possibleToInstallThePlugin(file)) {
+				installAndLoadThePlugin(file);
+			}
+		});
+		ContextMenu contextMenu = new ContextMenu(menuItem);
+		scrollPane.setOnMouseReleased(mouseEvent -> {
+			if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+				contextMenu.show(App.getStage(), mouseEvent.getScreenX(), mouseEvent.getScreenY());
+			}
+		});
+	}
+	
+	private void enableDragAndDrop() {
+		Predicate<Dragboard> containsSingleJarFile = (dragboard) -> {
+			if (dragboard.hasFiles()) {
+				List<File> files = dragboard.getFiles();
+				if (files.size() == 1) {
+					File file = files.get(0);
+					if (file.isFile() && file.getName().toLowerCase().endsWith(".jar")) {
+						return true;
+					}
+				}
+			}
+			return false;
+		};
+		
+		scrollPane.setOnDragOver(dragEvent -> {
+			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
+				dragEvent.acceptTransferModes(TransferMode.COPY);
+			} else {
+				dragEvent.consume();
+			}
+		});
+		scrollPane.setOnDragDropped(dragEvent -> {
+			dragEvent.setDropCompleted(false);
+			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
+				File file = dragEvent.getDragboard().getFiles().get(0);
+				if (possibleToInstallThePlugin(file)) {
+					installAndLoadThePlugin(file);
+					
+					dragEvent.setDropCompleted(true);
+				}
+			}
+			dragEvent.consume();
+		});
+	}
+	
+	private boolean possibleToInstallThePlugin(File file) {
+		boolean possible = true;
+		if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
+			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+			if (pluginMap.containsKey(file.getName())) {
+				possible = false;
+				MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
+			}
+		}
+		return possible;
+	}
+	
+	private void installAndLoadThePlugin(File file) {
+		try {
+			boolean succeedToInstall = PluginManager.install(file);
+			if (succeedToInstall) {
+				PluginManager.load(file.getName(), true);
+				
+				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			MessageBox.showError(App.getStage(), "Oops... something is weird !");
+		}
 	}
 	
 	private boolean isAssignableFromJarFile(Path path) {
