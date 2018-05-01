@@ -6,7 +6,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 
 import org.silentsoft.actlist.BizConst;
@@ -37,13 +36,18 @@ public class PluginManager {
 			
 			shouldCopy = false;
 		}
+		Path source = Paths.get(file.toURI());
+		Path target = Paths.get(System.getProperty("user.dir"), "plugins", file.getName());
+		if (shouldCopy) {
+			Files.copy(source, target);
+		}
 		
 		URLClassLoader urlClassLoader = null;
 		Class<?> pluginClass = null;
 		
 		boolean isErrorOccur = false;
 		try {
-			urlClassLoader = new URLClassLoader(new URL[]{ file.toURI().toURL() });
+			urlClassLoader = new URLClassLoader(new URL[]{ target.toUri().toURL() });
 			pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
 			
 			if (ActlistPlugin.class.isAssignableFrom(pluginClass) == false) {
@@ -52,17 +56,21 @@ public class PluginManager {
 		} catch (Exception | Error e) {
 			e.printStackTrace();
 			isErrorOccur = true;
+		} finally {
+			if (urlClassLoader != null) {
+				// close the file handle. this file will be loaded within load() method. not this time.
+				urlClassLoader.close();
+			}
 		}
 		
 		if (isErrorOccur) {
+			if (shouldCopy) {
+				// remove it if copied
+				Files.delete(target);
+			}
+			
 			MessageBox.showError(App.getStage(), "This file is not kind of Actlist plugin !");
 			return false;
-		}
-		
-		Path source = Paths.get(file.toURI());
-		Path target = Paths.get(System.getProperty("user.dir"), "plugins");
-		if (shouldCopy) {
-			Files.copy(source, target.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 		}
 		
 		return true;
