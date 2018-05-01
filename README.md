@@ -96,6 +96,14 @@ For more information on ActlistPlugin development, see [here](https://github.com
 
 ## Change log
 
+* 1.2.7
+    * supports UTF-8 content on plugin's about dialog
+    * plugin can be added through drag and drop
+      * also stage right click -> 'Add a new plugin' too
+    * minor UI changes
+    * minor UX improvements
+    * minor bugfix
+      * context menu
 * 1.2.6
     * finally, `debug();` method can be used in the Plugin's main method
     * supports MessageBox owner
