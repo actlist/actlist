@@ -405,51 +405,51 @@ public class AppController implements EventListener {
 		componentBox.getChildren().clear();
 		try {
 			File pluginsDirectory = Paths.get(System.getProperty("user.dir"), "plugins").toFile();
-			if (pluginsDirectory.exists()) {
-				List<String> deactivatedPlugins = readDeactivatedPlugins();
-				SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
-				
-				List<String> priorityOfPlugins = readPriorityOfPlugins();
-				SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
-				
-				// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
-				
-				// extract plugins
-				List<String> plugins = new ArrayList<String>();
-				Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
-					if (isAssignableFromJarFile(path)) {
-						plugins.add(path.getFileName().toString());
-					}
-				});
-				
-				// transform priority
-				for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
-					String plugin = priorityOfPlugins.get(i);
-					
-					if (plugins.contains(plugin)) {
-						plugins.remove(plugin);
-						plugins.add(0, plugin);
-					} else {
-						priorityOfPlugins.remove(i);
-					}
-				}
-				priorityOfPlugins.clear();
-				priorityOfPlugins.addAll(plugins);
-				savePriorityOfPlugins();
-				
-				// load plugins
-				for (String plugin : plugins) {
-					try {
-						Path path = Paths.get(System.getProperty("user.dir"), "plugins", plugin);
-						if (isAssignableFromJarFile(path)) {
-							loadPlugin(path);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
+			if (pluginsDirectory.exists() == false) {
 				pluginsDirectory.mkdirs();
+			}
+			
+			List<String> deactivatedPlugins = readDeactivatedPlugins();
+			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
+			
+			List<String> priorityOfPlugins = readPriorityOfPlugins();
+			SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
+			
+			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
+			
+			// extract plugins
+			List<String> plugins = new ArrayList<String>();
+			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
+				if (isAssignableFromJarFile(path)) {
+					plugins.add(path.getFileName().toString());
+				}
+			});
+			
+			// transform priority
+			for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
+				String plugin = priorityOfPlugins.get(i);
+				
+				if (plugins.contains(plugin)) {
+					plugins.remove(plugin);
+					plugins.add(0, plugin);
+				} else {
+					priorityOfPlugins.remove(i);
+				}
+			}
+			priorityOfPlugins.clear();
+			priorityOfPlugins.addAll(plugins);
+			savePriorityOfPlugins();
+			
+			// load plugins
+			for (String plugin : plugins) {
+				try {
+					Path path = Paths.get(System.getProperty("user.dir"), "plugins", plugin);
+					if (isAssignableFromJarFile(path)) {
+						loadPlugin(path);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		} catch (Exception e) {
 			
@@ -575,7 +575,7 @@ public class AppController implements EventListener {
 			if (succeedToInstall) {
 				PluginManager.load(file.getName(), true);
 				
-				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+				savePriorityOfPlugins();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
