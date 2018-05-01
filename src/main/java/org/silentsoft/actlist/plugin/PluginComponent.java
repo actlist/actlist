@@ -135,24 +135,31 @@ public class PluginComponent implements EventListener {
 				String minimumCompatibleVersion = plugin.getMinimumCompatibleVersion();
 				if (minimumCompatibleVersion != null) {
 					if (VersionComparator.getInstance().compare(BuildVersion.VERSION, minimumCompatibleVersion) < 0) {
-						String errorMessage = String.join("", "This plugin requires at least Actlist ", minimumCompatibleVersion);
 						shouldTraceException.set(false);
-						lblPluginName.setOnMouseClicked(mouseEvent -> {
-							if (mouseEvent.getClickCount() >= 2) {
-								Alert alert = new Alert(AlertType.CONFIRMATION);
-								alert.setTitle("Confirmation");
-								alert.setHeaderText(errorMessage);
-								alert.setContentText("Would you like to check latest Actlist now ?");
-								Optional<ButtonType> result = alert.showAndWait();
-								if (result.isPresent() && result.get() == ButtonType.OK) {
-									try {
-		        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
-		        					} catch (Exception e) {
-		        						
-		        					}
-								}
+						
+						String errorMessage = String.join("", "This plugin requires at least Actlist ", minimumCompatibleVersion);
+						Runnable confirmDialog = () -> {
+							Alert alert = new Alert(AlertType.CONFIRMATION);
+							alert.setTitle("Confirmation");
+							alert.setHeaderText(errorMessage);
+							alert.setContentText("Would you like to check latest Actlist now ?");
+							Optional<ButtonType> result = alert.showAndWait();
+							if (result.isPresent() && result.get() == ButtonType.OK) {
+								try {
+	        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+	        					} catch (Exception e) {
+	        						
+	        					}
 							}
+						};
+						lblPluginName.setOnMouseClicked(mouseEvent -> {
+							confirmDialog.run();
 						});
+						warningLabel.setOnMouseClicked(mouseEvent -> {
+							confirmDialog.run();
+						});
+						warningLabel.setVisible(true);
+						
 						throw new Exception(errorMessage);
 					}
 				}
@@ -406,36 +413,43 @@ public class PluginComponent implements EventListener {
 				lblPluginName.setCursor(Cursor.HAND);
 				
 				if (shouldTraceException) {
-					lblPluginName.setTooltip(new Tooltip("Double click to show the exception log."));
+					Runnable exceptionDialog = () -> {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setTitle("Exception Dialog");
+						alert.setHeaderText(pluginFileName);
+
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						throwable.printStackTrace(pw);
+						String exceptionText = sw.toString();
+
+						TextArea textArea = new TextArea(exceptionText);
+						textArea.setEditable(false);
+						textArea.setWrapText(true);
+
+						textArea.setMaxWidth(Double.MAX_VALUE);
+						textArea.setMaxHeight(Double.MAX_VALUE);
+						GridPane.setVgrow(textArea, Priority.ALWAYS);
+						GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+						GridPane content = new GridPane();
+						content.setMaxWidth(Double.MAX_VALUE);
+						content.add(textArea, 0, 0);
+
+						alert.getDialogPane().setContent(content);
+
+						alert.showAndWait();
+					};
+					
+					lblPluginName.setTooltip(new Tooltip("Click to show the exception log."));
 					lblPluginName.setOnMouseClicked(mouseEvent -> {
-						if (mouseEvent.getClickCount() >= 2) {
-							Alert alert = new Alert(AlertType.ERROR);
-							alert.setTitle("Exception Dialog");
-							alert.setHeaderText(pluginFileName);
-
-							StringWriter sw = new StringWriter();
-							PrintWriter pw = new PrintWriter(sw);
-							throwable.printStackTrace(pw);
-							String exceptionText = sw.toString();
-
-							TextArea textArea = new TextArea(exceptionText);
-							textArea.setEditable(false);
-							textArea.setWrapText(true);
-
-							textArea.setMaxWidth(Double.MAX_VALUE);
-							textArea.setMaxHeight(Double.MAX_VALUE);
-							GridPane.setVgrow(textArea, Priority.ALWAYS);
-							GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-							GridPane content = new GridPane();
-							content.setMaxWidth(Double.MAX_VALUE);
-							content.add(textArea, 0, 0);
-
-							alert.getDialogPane().setContent(content);
-
-							alert.showAndWait();
-						}
+						exceptionDialog.run();
 					});
+					
+					warningLabel.setOnMouseClicked(mouseEvent -> {
+						exceptionDialog.run();
+					});
+					warningLabel.setVisible(true);
 				} else {
 					lblPluginName.setTooltip(new Tooltip(throwable.getMessage()));
 				}
@@ -689,36 +703,38 @@ public class PluginComponent implements EventListener {
 	@FXML
 	private void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseButton.SECONDARY) {
-			((VBox) popOver.getContentNode()).getChildren().clear();
-			
-			((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
-			/**
-			 * NO ! It's not works properly on windows system yet !
-			   ((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
-			 */
-			
-			if (isActivated()) {
-				if (plugin.getFunctionMap().size() > 0) {
-					((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-				}
+			if (popOver != null) { // if the plugin had thrown an Exception then popOver might be null.
+				((VBox) popOver.getContentNode()).getChildren().clear();
 				
-				((VBox) popOver.getContentNode()).getChildren().addAll(functions);
-				
+				((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
 				/**
 				 * NO ! It's not works properly on windows system yet !
-				   if (plugin.getFunctionMap().size() > 0) {
-				       ((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-				   }
+				   ((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
 				 */
+				
+				if (isActivated()) {
+					if (plugin.getFunctionMap().size() > 0) {
+						((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+					}
+					
+					((VBox) popOver.getContentNode()).getChildren().addAll(functions);
+					
+					/**
+					 * NO ! It's not works properly on windows system yet !
+					   if (plugin.getFunctionMap().size() > 0) {
+					       ((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+					   }
+					 */
+				}
+				
+				/*
+				 * NO ! It's not works properly on windows system yet !
+				   ((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
+				 */
+				
+				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
+				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 			}
-			
-			/*
-			 * NO ! It's not works properly on windows system yet !
-			   ((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
-			 */
-			
-			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 		}
 	}
 	
