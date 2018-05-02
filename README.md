@@ -4,17 +4,17 @@
 
 Actlist will helps you to execute your desire things.
 
-Just do focus only on coding to create what you want. and you can share with others to make better world.
+Just do focus only on coding to create what you want. and you can share with others to makes better world.
 
-![](http://silentsoft.org/actlist/images/preview.png)
+![](http://actlist.silentsoft.org/img/preview.png)
 
 ## Installation
 
 Windows:
-> [download exe or zip file](http://silentsoft.org/actlist/archives/) and launch.
+> [download exe or zip file](http://actlist.silentsoft.org/archives/) and launch.
 
 Mac OS X:
-> [download dmg file](http://silentsoft.org/actlist/archives/) and launch.
+> [download dmg file](http://actlist.silentsoft.org/archives/) and launch.
 
 ## Development setup
 
@@ -92,7 +92,7 @@ public class Plugin extends ActlistPlugin {
 }
 ```
 
-For more information on ActlistPlugin development, see [here](https://github.com/silentsoft/actlist-plugin)
+For more information on ActlistPlugin development, see [here](http://actlist.silentsoft.org/docs/quick-start/)
 
 ## Change log
 
