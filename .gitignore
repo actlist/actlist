@@ -11,3 +11,5 @@
 /build/project
 /build/projectRefs
 /plugins
+/target/
+.DS_Store
