@@ -37,6 +37,7 @@ import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,6 +72,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import tray.animations.AnimationType;
 
 
@@ -159,59 +161,71 @@ public class PluginComponent implements EventListener {
 							confirmDialog.run();
 						});
 						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
 						
 						throw new Exception(errorMessage);
 					}
 				}
 				
 				new Thread(() -> {
-					try {
-						URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
-						if (pluginUpdateCheckURI != null) {
-			    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-			    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
-			    			/* below values are unnecessary. version value is enough.
-			    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
-			    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
-			    			*/
-			    			
-			    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
-			    			if (result == null) {
-			    				return;
-			    			}
-			    			
-			    			if (result.containsKey("available")) {
-			    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
-			    				if (isAvailableNewPlugin) {
-			    					if (result.containsKey("url")) {
-			    						try {
-			    							newPluginURI = new URI(result.get("url"));
-			        					} catch (Exception e) {
-			        						e.printStackTrace();
-			        					}
-			    					}
-			    					
-			    					try {
-			    						plugin.pluginUpdateFound();
-			    					} catch (Exception e) {
-			    						e.printStackTrace();
-			    					}
+					Runnable checkUpdate = () -> {
+						try {
+							URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
+							if (pluginUpdateCheckURI != null) {
+				    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+				    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+				    			/* below values are unnecessary. version value is enough.
+				    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+				    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+				    			*/
+				    			
+				    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
+				    			if (result == null) {
+				    				return;
+				    			}
+				    			
+				    			if (result.containsKey("available")) {
+				    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
+				    				if (isAvailableNewPlugin) {
+				    					if (result.containsKey("url")) {
+				    						try {
+				    							newPluginURI = new URI(result.get("url"));
+				        					} catch (Exception e) {
+				        						e.printStackTrace();
+				        					}
+				    					}
+				    					
+				    					try {
+				    						plugin.pluginUpdateFound();
+				    					} catch (Exception e) {
+				    						e.printStackTrace();
+				    					}
 
-			    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-		    						if (pluginArchivesURI != null) {
-		    							newPluginURI = pluginArchivesURI;
-		    						}
-			    					
-			    					if (newPluginURI != null) {
-			    						updateAlarmLabel.setVisible(true);
-			    					} else {
-			    						updateAlarmLabel.setVisible(false);
-			    					}
-			    				}
-			    			}
+				    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+			    						if (pluginArchivesURI != null) {
+			    							newPluginURI = pluginArchivesURI;
+			    						}
+				    					
+				    					if (newPluginURI != null) {
+				    						updateAlarmLabel.setVisible(true);
+				    						playFadeTransition(updateAlarmLabel);
+				    					} else {
+				    						updateAlarmLabel.setVisible(false);
+				    					}
+				    				}
+				    			}
+							}
+						} catch (Exception e) {
+							e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
 						}
-					} catch (Exception e) {
-						e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+					};
+					while (true) {
+						checkUpdate.run();
+						try {
+							Thread.sleep((long)Duration.hours(24).toMillis());
+						} catch (InterruptedException ie) {
+							
+						}
 					}
 				}).start();
 				
@@ -243,6 +257,7 @@ public class PluginComponent implements EventListener {
 						String warningText = plugin.getWarningText();
 						if (ObjectUtil.isNotEmpty(warningText)) {
 							warningLabel.setVisible(true);
+							playFadeTransition(warningLabel);
 						} else {
 							warningLabel.setVisible(false);
 						}
@@ -398,6 +413,27 @@ public class PluginComponent implements EventListener {
 		plugin = null;
 	}
 	
+	private void playFadeTransition(Node node) {
+		Runnable action = () -> {
+			if (node.isVisible()) {
+				FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), node);
+				fadeTransition.setFromValue(1.0);
+				fadeTransition.setToValue(0.3);
+				fadeTransition.setCycleCount(6);
+				fadeTransition.setAutoReverse(true);
+				 
+				fadeTransition.play();
+			}
+		};
+		if (Platform.isFxApplicationThread()) {
+			action.run();
+		} else {
+			Platform.runLater(() -> {
+				action.run();
+			});
+		}
+	}
+	
 	private void makeDisable(Throwable throwable, boolean shouldTraceException) {
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
@@ -450,6 +486,7 @@ public class PluginComponent implements EventListener {
 						exceptionDialog.run();
 					});
 					warningLabel.setVisible(true);
+					playFadeTransition(warningLabel);
 				} else {
 					lblPluginName.setTooltip(new Tooltip(throwable.getMessage()));
 				}
@@ -571,13 +608,6 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
-		if (updateAlarmLabel.isVisible()) {
-			HBox parent = (HBox) updateAlarmLabel.getParent();
-			if (parent != null) {
-				parent.getChildren().remove(updateAlarmLabel);
-			}			
-		}
-		
 		/**
 		 * this aboutStage must be closed when if already opened.
 		 * because the newPluginURI variable will be set by another thread.
