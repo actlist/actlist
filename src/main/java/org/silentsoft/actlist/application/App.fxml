@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -11,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
+<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
    <children>
 		<AnchorPane fx:id="root" minHeight="90.0" minWidth="380.0" prefHeight="230.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
@@ -37,6 +38,14 @@
 		                  <Pane prefWidth="-1.0" HBox.hgrow="ALWAYS" />
 			              <HBox fx:id="controlBox" alignment="CENTER_RIGHT" minHeight="25.0" prefHeight="25.0" styleClass="controls">
 			                 <children>
+                              <Label fx:id="appUpdateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showUpdatePopOver" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                                 <HBox.margin>
+                                    <Insets right="8.0" />
+                                 </HBox.margin>
+                              </Label>
 			            	    <Button fx:id="appMinimizeButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-minimize-button" />
 							    <Button fx:id="appMaximizeButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-maximize-button" />
 							    <Button fx:id="appCloseButton" minHeight="24.0" minWidth="24.0" prefHeight="24.0" prefWidth="24.0" styleClass="app-close-button" />

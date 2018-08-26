@@ -36,6 +36,7 @@ import org.silentsoft.ui.util.StageDragResizer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXButton.ButtonType;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -61,6 +62,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class AppController implements EventListener {
 
@@ -86,6 +88,9 @@ public class AppController implements EventListener {
 	private HBox controlBox;
 	
 	@FXML
+	private Label appUpdateAlarmLabel;
+	
+	@FXML
 	private Button appMinimizeButton;
 	
 	@FXML
@@ -96,6 +101,8 @@ public class AppController implements EventListener {
 	
 	@FXML
 	private VBox componentBox;
+	
+	private PopOver updatePopOver;
 	
 	private MaximizeProperty maximizeProperty;
 	
@@ -119,6 +126,7 @@ public class AppController implements EventListener {
 		
 		makeResizable(App.getStage(), root);
 		
+		initUpdatePopOver();
 		checkUpdate();
 		
 		SharedMemory.getDataMap().put(BizConst.KEY_PLUGIN_MAP, pluginMap);
@@ -286,108 +294,121 @@ public class AppController implements EventListener {
 		}
     }
     
+    private void initUpdatePopOver() {
+    	updatePopOver = new PopOver();
+		
+		Label title = new Label("Actlist Update Alarm");
+		title.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+		title.setPadding(new Insets(10.0, 0.0, 0.0, 0.0));
+		
+		Label message = new Label("New Actlist is available. Would you like to browse now ?");
+		message.setWrapText(true);
+		message.setFont(Font.font("Verdana", 12.0));
+		message.setTextAlignment(TextAlignment.CENTER);
+		message.setPrefWidth(194.0);
+		message.setPrefHeight(40.0);
+		
+		JFXButton notNowButton = new JFXButton("Not Now");
+		notNowButton.setCursor(Cursor.HAND);
+		notNowButton.setPrefWidth(97.0);
+		notNowButton.setButtonType(ButtonType.RAISED);
+		notNowButton.setRipplerFill(Paint.valueOf("#eeeeee"));
+		notNowButton.setFont(Font.font("Verdana", 12.0));
+		notNowButton.setTextFill(Paint.valueOf("#0b7aea"));
+		notNowButton.setOnMouseClicked(mouseEvent -> {
+			hideUpdatePopOver();
+		});
+		
+		JFXButton browseButton = new JFXButton("Browse");
+		browseButton.setCursor(Cursor.HAND);
+		browseButton.setPrefWidth(97.0);
+		browseButton.setButtonType(ButtonType.RAISED);
+		browseButton.setRipplerFill(Paint.valueOf("#eeeeee"));
+		browseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+		browseButton.setTextFill(Paint.valueOf("#1c81f9"));
+		browseButton.setOnMouseClicked(mouseEvent -> {
+			try {
+				Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+			} catch (Exception e) {
+				
+			}
+			hideUpdatePopOver();
+		});
+		
+		HBox hBox = new HBox(notNowButton, browseButton);
+		hBox.setAlignment(Pos.CENTER);
+		hBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1 0 0 0;");
+		
+		VBox vBox = new VBox(title, message, hBox);
+		vBox.setAlignment(Pos.CENTER);
+		vBox.setStyle("-fx-background-color: white;");
+		vBox.setSpacing(5.0);
+		vBox.setPrefWidth(214.0);
+		vBox.setPrefHeight(103.0);
+		
+		updatePopOver.setContentNode(vBox);
+		updatePopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+    }
+    
     private void checkUpdate() {
     	new Thread(() -> {
-    		try {
-    			boolean isAvailableNewActlist = false;
-    			
-    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-    			param.add(new BasicNameValuePair("version", BuildVersion.VERSION));
-    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
-    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
-    			
-    			HashMap<String, String> result = RESTfulAPI.doGet("http://silentsoft.org/actlist/update/check", param, HashMap.class);
-    			if (result == null) {
-    				return;
-    			}
-    			
-    			if (result.containsKey("available")) {
-    				isAvailableNewActlist = Boolean.parseBoolean(result.get("available"));
-    			}
-    			
-    			SharedMemory.getDataMap().put(BizConst.KEY_IS_AVAILABLE_NEW_ACTLIST, isAvailableNewActlist);
-    			
-    			if (isAvailableNewActlist) {
-    				Platform.runLater(() -> {
-    					PopOver popOver = new PopOver();
-        				
-        				Label appUpdateAlarmLabel = new Label();
-        				appUpdateAlarmLabel.setCursor(Cursor.HAND);
-        				appUpdateAlarmLabel.setStyle("-fx-background-color: red; -fx-background-radius: 5em;");
-        				appUpdateAlarmLabel.setMinWidth(6.0);
-        				appUpdateAlarmLabel.setMinHeight(6.0);
-        				appUpdateAlarmLabel.setMaxWidth(6.0);
-        				appUpdateAlarmLabel.setMaxHeight(6.0);
-        				HBox.setMargin(appUpdateAlarmLabel, new Insets(0.0, 10.0, 0.0, 0.0));
-        				appUpdateAlarmLabel.setOnMouseClicked(mouseEvent -> {
-        					if (popOver.isShowing() == false) {
-        						popOver.show(appUpdateAlarmLabel);
-        					}
+    		Runnable checkUpdate = () -> {
+    			try {
+        			boolean isAvailableNewActlist = false;
+        			
+        			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+        			param.add(new BasicNameValuePair("version", BuildVersion.VERSION));
+        			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+        			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+        			
+        			HashMap<String, String> result = RESTfulAPI.doGet("http://silentsoft.org/actlist/update/check", param, HashMap.class);
+        			if (result == null) {
+        				return;
+        			}
+        			
+        			if (result.containsKey("available")) {
+        				isAvailableNewActlist = Boolean.parseBoolean(result.get("available"));
+        			}
+        			
+        			SharedMemory.getDataMap().put(BizConst.KEY_IS_AVAILABLE_NEW_ACTLIST, isAvailableNewActlist);
+        			
+        			if (isAvailableNewActlist) {
+        				Platform.runLater(() -> {
+        					appUpdateAlarmLabel.setVisible(true);
+        					
+							FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), appUpdateAlarmLabel);
+							fadeTransition.setFromValue(1.0);
+							fadeTransition.setToValue(0.3);
+							fadeTransition.setCycleCount(6);
+							fadeTransition.setAutoReverse(true);
+							
+							fadeTransition.play();
         				});
-        				
-        				controlBox.getChildren().add(0, appUpdateAlarmLabel);
-        				
-        				Label title = new Label("Actlist Update Alarm");
-        				title.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
-        				title.setPadding(new Insets(10.0, 0.0, 0.0, 0.0));
-        				
-        				Label message = new Label("New Actlist is available. Would you like to browse now ?");
-        				message.setWrapText(true);
-        				message.setFont(Font.font("Verdana", 12.0));
-        				message.setTextAlignment(TextAlignment.CENTER);
-        				message.setPrefWidth(194.0);
-        				message.setPrefHeight(40.0);
-        				
-        				JFXButton notNowButton = new JFXButton("Not Now");
-        				notNowButton.setCursor(Cursor.HAND);
-        				notNowButton.setPrefWidth(97.0);
-        				notNowButton.setButtonType(ButtonType.RAISED);
-        				notNowButton.setRipplerFill(Paint.valueOf("#eeeeee"));
-        				notNowButton.setFont(Font.font("Verdana", 12.0));
-        				notNowButton.setTextFill(Paint.valueOf("#0b7aea"));
-        				notNowButton.setOnMouseClicked(mouseEvent -> {
-        					appUpdateAlarmLabel.setOnMouseClicked(null);
-        					controlBox.getChildren().remove(appUpdateAlarmLabel);
-        					popOver.hide();
-        				});
-        				
-        				JFXButton browseButton = new JFXButton("Browse");
-        				browseButton.setCursor(Cursor.HAND);
-        				browseButton.setPrefWidth(97.0);
-        				browseButton.setButtonType(ButtonType.RAISED);
-        				browseButton.setRipplerFill(Paint.valueOf("#eeeeee"));
-        				browseButton.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
-        				browseButton.setTextFill(Paint.valueOf("#1c81f9"));
-        				browseButton.setOnMouseClicked(mouseEvent -> {
-        					try {
-        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
-        					} catch (Exception e) {
-        						
-        					}
-        					appUpdateAlarmLabel.setOnMouseClicked(null);
-        					controlBox.getChildren().remove(appUpdateAlarmLabel);
-        					popOver.hide();
-        				});
-        				
-        				HBox hBox = new HBox(notNowButton, browseButton);
-        				hBox.setAlignment(Pos.CENTER);
-        				hBox.setStyle("-fx-border-color: lightgray; -fx-border-width: 1 0 0 0;");
-        				
-        				VBox vBox = new VBox(title, message, hBox);
-        				vBox.setAlignment(Pos.CENTER);
-        				vBox.setStyle("-fx-background-color: white;");
-        				vBox.setSpacing(5.0);
-        				vBox.setPrefWidth(214.0);
-        				vBox.setPrefHeight(103.0);
-        				
-        				popOver.setContentNode(vBox);
-        				popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-    				});
+        			}
+        		} catch (Exception e) {
+        			
+        		}
+    		};
+    		while (true) {
+    			checkUpdate.run();
+    			try {
+    				Thread.sleep((long)Duration.hours(24).toMillis());
+    			} catch (InterruptedException ie) {
+    				
     			}
-    		} catch (Exception e) {
-    			
     		}
     	}).start();
+    }
+    
+    @FXML
+    private void showUpdatePopOver() {
+    	if (updatePopOver.isShowing() == false) {
+			updatePopOver.show(appUpdateAlarmLabel);
+		}
+    }
+    
+    private void hideUpdatePopOver() {
+    	updatePopOver.hide();
     }
     
     private void hideSplashImage() {
