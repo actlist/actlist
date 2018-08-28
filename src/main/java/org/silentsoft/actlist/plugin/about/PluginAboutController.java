@@ -16,14 +16,20 @@ import javafx.scene.Parent;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 
 public class PluginAboutController extends AbstractViewerController {
 
+	@FXML
+	private VBox rootVBox;
+	
 	@FXML
 	private ImageView iconImage;
 	
@@ -47,21 +53,6 @@ public class PluginAboutController extends AbstractViewerController {
 	
 	@FXML
 	private Hyperlink newVersionLink;
-	
-	@FXML
-	private ScrollPane masterPane;
-	
-	@FXML
-	private TabPane tabPane;
-	
-	@FXML
-	private WebView descriptionView;
-	
-	@FXML
-	private WebView changeLogView;
-	
-	@FXML
-	private WebView licenseView;
 	
 	@Override
 	public void initialize(Parent viewer, Object... parameters) {
@@ -126,40 +117,80 @@ public class PluginAboutController extends AbstractViewerController {
 					}
 				}
 				
-				setContentToWebView(descriptionView, plugin.getPluginDescriptionURI(), plugin.getPluginDescription());
-				setContentToWebView(changeLogView, plugin.getPluginChangeLogURI(), plugin.getPluginChangeLog());
-				setContentToWebView(licenseView, plugin.getPluginLicenseURI(), plugin.getPluginLicense());
+				if (haveContentToShow(plugin)) {
+					TabPane tabPane = createContentTabPane();
+					makeTabIfContentExists(tabPane, "Description", plugin.getPluginDescriptionURI(), plugin.getPluginDescription());
+					makeTabIfContentExists(tabPane, "Change Log", plugin.getPluginChangeLogURI(), plugin.getPluginChangeLog());
+					makeTabIfContentExists(tabPane, "License", plugin.getPluginLicenseURI(), plugin.getPluginLicense());
+					viewer.getScene().getWindow().sizeToScene();
+				}
 			}
 		}
 	}
 	
-	private void setContentToWebView(WebView webView, URI uri, String text) {
-		BufferedReader reader = null;
-		try {
-			if (ObjectUtil.isNotEmpty(uri)) {
-				if ("jar".equals(uri.getScheme())) {
-					reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), Charset.forName("UTF-8")));
-					StringBuffer buffer = new StringBuffer();
-					for (String value=null; (value=reader.readLine()) != null; ) {
-						buffer.append(value.concat("\r\n"));
-					}
-					webView.getEngine().loadContent(buffer.toString(), "text/plain");
-				} else {
-					webView.getEngine().load(uri.toString());
-				}
-			} else if (ObjectUtil.isNotEmpty(text)) {
-				webView.getEngine().loadContent(text, "text/plain");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (reader != null) {
+	private boolean haveContentToShow(ActlistPlugin plugin) {
+		boolean result = false;
+		if (ObjectUtil.isNotEmpty(plugin.getPluginDescriptionURI()) || ObjectUtil.isNotEmpty(plugin.getPluginDescription())) {
+			result = true;
+		} else if (ObjectUtil.isNotEmpty(plugin.getPluginChangeLogURI()) || ObjectUtil.isNotEmpty(plugin.getPluginChangeLog())) {
+			result = true;
+		} else if (ObjectUtil.isNotEmpty(plugin.getPluginLicenseURI()) || ObjectUtil.isNotEmpty(plugin.getPluginLicense())) {
+			result = true;
+		}
+		return result;
+	}
+	
+	private TabPane createContentTabPane() {
+		TabPane tabPane = new TabPane();
+		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+		
+		ScrollPane scrollPane = new ScrollPane(tabPane);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setPrefWidth(330.0);
+		scrollPane.setPrefHeight(310.0);
+		
+		VBox.setVgrow(scrollPane, Priority.ALWAYS);
+		
+		rootVBox.getChildren().add(scrollPane);
+		
+		return tabPane;
+	}
+	
+	private void makeTabIfContentExists(TabPane tabPane, String title, URI uri, String text) {
+		boolean existsContent = ObjectUtil.isNotEmpty(uri) || ObjectUtil.isNotEmpty(text);
+		if (existsContent) {
+			WebView webView = new WebView();
+			{
+				BufferedReader reader = null;
 				try {
-					reader.close();
-				} catch (IOException e) {
+					if (ObjectUtil.isNotEmpty(uri)) {
+						if ("jar".equals(uri.getScheme())) {
+							reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), Charset.forName("UTF-8")));
+							StringBuffer buffer = new StringBuffer();
+							for (String value=null; (value=reader.readLine()) != null; ) {
+								buffer.append(value.concat("\r\n"));
+							}
+							webView.getEngine().loadContent(buffer.toString(), "text/plain");
+						} else {
+							webView.getEngine().load(uri.toString());
+						}
+					} else if (ObjectUtil.isNotEmpty(text)) {
+						webView.getEngine().loadContent(text, "text/plain");
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			}
+			tabPane.getTabs().add(new Tab(title, webView));
 		}
 	}
 
