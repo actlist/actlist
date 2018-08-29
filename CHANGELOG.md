@@ -1,3 +1,10 @@
+* 1.2.8
+    * update check request will be executed every 24 hours.
+    * minor UX improvements 
+      * orange dot and red dot will have animation
+      * the tabs on plugin's about dialog are displayed dynamically.
+    * minor bugfix 
+      * getConfig() / putConfig() on debug mode
 * 1.2.7
     * supports UTF-8 content on plugin's about dialog
     * plugin can be added through drag and drop
