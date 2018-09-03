@@ -212,6 +212,17 @@ public class PluginComponent implements EventListener {
 				    					} else {
 				    						updateAlarmLabel.setVisible(false);
 				    					}
+				    				} else {
+						    			if (result.containsKey("endOfService")) {
+						    				boolean hasEndOfService = Boolean.parseBoolean(result.get("endOfService"));
+											if (hasEndOfService) {
+												warningLabel.setOnMouseClicked(mouseEvent -> {
+													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
+												});
+												warningLabel.setVisible(true);
+												playFadeTransition(warningLabel);
+											}
+						    			}
 				    				}
 				    			}
 							}
