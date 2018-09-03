@@ -7,8 +7,8 @@ import org.silentsoft.ui.viewer.AbstractViewer;
 
 public class PluginAbout extends AbstractViewer {
 	
-	public PluginAbout(ActlistPlugin actlistPlugin, URI newPluginURI) {
-		super(actlistPlugin, newPluginURI);
+	public PluginAbout(ActlistPlugin actlistPlugin, boolean isAvailableNewPlugin, URI newPluginURI) {
+		super(actlistPlugin, isAvailableNewPlugin, newPluginURI);
 	}
 	
 }

@@ -633,7 +633,7 @@ public class PluginComponent implements EventListener {
 		aboutStage.initStyle(StageStyle.UTILITY);
 		{
 			BorderPane scene = new BorderPane();
-			scene.setCenter(new PluginAbout(this.plugin, this.newPluginURI).getViewer());
+			scene.setCenter(new PluginAbout(this.plugin, this.isAvailableNewPlugin, this.newPluginURI).getViewer());
 			
 			aboutStage.setScene(new Scene(scene));
 		}
