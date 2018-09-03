@@ -167,79 +167,6 @@ public class PluginComponent implements EventListener {
 					}
 				}
 				
-				new Thread(() -> {
-					Runnable checkUpdate = () -> {
-						try {
-							URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
-							if (pluginUpdateCheckURI != null) {
-				    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-				    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
-				    			/* below values are unnecessary. version value is enough.
-				    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
-				    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
-				    			*/
-				    			
-				    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
-				    			if (result == null) {
-				    				return;
-				    			}
-				    			
-				    			if (result.containsKey("available")) {
-				    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
-				    				if (isAvailableNewPlugin) {
-				    					if (result.containsKey("url")) {
-				    						try {
-				    							newPluginURI = new URI(result.get("url"));
-				        					} catch (Exception e) {
-				        						e.printStackTrace();
-				        					}
-				    					}
-				    					
-				    					try {
-				    						plugin.pluginUpdateFound();
-				    					} catch (Exception e) {
-				    						e.printStackTrace();
-				    					}
-
-				    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-			    						if (pluginArchivesURI != null) {
-			    							newPluginURI = pluginArchivesURI;
-			    						}
-				    					
-				    					if (newPluginURI != null) {
-				    						updateAlarmLabel.setVisible(true);
-				    						playFadeTransition(updateAlarmLabel);
-				    					} else {
-				    						updateAlarmLabel.setVisible(false);
-				    					}
-				    				} else {
-						    			if (result.containsKey("endOfService")) {
-						    				boolean hasEndOfService = Boolean.parseBoolean(result.get("endOfService"));
-											if (hasEndOfService) {
-												warningLabel.setOnMouseClicked(mouseEvent -> {
-													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
-												});
-												warningLabel.setVisible(true);
-												playFadeTransition(warningLabel);
-											}
-						    			}
-				    				}
-				    			}
-							}
-						} catch (Exception e) {
-							e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
-						}
-					};
-					while (true) {
-						checkUpdate.run();
-						try {
-							Thread.sleep((long)Duration.hours(24).toMillis());
-						} catch (InterruptedException ie) {
-							
-						}
-					}
-				}).start();
-				
 				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
 				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
 				
@@ -397,6 +324,94 @@ public class PluginComponent implements EventListener {
 						makeDisable(e, shouldTraceException.get());
 					} finally {
 						pluginLoadingBox.setVisible(false);
+						
+						new Thread(() -> {
+							Runnable checkUpdate = () -> {
+								try {
+									URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
+									if (pluginUpdateCheckURI != null) {
+						    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+						    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+						    			/* below values are unnecessary. version value is enough.
+						    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+						    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+						    			*/
+						    			
+						    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
+						    			if (result == null) {
+						    				return;
+						    			}
+						    			
+						    			if (result.containsKey("available")) {
+						    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
+						    				if (isAvailableNewPlugin) {
+						    					if (result.containsKey("url")) {
+						    						try {
+						    							newPluginURI = new URI(result.get("url"));
+						        					} catch (Exception e) {
+						        						e.printStackTrace();
+						        					}
+						    					}
+						    					
+						    					try {
+						    						plugin.pluginUpdateFound();
+						    					} catch (Exception e) {
+						    						e.printStackTrace();
+						    					}
+
+						    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+					    						if (pluginArchivesURI != null) {
+					    							newPluginURI = pluginArchivesURI;
+					    						}
+						    					
+						    					if (newPluginURI != null) {
+						    						updateAlarmLabel.setVisible(true);
+						    						playFadeTransition(updateAlarmLabel);
+						    					} else {
+						    						updateAlarmLabel.setVisible(false);
+						    					}
+						    				}
+						    			}
+						    			
+						    			if (result.containsKey("killSwitch")) {
+						    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(result.get("killSwitch").trim());
+						    				if (hasTurnedOnKillSwitch) {
+						    					String message = "The plugin's kill switch has turned on by the author.";
+						    					
+						    					makeDisable(new Exception(message), false);
+						    					
+						    					warningLabel.setOnMouseClicked(mouseEvent -> {
+													MessageBox.showInformation(App.getStage(), message);
+												});
+												warningLabel.setVisible(true);
+												playFadeTransition(warningLabel);
+						    				}
+						    			}
+						    			
+						    			if (result.containsKey("endOfService")) {
+						    				boolean hasEndOfService = Boolean.parseBoolean(result.get("endOfService"));
+											if (hasEndOfService) {
+												warningLabel.setOnMouseClicked(mouseEvent -> {
+													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
+												});
+												warningLabel.setVisible(true);
+												playFadeTransition(warningLabel);
+											}
+						    			}
+									}
+								} catch (Exception e) {
+									e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+								}
+							};
+							while (true) {
+								checkUpdate.run();
+								try {
+									Thread.sleep((long)Duration.hours(24).toMillis());
+								} catch (InterruptedException ie) {
+									
+								}
+							}
+						}).start();
 					}
 				});
 			} catch (Throwable e) {
