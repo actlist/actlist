@@ -95,25 +95,30 @@ public class PluginAboutController extends AbstractViewerController {
 				}
 				
 				{
-					Object _newPluginURI = parameters[1];
-					if (_newPluginURI == null || (_newPluginURI instanceof URI) == false) {
-						newVersionBox.setVisible(false);
-						
-						VBox parent = (VBox) newVersionBox.getParent();
-						parent.getChildren().remove(newVersionBox);
-					} else {
-						newVersionBox.setVisible(true);
-						
-						URI newPluginURI = (URI) _newPluginURI;
-						newVersionLink.setOnAction(actionEvent -> {
-							newVersionLink.setVisited(false);
+					Object _isAvailableNewPlugin = parameters[1];
+					Object _newPluginURI = parameters[2];
+					
+					if (_isAvailableNewPlugin instanceof Boolean) {
+						boolean isAvailableNewPlugin = (boolean) _isAvailableNewPlugin;
+						if (isAvailableNewPlugin && _newPluginURI != null && _newPluginURI instanceof URI) {
+							newVersionBox.setVisible(true);
 							
-							try {
-								Desktop.getDesktop().browse(newPluginURI);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						});
+							URI newPluginURI = (URI) _newPluginURI;
+							newVersionLink.setOnAction(actionEvent -> {
+								newVersionLink.setVisited(false);
+								
+								try {
+									Desktop.getDesktop().browse(newPluginURI);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							});
+						} else {
+							newVersionBox.setVisible(false);
+							
+							VBox parent = (VBox) newVersionBox.getParent();
+							parent.getChildren().remove(newVersionBox);
+						}
 					}
 				}
 				
