@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
@@ -24,6 +26,7 @@ import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
@@ -389,14 +392,22 @@ public class AppController implements EventListener {
         			
         		}
     		};
-    		while (true) {
-    			checkUpdate.run();
-    			try {
-    				Thread.sleep((long)Duration.hours(24).toMillis());
-    			} catch (InterruptedException ie) {
-    				
-    			}
-    		}
+    		
+    		boolean shouldCheck = true;
+			Date latestCheckDate= null;
+			while (true) {
+				if (shouldCheck) {
+					checkUpdate.run();
+					latestCheckDate = Calendar.getInstance().getTime();
+				}
+				try {
+					Thread.sleep((long)Duration.minutes(10).toMillis());
+				} catch (InterruptedException ie) {
+					
+				} finally {
+					shouldCheck = DateUtil.getDifferenceHoursFromNow(latestCheckDate) >= 24;
+				}
+			}
     	}).start();
     }
     

@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,6 +28,7 @@ import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.ObjectUtil;
@@ -403,12 +406,20 @@ public class PluginComponent implements EventListener {
 									e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
 								}
 							};
+							
+							boolean shouldCheck = true;
+							Date latestCheckDate= null;
 							while (true) {
-								checkUpdate.run();
+								if (shouldCheck) {
+									checkUpdate.run();
+									latestCheckDate = Calendar.getInstance().getTime();
+								}
 								try {
-									Thread.sleep((long)Duration.hours(24).toMillis());
+									Thread.sleep((long)Duration.minutes(10).toMillis());
 								} catch (InterruptedException ie) {
 									
+								} finally {
+									shouldCheck = DateUtil.getDifferenceHoursFromNow(latestCheckDate) >= 24;
 								}
 							}
 						}).start();
