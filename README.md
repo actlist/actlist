@@ -31,7 +31,7 @@ git clone https://github.com/silentsoft/actlist-plugin.git
 <dependency>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
 ```
 * Generate executable main class called `Plugin` where in default package (please do not assign package).
@@ -96,6 +96,11 @@ For more information on ActlistPlugin development, see [here](http://actlist.sil
 
 ## Change log
 
+* 1.2.9
+    * new features
+      * plugin's kill switch
+      * plugin's end of service
+    * minor bugfix
 * 1.2.8
     * update check request will be executed every 24 hours.
     * minor UX improvements 

@@ -1,3 +1,8 @@
+* 1.2.9
+    * new features
+      * plugin's kill switch
+      * plugin's end of service
+    * minor bugfix
 * 1.2.8
     * update check request will be executed every 24 hours.
     * minor UX improvements 
