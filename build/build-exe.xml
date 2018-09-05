@@ -21,8 +21,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.0.0">
-				<filename name="actlist-plugin-1.0.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.0.1">
+				<filename name="actlist-plugin-1.0.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -199,7 +199,7 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.0.0.jar"/>
+				<include name="actlist-plugin-1.0.1.jar"/>
 				<include name="silentsoft-core-1.0.2.jar"/>
 				<include name="silentsoft-io-1.0.0.jar"/>
 				<include name="silentsoft-ui-1.0.0.jar"/>
@@ -297,7 +297,7 @@
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
-			version="1.2.8"
+			version="1.2.9"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -313,7 +313,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Silentsoft"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
-				<attribute name="Implementation-Version" value="1.2.8"/>
+				<attribute name="Implementation-Version" value="1.2.9"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
