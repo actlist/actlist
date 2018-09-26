@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist</artifactId>
-	<version>1.2.9</version>
+	<version>1.2.10</version>
 
 	<properties>
 		<!-- Generic properties (Warning : DO NOT REMOVE) -->

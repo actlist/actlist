@@ -96,6 +96,12 @@ For more information on ActlistPlugin development, see [here](http://actlist.sil
 
 ## Change log
 
+* 1.2.10
+    * new features
+      * supports one-time plugin which deactivates immediately after activated
+      * supports plugin's update check through `.js` file
+      * Actlist showing/hiding feature
+    * minor bugfix
 * 1.2.9
     * new features
       * plugin's kill switch
@@ -171,107 +177,6 @@ For more information on ActlistPlugin development, see [here](http://actlist.sil
 * 1.0.0
     * The first proper release
 
-## Third party
+## License
 
-__material icons__
- * https://material.io/icons/
- * Apache License 2.0
-
-__commons-codec 1.6__
- * https://github.com/apache/commons-codec
- * Apache License 2.0
-
-__commons-daemon 1.0.10__
- * https://github.com/apache/commons-daemon
- * Apache License 2.0
-
-__commons-io 2.4__
- * https://github.com/apache/commons-io
- * Apache License 2.0
-
-__commons-lang 2.6__
- * https://github.com/apache/commons-lang
- * Apache License 2.0
-
-__commons-logging 1.1.3__
- * https://github.com/apache/commons-logging
- * Apache License 2.0
-
-__commons-net 3.3__
- * https://github.com/apache/commons-net
- * Apache License 2.0
-
-__httpclient 4.3.6__
- * https://github.com/apache/httpcomponents-client
- * Apache License 2.0
-
-__httpcore 4.3.3__
- * https://github.com/apache/httpcomponents-core
- * Apache License 2.0
-
-__httpmime 4.3.6__
- * Apache License 2.0
-
-__log4j 1.2.17__
- * https://github.com/apache/log4j
- * Apache License 2.0
-
-__centerdevice-nsmenufx 2.1.5__
- * https://github.com/codecentric/NSMenuFX
- * BSD-3-Clause
-
-__controlsfx 8.40.10__
- * https://bitbucket.org/controlsfx/controlsfx
- * BSD-3-Clause
-
-__json 20141113__
- * https://github.com/douglascrockford/JSON-java
- * JSON License
-
-__jackson-annotations 2.4.2__
- * https://github.com/FasterXML/jackson-annotations
- * Apache License 2.0
-
-__jackson-core 2.4.2__
- * https://github.com/FasterXML/jackson-core
- * Apache License 2.0
-
-__jackson-databind 2.4.2__
- * https://github.com/FasterXML/jackson-databind
- * Apache License 2.0
-
-__jfoenix 1.0.0__
- * https://github.com/jfoenixadmin/Jfoenix
- * Apache License 2.0
-
-__jna 4.5.1__
- * https://github.com/java-native-access/jna
- * Apache License 2.0
-
-__jna-platform 4.5.1__
- * https://github.com/java-native-access/jna
- * Apache License 2.0
-
-__proxy-vole 1.0.3__
- * https://github.com/MarkusBernhardt/proxy-vole
- * Apache License 2.0
-
-__ini4j 0.5.4__
- * https://github.com/michaelPf85/ini4j
- * Apache License 2.0
-
-__PlusHaze-TrayNotification__
- * https://github.com/PlusHaze/TrayNotification
- * MIT License
-
-__slf4j-api 1.7.5__
- * https://github.com/qos-ch/slf4j
- * MIT License
-
-__slf4j-log4j12 1.7.5__
- * https://github.com/qos-ch/slf4j
- * MIT License
-
-__jkeymaster 1.2__
- * https://github.com/tulskiy/jkeymaster
- * LGPL-3.0
+Please refer to [LICENSE](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt) and [NOTICE](https://github.com/silentsoft/actlist/blob/master/NOTICE.md).
