@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.apache.http.NameValuePair;
@@ -364,13 +365,13 @@ public class AppController implements EventListener {
         			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
         			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
         			
-        			HashMap<String, String> result = RESTfulAPI.doGet("http://silentsoft.org/actlist/update/check", param, HashMap.class);
+        			Map<String, Object> result = RESTfulAPI.doGet("http://silentsoft.org/actlist/update/check", param, Map.class);
         			if (result == null) {
         				return;
         			}
         			
         			if (result.containsKey("available")) {
-        				isAvailableNewActlist = Boolean.parseBoolean(result.get("available"));
+        				isAvailableNewActlist = Boolean.parseBoolean(String.valueOf(result.get("available")));
         			}
         			
         			SharedMemory.getDataMap().put(BizConst.KEY_IS_AVAILABLE_NEW_ACTLIST, isAvailableNewActlist);

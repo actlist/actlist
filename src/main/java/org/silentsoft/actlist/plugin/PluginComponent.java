@@ -12,9 +12,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -203,7 +207,11 @@ public class PluginComponent implements EventListener {
 							warningLabel.setVisible(false);
 						}
 						
-						togActivator.setSelected(activated);
+						if (plugin.isOneTimePlugin()) {
+							togActivator.setSelected(false);
+						} else {
+							togActivator.setSelected(activated);
+						}
 						
 						popOver = new PopOver(new VBox());
 						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
@@ -219,6 +227,8 @@ public class PluginComponent implements EventListener {
 						plugin.exceptionObject().addListener((observable, oldValue, newValue) -> {
 							if (newValue != null) {
 								makeDisable(newValue, true);
+								
+								plugin.exceptionObject().set(null);
 							}
 						});
 						plugin.showTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
@@ -260,6 +270,8 @@ public class PluginComponent implements EventListener {
 								} else {
 									trayNotification.showAndDismiss(newValue.getDuration());
 								}
+								
+								plugin.showTrayNotificationObject().set(null);
 							}
 						});
 						plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
@@ -273,6 +285,8 @@ public class PluginComponent implements EventListener {
 										trayNotification.dismiss();
 									}
 								}
+								
+								plugin.dismissTrayNotificationObject().set(null);
 							}
 						});
 						plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
@@ -297,6 +311,31 @@ public class PluginComponent implements EventListener {
 	        					} catch (Exception e) {
 	        						
 	        					}
+								
+								plugin.shouldBrowseActlistArchives().set(false);
+							}
+						});
+						plugin.shouldRequestShowActlist().addListener((observable, oldValue, newValue) -> {
+							if (newValue) {
+								if (App.isHidden()) {
+									// request show
+									EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_SHOW_HIDE, false);
+								}
+							} else {
+								if (App.isShown()) {
+									// request hide
+									EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_SHOW_HIDE, false);
+								}
+							}
+						});
+						plugin.shouldRequestDeactivate().addListener((observable, oldValue, newValue) -> {
+							if (newValue) {
+								if (isActivated()) {
+									togActivator.setSelected(false);
+									deactivated();
+								}
+								
+								plugin.shouldRequestDeactivate().set(false);
 							}
 						});
 						
@@ -316,7 +355,7 @@ public class PluginComponent implements EventListener {
 							addFunction(function);
 						}
 						
-						if (activated) {
+						if (activated && plugin.isOneTimePlugin() == false) {
 							activated();
 						}
 						
@@ -333,24 +372,40 @@ public class PluginComponent implements EventListener {
 								try {
 									URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
 									if (pluginUpdateCheckURI != null) {
-						    			ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+										Map<String, Object> result = null;
+										
+										ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
 						    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
 						    			/* below values are unnecessary. version value is enough.
 						    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
 						    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
 						    			*/
+										
+										String uri = pluginUpdateCheckURI.toString();
+										if (uri.matches("(?i).*\\.js")) {
+											StringBuffer script = new StringBuffer();
+											script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
+											script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class));
+											
+											ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+											Object _result = scriptEngine.eval(script.toString());
+											if (_result instanceof Map) {
+												result = (Map) _result;
+											}
+										} else {
+							    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class);
+										}
 						    			
-						    			HashMap<String, String> result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, HashMap.class);
 						    			if (result == null) {
 						    				return;
 						    			}
 						    			
 						    			if (result.containsKey("available")) {
-						    				isAvailableNewPlugin = Boolean.parseBoolean(result.get("available"));
+						    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
 						    				if (isAvailableNewPlugin) {
 						    					if (result.containsKey("url")) {
 						    						try {
-						    							newPluginURI = new URI(result.get("url"));
+						    							newPluginURI = new URI(String.valueOf(result.get("url")));
 						        					} catch (Exception e) {
 						        						e.printStackTrace();
 						        					}
@@ -377,7 +432,7 @@ public class PluginComponent implements EventListener {
 						    			}
 						    			
 						    			if (result.containsKey("killSwitch")) {
-						    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(result.get("killSwitch").trim());
+						    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(String.valueOf(result.get("killSwitch")).trim());
 						    				if (hasTurnedOnKillSwitch) {
 						    					String message = "The plugin's kill switch has turned on by the author.";
 						    					
@@ -392,7 +447,7 @@ public class PluginComponent implements EventListener {
 						    			}
 						    			
 						    			if (result.containsKey("endOfService")) {
-						    				boolean hasEndOfService = Boolean.parseBoolean(result.get("endOfService"));
+						    				boolean hasEndOfService = Boolean.parseBoolean(String.valueOf(result.get("endOfService")));
 											if (hasEndOfService) {
 												warningLabel.setOnMouseClicked(mouseEvent -> {
 													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
@@ -881,9 +936,11 @@ public class PluginComponent implements EventListener {
 					plugin.pluginActivated();
 					loadPluginGraphic();
 					
-					List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
-					deactivatedPlugins.remove(pluginFileName);
-					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+					if (plugin.isOneTimePlugin() == false) {
+						List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+						deactivatedPlugins.remove(pluginFileName);
+						EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+					}
 				} catch (Throwable e) {
 					makeDisable(e, true);
 				} finally {
@@ -897,9 +954,11 @@ public class PluginComponent implements EventListener {
 		new Thread(() -> {
 			Platform.runLater(() -> {
 				try {
-					List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
-					deactivatedPlugins.add(pluginFileName);
-					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+					if (plugin.isOneTimePlugin() == false) {
+						List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+						deactivatedPlugins.add(pluginFileName);
+						EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+					}
 					
 					clearPluginGraphicAndDeactivate();
 				} catch (Throwable e) {
