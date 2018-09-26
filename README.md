@@ -1,12 +1,12 @@
-[![release](http://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
-![platform](http://actlist.silentsoft.org/api/shields/platform)
-![downloads-total](http://actlist.silentsoft.org/api/shields/downloads-total)
-![downloads-week](http://actlist.silentsoft.org/api/shields/downloads-week)
-![usage](http://actlist.silentsoft.org/api/shields/usage)
-![statistics-since](http://actlist.silentsoft.org/api/shields/statistics-since)
-![created](http://actlist.silentsoft.org/api/shields/created)
-[![actlist-license](http://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
-[![actlist-plugin-license](http://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
+[![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
+![platform](https://actlist.silentsoft.org/api/shields/platform)
+![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
+![downloads-week](https://actlist.silentsoft.org/api/shields/downloads-week)
+![usage](https://actlist.silentsoft.org/api/shields/usage)
+![statistics-since](https://actlist.silentsoft.org/api/shields/statistics-since)
+![created](https://actlist.silentsoft.org/api/shields/created)
+[![actlist-license](https://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
+[![actlist-plugin-license](https://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
 ---
 
 # Actlist
@@ -17,7 +17,7 @@ Actlist will helps you to execute your desire things.
 
 Just do focus only on coding to create what you want. and you can share with others to makes better world.
 
-![](http://actlist.silentsoft.org/img/preview.png)
+![](http://actlist.silentsoft.org/img/preview.png?token=02b15478)
 
 ## Installation
 
