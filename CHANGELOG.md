@@ -1,3 +1,9 @@
+* 1.2.10
+    * new features
+      * supports one-time plugin which deactivates immediately after activated
+      * supports plugin's update check through `.js` file
+      * Actlist showing/hiding feature
+    * minor bugfix
 * 1.2.9
     * new features
       * plugin's kill switch
