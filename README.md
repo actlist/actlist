@@ -1,3 +1,12 @@
+[![release](http://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
+![platform](http://actlist.silentsoft.org/api/shields/platform)
+![downloads-total](http://actlist.silentsoft.org/api/shields/downloads-total)
+![downloads-week](http://actlist.silentsoft.org/api/shields/downloads-week)
+![usage](http://actlist.silentsoft.org/api/shields/usage)
+[![actlist-license](http://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
+[![actlist-plugin-license](http://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
+---
+
 # Actlist
 > Easy and simply execute your own act list.
 
