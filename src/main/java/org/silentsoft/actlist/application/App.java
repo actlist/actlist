@@ -441,11 +441,23 @@ public class App extends Application implements EventListener {
 	}
 	
 	private void bringToFront() {
+		if (isHidden()) {
+			showOrHide(); // in this case the Actlist will definitely showing up.
+		}
+	}
+	
+	public static boolean isShown() {
+		return !isHidden();
+	}
+	
+	public static boolean isHidden() {
 		if (stage.isIconified() ||
 			stage.isShowing() == false ||
 		    (stage.isShowing() == true && stage.isFocused() == false)) {
-			showOrHide(); // in this case the Actlist will definitely showing up.
+			return true;
 		}
+		
+		return false;
 	}
 	
 	private Stage aboutStage;
