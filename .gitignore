@@ -12,4 +12,10 @@
 /build/projectRefs
 /plugins
 /target/
+.settings/
+.classpath
+.project
 .DS_Store
+.CHANGELOG.md.html
+.NOTICE.md.html
+.README.md.html
