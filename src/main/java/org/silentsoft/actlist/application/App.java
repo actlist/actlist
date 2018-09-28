@@ -144,9 +144,9 @@ public class App extends Application implements EventListener {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(CommonConst.EXTENSION_FXML)));
 		app = fxmlLoader.load();
 		appController = fxmlLoader.getController();
-		Platform.runLater(() -> {
+//		Platform.runLater(() -> {
 			appController.initialize();
-		});
+//		});
 	}
 	
 	private Scene createScene() {
