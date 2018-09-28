@@ -112,7 +112,7 @@ public class App extends Application implements EventListener {
 		initialize();
 		
 		stage.setTitle(BizConst.APPLICATION_NAME);
-		stage.initStyle(StageStyle.TRANSPARENT);
+		stage.initStyle(StageStyle.UNDECORATED);
 		stage.setScene(createScene());
 		stage.setWidth(ConfigUtil.getStageWidth());
 		stage.setHeight(ConfigUtil.getStageHeight());
@@ -154,14 +154,14 @@ public class App extends Application implements EventListener {
 		
 		if (SystemUtil.isMac()) {
 			BorderPane root = new BorderPane();
-			root.setStyle("-fx-background-color: transparent;");
+			root.setStyle("-fx-background-color: white;");
 			root.setTop(createMenuBar());
 			root.setCenter(app);
 			
-			scene = new Scene(root, Color.TRANSPARENT);
+			scene = new Scene(root/*, Color.TRANSPARENT*/);
 		}
 		
-		return (scene == null) ? (new Scene(app, Color.TRANSPARENT)) : scene;
+		return (scene == null) ? (new Scene(app/*, Color.TRANSPARENT*/)) : scene;
 	}
 	
 	private MenuBar createMenuBar() {
@@ -178,14 +178,14 @@ public class App extends Application implements EventListener {
 				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
 			} else {
 				actlistConfig = new ActlistConfig();
-				actlistConfig.put("rootWidth", 380.0);
-				actlistConfig.put("rootHeight", 340.0);
-				actlistConfig.put("stageWidth", 390.0);  // left shadow(5) + root(380) + right shadow(5)
-				actlistConfig.put("stageHeight", 350.0); // top shadow(5) + root(340) + bottom shadow(5)
+//				actlistConfig.put("rootWidth", 380.0);
+//				actlistConfig.put("rootHeight", 340.0);
+				actlistConfig.put("stageWidth", 380.0);
+				actlistConfig.put("stageHeight", 340.0);
 				actlistConfig.put("stageOpacity", 1.0);
 				actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
-				/* actlistConfig.put("animationEffect", true); */
+//				actlistConfig.put("animationEffect", true);
 				actlistConfig.put("alwaysOnTop", false);
 				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
 				actlistConfig.put("proxyHost", "");

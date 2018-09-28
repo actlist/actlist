@@ -95,9 +95,6 @@ public class Console {
 
         			changeMaximizeProperty(stage);
         			
-        			stage.setX(x);
-                    stage.setY(y);
-                    
                     dragDelta.setX(-1 * (stage.getWidth() / 2));
                     dragDelta.setY(-1 * (mouseEvent.getSceneY()));
         		} else {
