@@ -115,8 +115,8 @@ public class AppController implements EventListener {
 	protected void initialize() {
 		EventHandler.addListener(this);
 		
-		root.setPrefWidth(ConfigUtil.getRootWidth());
-		root.setPrefHeight(ConfigUtil.getRootHeight());
+		root.setPrefWidth(ConfigUtil.getStageWidth());
+		root.setPrefHeight(ConfigUtil.getStageHeight());
 		
 		maximizeProperty = new MaximizeProperty(App.getStage());
 		pluginMap = new HashMap<String, URLClassLoader>();
@@ -157,7 +157,7 @@ public class AppController implements EventListener {
         		dragDelta.setX(stage.getX() - mouseEvent.getScreenX());
                 dragDelta.setY(stage.getY() - mouseEvent.getScreenY());
                 
-                byNode.setOpacity(0.8);
+                byNode.setOpacity(0.95);
         	}
         });
         
@@ -169,9 +169,6 @@ public class AppController implements EventListener {
 
         			changeMaximizeProperty(stage);
         			
-        			stage.setX(x);
-                    stage.setY(y);
-                    
                     dragDelta.setX(-1 * (stage.getWidth() / 2));
                     dragDelta.setY(-1 * (mouseEvent.getSceneY()));
         		} else {
@@ -250,10 +247,10 @@ public class AppController implements EventListener {
     }
     
     private void makeResizable(final Stage stage, final Region region) {
-    	StageDragResizer.makeResizable(stage, region, 7, 10, () -> {
+    	StageDragResizer.makeResizable(stage, region, 7, 0, () -> {
     		try {
-    			ConfigUtil.setRootWidth(region.getWidth());
-    			ConfigUtil.setRootHeight(region.getHeight());
+//    			ConfigUtil.setRootWidth(region.getWidth());
+//    			ConfigUtil.setRootHeight(region.getHeight());
     			
     			ConfigUtil.setStageWidth(App.getStage().getWidth());
     			ConfigUtil.setStageHeight(App.getStage().getHeight());
@@ -265,8 +262,8 @@ public class AppController implements EventListener {
     
     private void changeMaximizeProperty(Stage stage) {
     	maximizeProperty.setMaximized(stage, !maximizeProperty.isMaximized());
-		if (maximizeProperty.isMaximized()) {
-			// This option is recommended when maximized.
+//		if (maximizeProperty.isMaximized()) {
+//			// This option is recommended when maximized.
 			AnchorPane.setLeftAnchor(root, 0.0);
 			AnchorPane.setRightAnchor(root, 0.0);
 			AnchorPane.setTopAnchor(root, 0.0);
@@ -280,22 +277,22 @@ public class AppController implements EventListener {
 			AnchorPane.setRightAnchor(body, 0.0);
 			AnchorPane.setTopAnchor(body, 25.0);
 			AnchorPane.setBottomAnchor(body, 0.0);
-		} else {
-			// Showing shadow when normalized.
-			AnchorPane.setLeftAnchor(root, 5.0);
-			AnchorPane.setRightAnchor(root, 5.0);
-			AnchorPane.setTopAnchor(root, 5.0);
-			AnchorPane.setBottomAnchor(root, 5.0);
-			
-			// Make offset for change the size of application via mouse.
-			AnchorPane.setLeftAnchor(head, 2.0);
-			AnchorPane.setRightAnchor(head, 2.0);
-			AnchorPane.setTopAnchor(head, 2.0);
-			AnchorPane.setLeftAnchor(body, 2.0);
-			AnchorPane.setRightAnchor(body, 2.0);
-			AnchorPane.setTopAnchor(body, 27.0);
-			AnchorPane.setBottomAnchor(body, 2.0);
-		}
+//		} else {
+//			// Showing shadow when normalized.
+//			AnchorPane.setLeftAnchor(root, 5.0);
+//			AnchorPane.setRightAnchor(root, 5.0);
+//			AnchorPane.setTopAnchor(root, 5.0);
+//			AnchorPane.setBottomAnchor(root, 5.0);
+//			
+//			// Make offset for change the size of application via mouse.
+//			AnchorPane.setLeftAnchor(head, 2.0);
+//			AnchorPane.setRightAnchor(head, 2.0);
+//			AnchorPane.setTopAnchor(head, 2.0);
+//			AnchorPane.setLeftAnchor(body, 2.0);
+//			AnchorPane.setRightAnchor(body, 2.0);
+//			AnchorPane.setTopAnchor(body, 27.0);
+//			AnchorPane.setBottomAnchor(body, 2.0);
+//		}
     }
     
     private void initUpdatePopOver() {
