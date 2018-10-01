@@ -1,6 +1,8 @@
 package org.silentsoft.actlist.application;
 
 import java.awt.Desktop;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.io.File;
@@ -36,6 +38,7 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 import de.codecentric.centerdevice.MenuToolkit;
+import de.codecentric.centerdevice.glass.AdapterContext;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -426,16 +429,49 @@ public class App extends Application implements EventListener {
 //		    			});
 //		    			animation.play();
 //					} else {
+					if (SystemUtil.isMac()) {
+						AdapterContext.getContext().getApplicationAdapter().hide();
+					} else {
 						Platform.runLater(() -> { stage.hide(); });
+					}
 //					}
 				} else {
-					Platform.runLater(() -> { stage.requestFocus(); }); // do not hide. just bring it up to front.
+					if (SystemUtil.isMac()) {
+						Platform.runLater(() -> {
+							stage.toFront();
+
+							/* WHAT THE HECK .. ! BUT THIS IS NECESSARY BECAUSE OF stage.requestFocus() DOES NOT WORKS PROPERLY ON MAC */
+							{
+								Point previousMouseLocation = MouseInfo.getPointerInfo().getLocation();
+								new Thread(() -> {
+									Platform.runLater(() -> {
+										try {
+											Robot robot = new Robot();
+											robot.mouseMove((int) stage.getX()+10, (int) stage.getY()+10);
+											robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+											robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+											
+											robot.mouseMove(previousMouseLocation.x, previousMouseLocation.y);
+										} catch (Exception e) {
+											
+										}
+									});
+								}).start();
+							}
+						});
+					} else {
+						Platform.runLater(() -> { stage.requestFocus(); }); // do not hide. just bring it up to front.
+					}
 				}
 			} else {
 //				if (ConfigUtil.isAnimationEffect()) {
 //					AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
 //				}
-				Platform.runLater(() -> { stage.show(); });
+				if (SystemUtil.isMac()) {
+					AdapterContext.getContext().getApplicationAdapter().unhideAllApplications();
+				} else {
+					Platform.runLater(() -> { stage.show(); });
+				}
 			}
 		}
 	}
