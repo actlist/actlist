@@ -40,6 +40,7 @@ import org.silentsoft.ui.util.StageDragResizer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXButton.ButtonType;
 
+import de.codecentric.centerdevice.glass.AdapterContext;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -212,6 +213,8 @@ public class AppController implements EventListener {
     			 * Do not call the above event. make sure to stay on taskbar.
     			 */
     			stage.setIconified(true);
+    			
+    			// TODO MenuBar still disappearing on Mac
     		}
     	});
     }
@@ -237,11 +240,15 @@ public class AppController implements EventListener {
     private void makeClosable(final Stage stage, final Node byNode) {
     	byNode.setOnMouseClicked(mouseEvent -> {
     		if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-//    			Transition animation = AnimationUtils.createTransition(App.getParent(), AnimationType.BOUNCE_OUT_DOWN);
-//    			animation.setOnFinished(actionEvent -> {
-    				stage.hide();
-//    			});
-//    			animation.play();
+    			if (SystemUtil.isMac()) {
+					AdapterContext.getContext().getApplicationAdapter().hide();
+				} else {
+//	    			Transition animation = AnimationUtils.createTransition(App.getParent(), AnimationType.BOUNCE_OUT_DOWN);
+//	    			animation.setOnFinished(actionEvent -> {
+	    				stage.hide();
+//	    			});
+//	    			animation.play();					
+				}
     		}
     	});
     }
