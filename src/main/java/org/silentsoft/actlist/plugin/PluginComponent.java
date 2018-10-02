@@ -194,7 +194,7 @@ public class PluginComponent implements EventListener {
 						String pluginName = plugin.getPluginName();
 						String pluginDescription = plugin.getPluginDescription();
 						
-						lblPluginName.setText(pluginName);
+						lblPluginName.setText((pluginName == null || pluginName.trim().isEmpty()) ? pluginFileName : pluginName);
 						if (ObjectUtil.isNotEmpty(pluginDescription)) {
 							lblPluginName.setTooltip(new Tooltip(pluginDescription));
 						}
@@ -243,14 +243,16 @@ public class PluginComponent implements EventListener {
 								trayNotification.setImage(App.getIcons().get(4)); // 128x128
 								trayNotification.setAnimationType(AnimationType.POPUP);
 								
-								if (newValue.getTitle() == null) {
-									trayNotification.setTitle("Actlist message has been arrived.");
+								String titleValue = (plugin.getPluginName() == null || plugin.getPluginName().trim().isEmpty()) ? pluginFileName : plugin.getPluginName();
+								String titlePrefix = String.format("[%s] ", titleValue);
+								if (newValue.getTitle() == null || newValue.getTitle().trim().isEmpty()) {
+									trayNotification.setTitle(titlePrefix.concat(""));
 								} else {
-									trayNotification.setTitle(newValue.getTitle());
+									trayNotification.setTitle(titlePrefix.concat(newValue.getTitle()));
 								}
 								
-								if (newValue.getMessage() == null) {
-									trayNotification.setMessage(pluginName);
+								if (newValue.getMessage() == null || newValue.getMessage().trim().isEmpty()) {
+									trayNotification.setMessage("(empty message)");
 								} else {
 									trayNotification.setMessage(newValue.getMessage());
 								}
