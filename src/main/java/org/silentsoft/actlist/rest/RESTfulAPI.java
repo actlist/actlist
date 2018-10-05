@@ -19,28 +19,14 @@ import com.github.markusbernhardt.proxy.ProxySearch;
 
 public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 
-	static {
-		init("", "");
-		/**
-		 * init("http://silentsoft.org", "/actlist");
-		 * 
-		 * it must not be set because of plugin's update check URI.
-		 * that URI may not be a official silentsoft.org. it could be a private server.
-		 */
-	}
-	
-	public static void init() {
-		// DO NOT WRITE CODE HERE.
-	}
-	
-	public static <T> T doGet(String api, Object param, Class<T> returnType) throws Exception {
-		return doGet(api, getProxyHost(), param, returnType, (request) -> {
+	public static <T> T doGet(String uri, Object param, Class<T> returnType) throws Exception {
+		return doGet(uri, getProxyHost(), param, returnType, (request) -> {
 			request.setHeaders(createHeaders());
 		});
 	}
 	
-	public static <T> T doPost(String api, Object param, Class<T> returnType) throws Exception {
-		return doPost(api, getProxyHost(), param, returnType, (request) -> {
+	public static <T> T doPost(String uri, Object param, Class<T> returnType) throws Exception {
+		return doPost(uri, getProxyHost(), param, returnType, (request) -> {
 			request.setHeaders(createHeaders());
 		});
 	}
