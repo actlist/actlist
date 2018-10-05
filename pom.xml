@@ -21,7 +21,7 @@
 
 		<!-- Silentsoft -->
 		<silentsoft.ui.version>1.0.0</silentsoft.ui.version>
-		<silentsoft.net.version>1.0.0</silentsoft.net.version>
+		<silentsoft.net.version>1.0.1</silentsoft.net.version>
 
 		<!-- Actlist -->
 		<actlist.plugin.version>1.0.1</actlist.plugin.version>
