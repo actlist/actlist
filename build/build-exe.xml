@@ -41,8 +41,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.0.0">
-				<filename name="silentsoft-net-1.0.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.0.1">
+				<filename name="silentsoft-net-1.0.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -203,7 +203,7 @@
 				<include name="silentsoft-core-1.0.2.jar"/>
 				<include name="silentsoft-io-1.0.0.jar"/>
 				<include name="silentsoft-ui-1.0.0.jar"/>
-				<include name="silentsoft-net-1.0.0.jar"/>
+				<include name="silentsoft-net-1.0.1.jar"/>
 				<include name="jackson-databind-2.4.2.jar"/>
 				<include name="commons-codec-1.6.jar"/>
 				<include name="httpcore-4.3.3.jar"/>
