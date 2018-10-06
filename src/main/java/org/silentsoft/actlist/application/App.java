@@ -10,21 +10,19 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.about.About;
 import org.silentsoft.actlist.configuration.Configuration;
 import org.silentsoft.actlist.console.Console;
+import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
-import org.silentsoft.core.util.FileUtil;
-import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
@@ -41,6 +39,8 @@ import de.codecentric.centerdevice.MenuToolkit;
 import de.codecentric.centerdevice.glass.AdapterContext;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.application.Preloader;
+import javafx.application.Preloader.StateChangeNotification;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -68,11 +68,10 @@ public class App extends Application implements EventListener {
 	
 	public static void main(String[] args) {
 		loadConfiguration();
-		checkSingleInstance();
 		
 		launch(args);
 	}
-			
+	
 	public static Stage getStage() {
 		Stage currentStage = StageUtil.getCurrentStage();
 		if (currentStage == null) {
@@ -107,12 +106,69 @@ public class App extends Application implements EventListener {
 		return provider;
 	}
 	
+	private static void loadConfiguration() {
+		try {
+			// debug mode only
+			if (SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG) == null) {
+				org.silentsoft.actlist.preloader.App.loadConfiguration();
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
 	@SuppressWarnings("static-access")
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 		
-		initialize();
+		new Thread(() -> {
+			try {
+				notifyPreloader(new Preloader.ProgressNotification(0.2));
+				heavyLifting();
+				
+				notifyPreloader(new Preloader.ProgressNotification(0.3));
+				initializeWithoutFxThread();
+				
+				notifyPreloader(new Preloader.ProgressNotification(0.4));
+				Platform.runLater(() -> {
+					try {
+						initializeWithFxThread();;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+	
+	private void heavyLifting() throws Exception {
+		RESTfulAPI.getProxyHost();
+	}
+	
+	private void initializeWithoutFxThread() throws Exception {
+		Platform.setImplicitExit(false);
+		
+		StageUtil.registerStage(stage);
+		
+		EventHandler.addListener(this);
+		
+		
+		displayStageIcon();
+		registerTrayIcon();
+		registerHotkey();
+	}
+	
+	private void initializeWithFxThread() throws Exception {
+		initConsole();
+		registerMenu();
+		
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(CommonConst.EXTENSION_FXML)));
+		app = fxmlLoader.load();
+		appController = fxmlLoader.getController();
+		appController.initialize();
 		
 		stage.setTitle(BizConst.APPLICATION_NAME);
 		stage.initStyle(StageStyle.UNDECORATED);
@@ -126,30 +182,7 @@ public class App extends Application implements EventListener {
 //			AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
 //		}
 		
-		stage.show();
-	}
-	
-	private void initialize() throws Exception {
-		Platform.setImplicitExit(false);
-		
-		StageUtil.registerStage(stage);
-		
-		EventHandler.addListener(this);
-		
-		// WARNING : DO NOT MODIFY FUNCTION CALL PRIORITY
-		
-		initConsole();
-		displayStageIcon();
-		registerTrayIcon();
-		registerHotkey();
-		registerMenu();
-		
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName().concat(CommonConst.EXTENSION_FXML)));
-		app = fxmlLoader.load();
-		appController = fxmlLoader.getController();
-//		Platform.runLater(() -> {
-			appController.initialize();
-//		});
+//		stage.show();
 	}
 	
 	private Scene createScene() {
@@ -169,86 +202,6 @@ public class App extends Application implements EventListener {
 	
 	private MenuBar createMenuBar() {
 		return null;
-	}
-	
-	private static void loadConfiguration() {
-		try {
-			ActlistConfig actlistConfig = null;
-			
-			File configFile = Paths.get(System.getProperty("user.dir"), "actlist.jar.config").toFile();
-			if (configFile.exists()) {
-				String configContent = FileUtil.readFile(configFile);
-				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
-			} else {
-				actlistConfig = new ActlistConfig();
-//				actlistConfig.put("rootWidth", 380.0);
-//				actlistConfig.put("rootHeight", 340.0);
-				actlistConfig.put("stageWidth", 380.0);
-				actlistConfig.put("stageHeight", 340.0);
-				actlistConfig.put("stageOpacity", 1.0);
-				actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
-				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
-//				actlistConfig.put("animationEffect", true);
-				actlistConfig.put("alwaysOnTop", false);
-				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
-				actlistConfig.put("proxyHost", "");
-			}
-			
-			SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
-		} catch (Exception e) {
-			
-		}
-	}
-	
-	private static void checkSingleInstance() {
-		String imageName = BizConst.APPLICATION_NAME;
-		if (SystemUtil.isWindows()) {
-			imageName = imageName + CommonConst.EXTENSION_EXE;
-		}
-		
-		if (SystemUtil.findProcessByImageName(imageName, SystemUtil.getCurrentProcessId())) {
-			// Fire hot key to showing up the already running process.
-			try {
-				Robot robot = new Robot();
-				
-				int keyCode = ConfigUtil.getShowHideActlistHotKeyCode();
-				int modifier = ConfigUtil.getShowHideActlistHotKeyModifier();
-				
-				// Press Key
-				if ((modifier & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
-					robot.keyPress(java.awt.event.KeyEvent.VK_CONTROL);
-				}
-				if ((modifier & InputEvent.ALT_DOWN_MASK) == InputEvent.ALT_DOWN_MASK) {
-					robot.keyPress(java.awt.event.KeyEvent.VK_ALT);
-				}
-				if ((modifier & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {
-					robot.keyPress(java.awt.event.KeyEvent.VK_SHIFT);
-				}
-				if ((modifier & InputEvent.META_DOWN_MASK) == InputEvent.META_DOWN_MASK) {
-					robot.keyPress(java.awt.event.KeyEvent.VK_WINDOWS);
-				}
-				robot.keyPress(keyCode);
-				
-				// Release Key
-				if ((modifier & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
-					robot.keyRelease(java.awt.event.KeyEvent.VK_CONTROL);
-				}
-				if ((modifier & InputEvent.ALT_DOWN_MASK) == InputEvent.ALT_DOWN_MASK) {
-					robot.keyRelease(java.awt.event.KeyEvent.VK_ALT);
-				}
-				if ((modifier & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {
-					robot.keyRelease(java.awt.event.KeyEvent.VK_SHIFT);
-				}
-				if ((modifier & InputEvent.META_DOWN_MASK) == InputEvent.META_DOWN_MASK) {
-					robot.keyRelease(java.awt.event.KeyEvent.VK_WINDOWS);
-				}
-				robot.keyRelease(keyCode);
-			} catch (Exception e) {
-				
-			}
-			
-			System.exit(0); // Just termination.
-		}
 	}
 	
 	private Stage consoleStage;
@@ -550,9 +503,43 @@ public class App extends Application implements EventListener {
 		System.exit(0);
 	}
 
+	private CountDownLatch pluginCountDownLatch;
+	private void notifyPreloaderPreparingPlugins() {
+		pluginCountDownLatch = new CountDownLatch((int) SharedMemory.getDataMap().get(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS));
+		notifyPreloader(new Preloader.ProgressNotification(0.5));
+		new Thread(() -> {
+			try {
+				pluginCountDownLatch.await();
+				
+				Thread.sleep(300);
+				notifyPreloader(new Preloader.ProgressNotification(1.0));
+				Thread.sleep(1200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				notifyPreloader(new Preloader.StateChangeNotification(StateChangeNotification.Type.BEFORE_START));
+				Platform.runLater(() -> {
+					stage.show();
+				});
+			}
+		}).start();
+	}
+	
+	private void notifyPreloaderCountDownPlugin() {
+		int numberOfPlugins = (int) SharedMemory.getDataMap().get(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS);
+		notifyPreloader(new Preloader.ProgressNotification(0.5 + (((numberOfPlugins - pluginCountDownLatch.getCount() + 1) / ((double)numberOfPlugins)) * 0.5)));
+		pluginCountDownLatch.countDown();
+	}
+	
 	@Override
 	public void onEvent(String event) {
 		switch (event) {
+		case BizConst.EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS:
+			notifyPreloaderPreparingPlugins();
+			break;
+		case BizConst.EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN:
+			notifyPreloaderCountDownPlugin();
+			break;
 		case BizConst.EVENT_REGISTER_TRAY_ICON:
 			registerTrayIcon();
 			break;

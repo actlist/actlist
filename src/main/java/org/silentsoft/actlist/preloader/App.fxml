@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+		<AnchorPane minHeight="340.0" minWidth="380.0" prefHeight="340.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+		   <children>
+            <VBox alignment="CENTER" spacing="40.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label prefHeight="128.0" prefWidth="128.0" styleClass="logo">
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </Label>
+                  <VBox maxWidth="300.0" minWidth="300.0" prefWidth="300.0" spacing="10.0">
+                     <children>
+                        <Label fx:id="statusLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Initializing" textFill="#d7d7d7">
+                           <font>
+                              <Font name="Verdana" size="13.0" />
+                           </font>
+                        </Label>
+                        <ProgressBar fx:id="statusProgressBar" maxWidth="1.7976931348623157E308" progress="0.1" />
+                     </children>
+                  </VBox>
+                  <Label text="silentsoft.org" textFill="#888888" />
+               </children>
+            </VBox>
+		   </children>
+		</AnchorPane>
+   </children>
+   <effect>
+      <DropShadow />
+   </effect>
+</AnchorPane>

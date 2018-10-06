@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
+<AnchorPane style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.application.AppController">
    <children>
 		<AnchorPane fx:id="root" minHeight="90.0" minWidth="380.0" prefHeight="340.0" prefWidth="380.0" stylesheets="@App.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 		   <children>
@@ -63,16 +63,6 @@
 				            <VBox fx:id="componentBox" />
 				         </content>
 				      </ScrollPane>
-                  <VBox fx:id="splashBox" alignment="CENTER" spacing="30.0" styleClass="splash-box" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Label prefHeight="128.0" prefWidth="128.0" styleClass="splash-image">
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                        </Label>
-                        <Label fx:id="splashDescription" text="silentsoft.org" textFill="#888888" />
-                     </children>
-                  </VBox>
 		         </children>
 		      </AnchorPane>
 		   </children>

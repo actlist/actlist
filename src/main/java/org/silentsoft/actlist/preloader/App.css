@@ -1,0 +1,24 @@
+.content {
+	-fx-border-width: 1 0 0 0;
+	-fx-border-color: rgb(45, 45, 45);
+	-fx-background-color: rgb(35, 35, 35);
+}
+
+.logo {
+	-fx-background-size: 128, 128;
+	-fx-background-repeat: no-repeat;
+	-fx-background-image: url("/images/icon/actlist_128.png");
+}
+
+.progress-bar {
+	-fx-background-color: transparent;
+}
+.progress-bar > .bar {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0.3em;
+}
+.progress-bar > .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+}
