@@ -81,12 +81,6 @@ public class AppController implements EventListener {
 	private AnchorPane body;
 	
 	@FXML
-	private VBox splashBox;
-	
-	@FXML
-	private Label splashDescription;
-	
-	@FXML
 	private ScrollPane scrollPane;
 	
 	@FXML
@@ -136,8 +130,6 @@ public class AppController implements EventListener {
 		
 		SharedMemory.getDataMap().put(BizConst.KEY_PLUGIN_MAP, pluginMap);
 		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
-		
-		hideSplashImage();
 		
 		loadPlugins();
 		
@@ -427,17 +419,6 @@ public class AppController implements EventListener {
     	updatePopOver.hide();
     }
     
-    private void hideSplashImage() {
-    	new Thread(() -> {
-			try {
-				Thread.sleep(1500);
-			} catch (Exception e) {
-				
-			}
-			splashBox.setVisible(false);
-		}).start();
-    }
-    
 	private void loadPlugins() {
 		componentBox.getChildren().clear();
 		try {
@@ -477,6 +458,10 @@ public class AppController implements EventListener {
 			priorityOfPlugins.addAll(plugins);
 			savePriorityOfPlugins();
 			
+			// preloader things
+			SharedMemory.getDataMap().put(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS, plugins.size());
+			EventHandler.callEvent(getClass(), BizConst.EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS);
+			
 			// load plugins
 			for (String plugin : plugins) {
 				try {
@@ -486,11 +471,19 @@ public class AppController implements EventListener {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					EventHandler.callEvent(getClass(), BizConst.EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN);
 				}
 			}
 		} catch (Exception e) {
 			
 		} finally {
+			// I have to show the main stage even if weird things happens
+			if (SharedMemory.getDataMap().get(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS) == null) {
+				SharedMemory.getDataMap().put(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS, 0);
+				EventHandler.callEvent(getClass(), BizConst.EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS);
+			}
+			
 			if (componentBox.getChildren().isEmpty()) {
 				Label label = new Label();
 				label.setText("No plugins available.");

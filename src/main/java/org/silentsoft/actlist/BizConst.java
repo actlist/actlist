@@ -10,6 +10,9 @@ public class BizConst {
 	
 	public static final String KEY_IS_AVAILABLE_NEW_ACTLIST = "KEY_IS_AVAILABLE_NEW_ACTLIST";
 	
+	public static final String KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS = "KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS";
+	public static final String EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS = "EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS";
+	public static final String EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN = "EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN";
 	
 	/**
 	 * Actlist application will register the tray icon when this event is called.
