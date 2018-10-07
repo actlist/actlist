@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -27,6 +29,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.comparator.VersionComparator;
 import org.silentsoft.actlist.plugin.ActlistPlugin.Function;
+import org.silentsoft.actlist.plugin.ActlistPlugin.SupportedPlatform;
 import org.silentsoft.actlist.plugin.about.PluginAbout;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
@@ -36,6 +39,7 @@ import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.ObjectUtil;
+import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
@@ -141,6 +145,53 @@ public class PluginComponent implements EventListener {
 				
 				plugin = pluginClass.newInstance();
 				
+				popOver = new PopOver(new VBox());
+				((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
+				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+				
+				SupportedPlatform currentPlatform = null;
+				{
+					if (SystemUtil.isWindows()) {
+						currentPlatform = SupportedPlatform.WINDOWS;
+					} else if (SystemUtil.isMac()) {
+						currentPlatform = SupportedPlatform.MACOSX;
+					} /* else if (SystemUtil.isLinux()) {
+						currentPlatform = SupportedPlatform.LINUX;
+					} else {
+						currentPlatform = SupportedPlatform.UNKNOWN;
+					} */
+				}
+				plugin.currentPlatformObject().set(currentPlatform);
+				
+				SupportedPlatform[] supportedPlatforms = plugin.getSupportedPlatforms();
+				if (supportedPlatforms != null) {
+					if (supportedPlatforms.length > 0 && Arrays.asList(supportedPlatforms).contains(currentPlatform) == false) {
+						shouldTraceException.set(false);
+						
+						List<String> listOfSupportedPlatform = Arrays.stream(supportedPlatforms).map(Enum::name).collect(Collectors.toList());
+						String errorMessage = String.join("", "This plugin only supports ", String.join(", ", listOfSupportedPlatform));
+						Runnable errorDialog = () -> {
+							Alert alert = new Alert(AlertType.ERROR);
+							alert.setTitle("Error");
+							alert.setHeaderText("Unsupported platform");
+							alert.setContentText(errorMessage);
+							alert.showAndWait();
+						};
+						lblPluginName.setOnMouseClicked(mouseEvent -> {
+							if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+								errorDialog.run();
+							}
+						});
+						warningLabel.setOnMouseClicked(mouseEvent -> {
+							errorDialog.run();
+						});
+						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
+						
+						throw new Exception(errorMessage);
+					}
+				}
+				
 				String minimumCompatibleVersion = plugin.getMinimumCompatibleVersion();
 				if (minimumCompatibleVersion != null) {
 					if (VersionComparator.getInstance().compare(BuildVersion.VERSION, minimumCompatibleVersion) < 0) {
@@ -162,7 +213,9 @@ public class PluginComponent implements EventListener {
 							}
 						};
 						lblPluginName.setOnMouseClicked(mouseEvent -> {
-							confirmDialog.run();
+							if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+								confirmDialog.run();
+							}
 						});
 						warningLabel.setOnMouseClicked(mouseEvent -> {
 							confirmDialog.run();
@@ -213,9 +266,9 @@ public class PluginComponent implements EventListener {
 							togActivator.setSelected(activated);
 						}
 						
-						popOver = new PopOver(new VBox());
-						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
-						popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+//						popOver = new PopOver(new VBox());
+//						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
+//						popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
 						
 						plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
 							if (oldValue == newValue) {
@@ -573,7 +626,9 @@ public class PluginComponent implements EventListener {
 					
 					lblPluginName.setTooltip(new Tooltip("Click to show the exception log."));
 					lblPluginName.setOnMouseClicked(mouseEvent -> {
-						exceptionDialog.run();
+						if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+							exceptionDialog.run();
+						}
 					});
 					
 					warningLabel.setOnMouseClicked(mouseEvent -> {
