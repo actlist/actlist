@@ -140,7 +140,6 @@ public class PluginComponent implements EventListener {
 		new Thread(() -> {
 			AtomicBoolean shouldTraceException = new AtomicBoolean(true);
 			try {
-				makeConsumable();
 				makeDraggable();
 				
 				plugin = pluginClass.newInstance();
@@ -652,13 +651,6 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
-	private void makeConsumable() {
-		// This code prevents mouse events from going to the bottom scroll pane component.
-		root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-			mouseEvent.consume();
-		});
-	}
-	
 	private void makeDraggable() {
 		hand.setOnDragDetected(mouseEvent -> {
 			createSnapshot(mouseEvent);
@@ -666,30 +658,32 @@ public class PluginComponent implements EventListener {
 			root.startFullDrag();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
-			root.setStyle("-fx-background-color: #f2f2f2;");
-			
-			mouseDragEvent.consume();
+			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
+				root.setStyle("-fx-background-color: #f2f2f2;");
+			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
-			deleteSnapshot();
-			
-			// move index of dragging node to index of drop target.
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			int indexOfDraggingNode = componentBox.getChildren().indexOf(mouseDragEvent.getGestureSource());
-			int indexOfDropTarget = componentBox.getChildren().indexOf(root);
-			if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
-				final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
-				componentBox.getChildren().add(indexOfDropTarget, node);
+			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
+				deleteSnapshot();
+				
+				// move index of dragging node to index of drop target.
+				int indexOfDraggingNode = componentBox.getChildren().indexOf(mouseDragEvent.getGestureSource());
+				int indexOfDropTarget = componentBox.getChildren().indexOf(root);
+				if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
+					final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
+					componentBox.getChildren().add(indexOfDropTarget, node);
+				}
+				
+				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 			}
-			
-			EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-			
-			mouseDragEvent.consume();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
-			root.setStyle("-fx-background-color: #ffffff;");
-			
-			mouseDragEvent.consume();
+			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
+				root.setStyle("-fx-background-color: #ffffff;");
+			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {
 			// in most cases, the 'root' will consume the mouse drag event. so will not being called this event.
