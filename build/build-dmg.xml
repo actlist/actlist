@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<property file="build.properties"/>
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -298,7 +299,7 @@
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
 			preloaderClass="org.silentsoft.actlist.preloader.App"
-			version="1.2.10"
+			version="${version}"
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
@@ -314,7 +315,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Silentsoft"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
-				<attribute name="Implementation-Version" value="1.2.10"/>
+				<attribute name="Implementation-Version" value="${version}"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
