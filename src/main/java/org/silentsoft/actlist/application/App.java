@@ -264,7 +264,7 @@ public class App extends Application implements EventListener {
 		
 		TrayIconHandler.addSeparator();
 		
-		TrayIconHandler.addItem("Open plugins directory", actionEvent -> {
+		TrayIconHandler.addItem("Open Plugins Directory", actionEvent -> {
 			try {
 				File pluginsDirectory = Paths.get(System.getProperty("user.dir"), "plugins").toFile();
 				if (pluginsDirectory.exists() == false) {
@@ -278,9 +278,9 @@ public class App extends Application implements EventListener {
 		
 		TrayIconHandler.addSeparator();
 		
-		TrayIconHandler.addItem("Browse silentsoft.org", actionEvent -> {
+		TrayIconHandler.addItem("Browse Homepage", actionEvent -> {
 			try {
-				Desktop.getDesktop().browse(new URI("http://silentsoft.org"));
+				Desktop.getDesktop().browse(new URI("http://actlist.silentsoft.org"));
 			} catch (Exception e) {
 				/**
 				 * if open the box this time, then user may think 'WTF? I have a browser!'
