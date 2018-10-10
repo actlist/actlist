@@ -38,7 +38,7 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 		try {
 			String proxyMode = ConfigUtil.getProxyMode();
 			if (ProxyMode.AUTOMATIC.equals(proxyMode)) {
-				List<Proxy> proxies = ProxySearch.getDefaultProxySearch().getProxySelector().select(URI.create("http://silentsoft.org"));
+				List<Proxy> proxies = ProxySearch.getDefaultProxySearch().getProxySelector().select(URI.create("http://actlist.silentsoft.org"));
 				if (proxies != null && proxies.isEmpty() == false) {
 					for (Proxy proxy : proxies) {
 						SocketAddress socketAddress = proxy.address();
