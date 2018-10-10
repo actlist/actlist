@@ -361,7 +361,7 @@ public class AppController implements EventListener {
         			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
         			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
         			
-        			Map<String, Object> result = RESTfulAPI.doGet("http://silentsoft.org/actlist/update/check", param, Map.class);
+        			Map<String, Object> result = RESTfulAPI.doGet("http://actlist.silentsoft.org/api/update/check", param, Map.class);
         			if (result == null) {
         				return;
         			}
