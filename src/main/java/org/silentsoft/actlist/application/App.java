@@ -282,10 +282,14 @@ public class App extends Application implements EventListener {
 			try {
 				Desktop.getDesktop().browse(new URI("http://actlist.silentsoft.org"));
 			} catch (Exception e) {
-				/**
-				 * if open the box this time, then user may think 'WTF? I have a browser!'
-				 * don't open the error message box. sometimes need to silent.
-				 */
+				
+			}
+		});
+		TrayIconHandler.addItem("Feedback", actionEvent -> {
+			try {
+				Desktop.getDesktop().browse(new URI("https://github.com/silentsoft/actlist/issues"));
+			} catch (Exception e) {
+				
 			}
 		});
 		TrayIconHandler.addItem("About", actionEvent -> {
