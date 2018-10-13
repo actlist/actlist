@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property file="build.properties"/>
+	<target name="generate-iss-script">
+		<delete file="package/windows/Actlist.iss"/>
+		<copy file="build.iss" tofile="package/windows/Actlist.iss">
+			<filterchain>
+				<replacetokens>
+					<token key="AppVersion" value="${version}"/>
+					<!-- <token key="AppArchitecture" value="${os.arch}"/> -->
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -275,7 +286,7 @@
 	
 	
 	</target>
-	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
+	<target name="do-deploy" depends="setup-staging-area, do-compile, generate-iss-script, init-fx-tasks">
 		<delete file="dist"/>
 		<delete file="deploy" />
 	
