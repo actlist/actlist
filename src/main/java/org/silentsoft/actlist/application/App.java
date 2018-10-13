@@ -133,7 +133,7 @@ public class App extends Application implements EventListener {
 				notifyPreloader(new Preloader.ProgressNotification(0.4));
 				Platform.runLater(() -> {
 					try {
-						initializeWithFxThread();;
+						initializeWithFxThread();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
