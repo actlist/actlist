@@ -140,6 +140,7 @@ public class PluginComponent implements EventListener {
 		new Thread(() -> {
 			AtomicBoolean shouldTraceException = new AtomicBoolean(true);
 			try {
+				makeConsumable();
 				makeDraggable();
 				
 				plugin = pluginClass.newInstance();
@@ -649,6 +650,13 @@ public class PluginComponent implements EventListener {
 				EventHandler.removeListener(this);
 			});
 		}).start();
+	}
+	
+	private void makeConsumable() {
+		// This code prevents mouse events from going to the bottom scroll pane component.
+		root.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+			mouseEvent.consume();
+		});
 	}
 	
 	private void makeDraggable() {
