@@ -1,3 +1,17 @@
+* 1.3.0
+    * new features
+      * supports platform restriction function in plugin
+      * supports feedback tray menu
+    * improvements
+      * interaction on engine initialization
+      * installation path can be selected on Windows exe installer
+      * desktop icon can be created on Windows exe installer
+      * caller plugin name will be shown in the tray notification
+    * fixed bugs
+      * RESTfulAPI initialization
+      * unicode installation path
+      * mouse event consumming issue
+      * wrong UI interactions on all platforms
 * 1.2.10
     * new features
       * supports one-time plugin which deactivates immediately after activated
