@@ -328,7 +328,7 @@ public class AppController implements EventListener {
 		browseButton.setTextFill(Paint.valueOf("#1c81f9"));
 		browseButton.setOnMouseClicked(mouseEvent -> {
 			try {
-				Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+				Desktop.getDesktop().browse(new URI("http://actlist.silentsoft.org/archives/"));
 			} catch (Exception e) {
 				
 			}
