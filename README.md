@@ -19,7 +19,7 @@ Just do focus only on coding to create what you want. and you can share with oth
 
 ![](http://actlist.silentsoft.org/img/preview.png?token=02b15478)
 
-## Installation
+### Installation
 
 Windows:
 > [download exe or zip file](http://actlist.silentsoft.org/archives/) and launch.
@@ -27,7 +27,10 @@ Windows:
 Mac OS X:
 > [download dmg file](http://actlist.silentsoft.org/archives/) and launch.
 
-## Development setup
+### Language Requirements
+* Java 1.8 (with JavaFx)
+
+### Development setup
 
 To create an Actlist plugin, you need to do some of the following:
 * Create a new Java project and configure to Maven project.
@@ -106,10 +109,10 @@ public class Plugin extends ActlistPlugin {
 
 For more information on ActlistPlugin development, see [here](http://actlist.silentsoft.org/docs/quick-start/)
 
-## Change log
+### Change log
 
 Please refer to [CHANGELOG](https://github.com/silentsoft/actlist/blob/master/CHANGELOG.md).
 
-## License
+### License
 
 Please refer to [LICENSE](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt) and [NOTICE](https://github.com/silentsoft/actlist/blob/master/NOTICE.md).
