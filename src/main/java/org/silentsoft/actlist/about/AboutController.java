@@ -39,12 +39,12 @@ public class AboutController extends AbstractViewerController {
 	
 	@FXML
 	private void browseHomepage() {
-		browse(homepageLink, "http://silentsoft.org");
+		browse(homepageLink, "http://actlist.silentsoft.org");
 	}
 	
 	@FXML
 	private void browseArchives() {
-		browse(archivesLink, "http://silentsoft.org/actlist/archives/");
+		browse(archivesLink, "http://actlist.silentsoft.org/archives/");
 	}
 	
 	@FXML
