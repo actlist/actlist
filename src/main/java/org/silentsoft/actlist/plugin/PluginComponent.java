@@ -206,7 +206,7 @@ public class PluginComponent implements EventListener {
 							Optional<ButtonType> result = alert.showAndWait();
 							if (result.isPresent() && result.get() == ButtonType.OK) {
 								try {
-	        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+	        						Desktop.getDesktop().browse(new URI("http://actlist.silentsoft.org/archives/"));
 	        					} catch (Exception e) {
 	        						
 	        					}
@@ -362,7 +362,7 @@ public class PluginComponent implements EventListener {
 						plugin.shouldBrowseActlistArchives().addListener((observable, oldValue, newValue) -> {
 							if (newValue) {
 								try {
-	        						Desktop.getDesktop().browse(new URI("http://silentsoft.org/actlist/archives/"));
+	        						Desktop.getDesktop().browse(new URI("http://actlist.silentsoft.org/archives/"));
 	        					} catch (Exception e) {
 	        						
 	        					}
