@@ -13,7 +13,6 @@ public class ConfigUtil {
 		return (ActlistConfig) SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG);
 	}
 	
-	/*
 	public static double getRootWidth() {
 		Object rootWidth = getActlistConfig().get("rootWidth");
 		if (rootWidth instanceof Integer) {
@@ -37,7 +36,6 @@ public class ConfigUtil {
 	public static void setRootHeight(double height) throws Exception {
 		getActlistConfig().put("rootHeight", height);
 	}
-	*/
 	
 	public static double getStageWidth() {
 		Object stageWidth = getActlistConfig().get("stageWidth");

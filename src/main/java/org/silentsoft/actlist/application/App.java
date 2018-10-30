@@ -171,7 +171,7 @@ public class App extends Application implements EventListener {
 		appController.initialize();
 		
 		stage.setTitle(BizConst.APPLICATION_NAME);
-		stage.initStyle(StageStyle.UNDECORATED);
+		stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setScene(createScene());
 		stage.setWidth(ConfigUtil.getStageWidth());
 		stage.setHeight(ConfigUtil.getStageHeight());
@@ -190,14 +190,14 @@ public class App extends Application implements EventListener {
 		
 		if (SystemUtil.isMac()) {
 			BorderPane root = new BorderPane();
-			root.setStyle("-fx-background-color: white;");
+			root.setStyle("-fx-background-color: transparent;");
 			root.setTop(createMenuBar());
 			root.setCenter(app);
 			
-			scene = new Scene(root/*, Color.TRANSPARENT*/);
+			scene = new Scene(root, Color.TRANSPARENT);
 		}
 		
-		return (scene == null) ? (new Scene(app/*, Color.TRANSPARENT*/)) : scene;
+		return (scene == null) ? (new Scene(app, Color.TRANSPARENT)) : scene;
 	}
 	
 	private MenuBar createMenuBar() {
