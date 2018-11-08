@@ -18,6 +18,10 @@
    -fx-background-color: transparent;
 }
 
+.root {
+	-fx-background-color: null; /* quite important */
+}
+
 .app-icon {
 	-fx-background-size: 24, 24;
 	-fx-background-repeat: no-repeat;
