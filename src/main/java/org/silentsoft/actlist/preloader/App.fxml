@@ -35,6 +35,6 @@
 		</AnchorPane>
    </children>
    <effect>
-      <DropShadow />
+      <DropShadow blurType="GAUSSIAN" />
    </effect>
 </AnchorPane>
