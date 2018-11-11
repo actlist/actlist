@@ -4,40 +4,55 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TextArea;
-import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.stage.Stage;
-
+import org.silentsoft.actlist.BizConst;
+import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.util.ConfigUtil.Theme;
+import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.event.EventListener;
 import org.silentsoft.ui.model.Delta;
 import org.silentsoft.ui.model.MaximizeProperty;
 import org.silentsoft.ui.util.StageDragResizer;
 
-public class Console {
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.SVGPath;
+import javafx.stage.Stage;
+
+public class Console implements EventListener {
 	
 	@FXML
 	private AnchorPane root;
 	
 	@FXML
-	private AnchorPane head;
+	private BorderPane head;
 	
 	@FXML
 	private AnchorPane body;
 	
 	@FXML
-	private Button appMinimizeBtn;
+	private HBox leftBox;
 	
 	@FXML
-	private Button appMaximizeBtn;
+	private Label leftMinimizeButton, leftMaximizeButton, leftCloseButton;
 	
 	@FXML
-	private Button appCloseBtn;
+	private Label icon, title;
+	
+	@FXML
+	private HBox rightBox;
+	
+	@FXML
+	private Label rightMinimizeButton, rightMaximizeButton, rightCloseButton;
 	
 	@FXML
 	private TextArea console;
@@ -47,6 +62,8 @@ public class Console {
 	private MaximizeProperty maximizeProperty;
 
 	public void initialize(Stage stage) {
+		EventHandler.addListener(this);
+		
 		console.setContextMenu(new ContextMenu()); // disable context menu.
 		
 		printStream = new PrintStream(new OutputStream() {
@@ -62,10 +79,16 @@ public class Console {
 		
 		makeDraggable(stage, head);
 		makeNormalizable(stage, head);
-		
-		makeMinimizable(stage, appMinimizeBtn);
-		makeMaximizable(stage, appMaximizeBtn);
-		makeClosable(stage, appCloseBtn);
+		{
+			makeMinimizable(stage, leftMinimizeButton);
+			makeMaximizable(stage, leftMaximizeButton);
+			makeClosable(stage, leftCloseButton);
+			
+			makeMinimizable(stage, rightMinimizeButton);
+			makeMaximizable(stage, rightMaximizeButton);
+			makeClosable(stage, rightCloseButton);
+		}
+		applyTheme();
 		
 		makeResizable(stage, root);
 	}
@@ -206,9 +229,64 @@ public class Console {
 			AnchorPane.setBottomAnchor(body, 2.0);
 		}
     }
-	
+    
+    private void applyTheme() {
+    	String theme = ConfigUtil.getTheme();
+    	switch (theme) {
+    	case Theme.WIN:
+    		if (head.getLeft() != null) {
+    			head.setLeft(null);
+    		}
+    		
+    		icon.setVisible(true);
+    		title.setVisible(true);
+    		
+    		if (head.getRight() == null) {
+    			head.setRight(rightBox);
+    		}
+    		
+    		break;
+    	case Theme.MAC:
+    		if (head.getRight() != null) {
+    			head.setRight(null);
+    		}
+    		
+    		icon.setVisible(false);
+    		title.setVisible(false);
+    		
+    		if (head.getLeft() == null) {
+    			head.setLeft(leftBox);
+    		}
+    		
+    		break;
+    	}
+    }
+    
+    @FXML
+    private void showControls() {
+    	((SVGPath) leftCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) leftMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    }
+    
+    @FXML
+    private void hideControls() {
+    	((SVGPath) leftCloseButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    	((SVGPath) leftMinimizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    }
+    
 	public PrintStream getPrintStream() {
 		return printStream;
+	}
+
+	@Override
+	public void onEvent(String event) {
+		switch (event) {
+		case BizConst.EVENT_APPLY_THEME:
+			applyTheme();
+			break;
+		}
 	}
 	
 }

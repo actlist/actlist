@@ -14,30 +14,57 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="240.0" prefWidth="370.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.configuration.ConfigurationController">
+<AnchorPane prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
    <children>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab text="General">
                <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+                  <VBox spacing="20.0">
                      <children>
-                        <JFXSlider fx:id="stageOpacity" majorTickUnit="10.0" max="100.0" min="0.0" prefHeight="14.0" prefWidth="62.0" value="100.0">
+                        <HBox alignment="CENTER_RIGHT">
+                           <children>
+                              <JFXSlider fx:id="stageOpacity" majorTickUnit="10.0" max="100.0" min="10.0" prefHeight="14.0" prefWidth="80.0" value="100.0" />
+                           </children>
                            <VBox.margin>
-                              <Insets left="270.0" />
+                              <Insets top="3.0" />
                            </VBox.margin>
-                        </JFXSlider>
+                        </HBox>
+						<!-- <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" /> -->
+                        <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
+                        <VBox prefHeight="40.0" spacing="5.0">
+                           <VBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </VBox.margin>
+                           <children>
+                              <Label text="Theme" />
+                              <HBox>
+                                 <children>
+                                    <JFXRadioButton fx:id="winTheme" onAction="#theme" text="Win">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="theme" />
+                                       </toggleGroup>
+                                    </JFXRadioButton>
+                                    <JFXRadioButton fx:id="macTheme" onAction="#theme" selected="true" text="Mac" toggleGroup="$theme" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
                         <VBox prefHeight="40.0">
                            <children>
                               <Label text="Show/Hide Actlist (Global HotKey)" />
-                              <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A" />
+                              <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin></JFXTextField>
                            </children>
                            <VBox.margin>
                               <Insets left="10.0" />
                            </VBox.margin>
                         </VBox>
-						<!-- <JFXCheckBox fx:id="animationEffect" onAction="#animationEffect" selected="true" text="Animation effect" /> -->
-                        <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
                      </children>
                      <padding>
                         <Insets bottom="10.0" left="15.0" right="10.0" top="10.0" />

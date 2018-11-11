@@ -26,7 +26,10 @@ import org.silentsoft.actlist.plugin.PluginManager;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.util.ConfigUtil.Theme;
 import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.actlist.view.about.About;
+import org.silentsoft.actlist.view.configuration.Configuration;
 import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.SystemUtil;
@@ -48,7 +51,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -57,10 +59,12 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
@@ -75,28 +79,34 @@ public class AppController implements EventListener {
 	private AnchorPane root;
 	
 	@FXML
-	private AnchorPane head;
+	private BorderPane head;
 	
 	@FXML
-	private AnchorPane body;
+	private Label headMinimizeButton, headMaximizeButton, headCloseButton;
 	
 	@FXML
-	private ScrollPane scrollPane;
+	private BorderPane body;
 	
 	@FXML
-	private HBox controlBox;
+	private VBox sideArea;
+	
+	@FXML
+	private HBox sideControls;
+	
+	@FXML
+	private Label sideMinimizeButton, sideMaximizeButton, sideCloseButton;
+	
+	@FXML
+	private VBox sideNav;
 	
 	@FXML
 	private Label appUpdateAlarmLabel;
 	
 	@FXML
-	private Button appMinimizeButton;
+	private ScrollPane scrollPane;
 	
 	@FXML
-	private Button appMaximizeButton;
-	
-	@FXML
-	private Button appCloseButton;
+	private BorderPane contentPane;
 	
 	@FXML
 	private VBox componentBox;
@@ -116,12 +126,23 @@ public class AppController implements EventListener {
 		maximizeProperty = new MaximizeProperty(App.getStage());
 		pluginMap = new HashMap<String, URLClassLoader>();
 		
-		makeDraggable(App.getStage(), head);
-		makeNormalizable(App.getStage(), head);
-		
-		makeMinimizable(App.getStage(), appMinimizeButton);
-		makeMaximizable(App.getStage(), appMaximizeButton);
-		makeClosable(App.getStage(), appCloseButton);
+		{
+			makeDraggable(App.getStage(), head);
+			makeNormalizable(App.getStage(), head);
+			
+			makeMinimizable(App.getStage(), headMinimizeButton);
+			makeMaximizable(App.getStage(), headMaximizeButton);
+			makeClosable(App.getStage(), headCloseButton);
+		}
+		{
+			makeDraggable(App.getStage(), sideNav);
+			makeNormalizable(App.getStage(), sideNav);
+			
+			makeMinimizable(App.getStage(), sideMinimizeButton);
+			makeMaximizable(App.getStage(), sideMaximizeButton);
+			makeClosable(App.getStage(), sideCloseButton);
+		}
+		applyTheme();
 		
 		makeResizable(App.getStage(), root);
 		
@@ -150,7 +171,7 @@ public class AppController implements EventListener {
         		dragDelta.setX(stage.getX() - mouseEvent.getScreenX());
                 dragDelta.setY(stage.getY() - mouseEvent.getScreenY());
                 
-                byNode.setOpacity(0.8);
+                byNode.setOpacity(0.98);
         	}
         });
         
@@ -268,13 +289,9 @@ public class AppController implements EventListener {
 			AnchorPane.setTopAnchor(root, 0.0);
 			AnchorPane.setBottomAnchor(root, 0.0);
 			
-			AnchorPane.setLeftAnchor(head, 0.0);
-			AnchorPane.setRightAnchor(head, 0.0);
-			AnchorPane.setTopAnchor(head, 0.0);
-			
 			AnchorPane.setLeftAnchor(body, 0.0);
 			AnchorPane.setRightAnchor(body, 0.0);
-			AnchorPane.setTopAnchor(body, 25.0);
+			AnchorPane.setTopAnchor(body, 0.0);
 			AnchorPane.setBottomAnchor(body, 0.0);
 		} else {
 			// Showing shadow when normalized.
@@ -284,14 +301,52 @@ public class AppController implements EventListener {
 			AnchorPane.setBottomAnchor(root, 5.0);
 			
 			// Make offset for change the size of application via mouse.
-			AnchorPane.setLeftAnchor(head, 2.0);
-			AnchorPane.setRightAnchor(head, 2.0);
-			AnchorPane.setTopAnchor(head, 2.0);
 			AnchorPane.setLeftAnchor(body, 2.0);
 			AnchorPane.setRightAnchor(body, 2.0);
-			AnchorPane.setTopAnchor(body, 27.0);
+			AnchorPane.setTopAnchor(body, 2.0);
 			AnchorPane.setBottomAnchor(body, 2.0);
 		}
+    }
+    
+    private void applyTheme() {
+    	String theme = ConfigUtil.getTheme();
+    	switch (theme) {
+    	case Theme.WIN:
+    		if (body.getTop() == null) {
+    			body.setTop(head);
+    		}
+    		
+    		if (sideArea.getChildren().indexOf(sideControls) != -1) {
+    			sideArea.getChildren().remove(sideControls);
+    		}
+    		
+    		break;
+    	case Theme.MAC:
+    		if (body.getTop() != null) {
+    			body.setTop(null);
+    		}
+    		
+    		if (sideArea.getChildren().indexOf(sideControls) == -1) {
+    			sideArea.getChildren().add(0, sideControls);
+    		}
+    		
+    		break;
+    	}
+    }
+    
+    @FXML
+    private void showPluginsView() {
+    	contentPane.setCenter(componentBox);
+    }
+    
+    @FXML
+    private void showAboutView() {
+    	contentPane.setCenter(new About().getViewer());
+    }
+    
+    @FXML
+    private void showConfigurationView() {
+    	contentPane.setCenter(new Configuration().getViewer());
     }
     
     private void initUpdatePopOver() {
@@ -347,7 +402,7 @@ public class AppController implements EventListener {
 		vBox.setPrefHeight(103.0);
 		
 		updatePopOver.setContentNode(vBox);
-		updatePopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
+		updatePopOver.setArrowLocation(ArrowLocation.BOTTOM_LEFT);
     }
     
     private void checkUpdate() {
@@ -409,6 +464,20 @@ public class AppController implements EventListener {
     }
     
     @FXML
+    private void showControls() {
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    }
+    
+    @FXML
+    private void hideControls() {
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
+    }
+    
+    @FXML
     private void showUpdatePopOver() {
     	if (updatePopOver.isShowing() == false) {
 			updatePopOver.show(appUpdateAlarmLabel);
@@ -417,6 +486,7 @@ public class AppController implements EventListener {
     
     private void hideUpdatePopOver() {
     	updatePopOver.hide();
+    	appUpdateAlarmLabel.setVisible(false);
     }
     
 	private void loadPlugins() {
@@ -685,13 +755,20 @@ public class AppController implements EventListener {
 	@Override
 	public void onEvent(String event) {
 		switch (event) {
+		case BizConst.EVENT_APPLY_THEME:
+			applyTheme();
+			break;
+		case BizConst.EVENT_SHOW_ABOUT_VIEW:
+			showAboutView();
+			break;
+		case BizConst.EVENT_SHOW_CONFIGURATION_VIEW:
+			showConfigurationView();
+			break;
 		case BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS:
 			saveDeactivatedPlugins();
-			
 			break;
 		case BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS:
 			savePriorityOfPlugins();
-			
 			break;
 		}
 	}

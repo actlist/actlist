@@ -132,9 +132,37 @@ public class ConfigUtil {
 		
 		return hotKeyText.concat(String.valueOf((char) getShowHideActlistHotKeyCode()));
 	}
+
+	public class Theme {
+		// Do not make as enum type. It must be a string for simple json serialize/deserialize.
+		public static final String MAC = "MAC";
+		public static final String WIN = "WIN";
+	}
 	
-	// Do not make as enum type. It must be a string for simple json serialize/deserialize.
+	public static String getTheme() {
+		Object theme = getActlistConfig().get("theme");
+		if (theme == null) { // platform dependent property is not saved on initial config.jar
+			try {
+				if (SystemUtil.isMac()) {
+					theme = Theme.MAC;
+				} else {
+					theme = Theme.WIN;
+				}
+				setTheme((String) theme);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (String) theme;
+	}
+	
+	public static void setTheme(String theme) throws Exception {
+		getActlistConfig().put("theme", theme);
+	}
+	
 	public class ProxyMode {
+		// Do not make as enum type. It must be a string for simple json serialize/deserialize.
 		public static final String NONE = "NONE";
 		public static final String AUTOMATIC = "AUTOMATIC";
 		public static final String MANUAL = "MANUAL";
