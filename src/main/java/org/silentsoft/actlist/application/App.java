@@ -18,8 +18,6 @@ import javax.swing.KeyStroke;
 
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
-import org.silentsoft.actlist.about.About;
-import org.silentsoft.actlist.configuration.Configuration;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
@@ -293,9 +291,7 @@ public class App extends Application implements EventListener {
 			}
 		});
 		TrayIconHandler.addItem("About", actionEvent -> {
-			Platform.runLater(() -> {
-				showAbout();
-			});
+			showAbout();
 		});
 		
 		TrayIconHandler.addSeparator();
@@ -453,6 +449,7 @@ public class App extends Application implements EventListener {
 		return false;
 	}
 	
+	/*
 	private Stage aboutStage;
 	private void showAbout() {
 		Platform.runLater(() -> {
@@ -472,6 +469,14 @@ public class App extends Application implements EventListener {
 			aboutStage.show();
 		});
 	}
+	*/
+	
+	private void showAbout() {
+		Platform.runLater(() -> {
+			bringToFront();
+			EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_ABOUT_VIEW, false);
+		});
+	}
 	
 	private void showConsole() {
 		Platform.runLater(() -> {
@@ -479,6 +484,7 @@ public class App extends Application implements EventListener {
 		});
 	}
 	
+	/*
 	private Stage configurationStage;
 	private void showConfiguration() {
 		Platform.runLater(() -> {
@@ -497,6 +503,14 @@ public class App extends Application implements EventListener {
 				configurationStage.getIcons().addAll(getIcons());
 			}
 			configurationStage.show();
+		});
+	}
+	*/
+	
+	private void showConfiguration() {
+		Platform.runLater(() -> {
+			bringToFront();
+			EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_CONFIGURATION_VIEW, false);
 		});
 	}
 	

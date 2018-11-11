@@ -1,4 +1,4 @@
-package org.silentsoft.actlist.about;
+package org.silentsoft.actlist.view.about;
 
 import java.awt.Desktop;
 import java.net.URI;

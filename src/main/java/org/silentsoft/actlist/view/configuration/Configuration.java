@@ -1,4 +1,4 @@
-package org.silentsoft.actlist.configuration;
+package org.silentsoft.actlist.view.configuration;
 
 import org.silentsoft.ui.viewer.AbstractViewer;
 

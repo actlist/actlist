@@ -1,4 +1,4 @@
-package org.silentsoft.actlist.configuration;
+package org.silentsoft.actlist.view.configuration;
 
 import java.awt.event.InputEvent;
 import java.net.URI;
@@ -11,6 +11,7 @@ import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
+import org.silentsoft.actlist.util.ConfigUtil.Theme;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.ui.viewer.AbstractViewerController;
@@ -37,34 +38,28 @@ public class ConfigurationController extends AbstractViewerController {
 	private JFXSlider stageOpacity;
 	
 	@FXML
+	private JFXCheckBox alwaysOnTop;
+	
+	@FXML
+	private JFXRadioButton winTheme, macTheme;
+	
+	@FXML
 	private JFXTextField showHideActlistHotKey;
 	
 	/* @FXML private JFXCheckBox animationEffect;*/
-	
-	@FXML
-	private JFXCheckBox alwaysOnTop;
 	
 	private AtomicBoolean hotKeyMakingMode;
 	
 	/* Proxy */
 	
 	@FXML
-	private JFXRadioButton noneProxy;
-	
-	@FXML
-	private JFXRadioButton automaticProxy;
-	
-	@FXML
-	private JFXRadioButton manualProxy;
+	private JFXRadioButton noneProxy, automaticProxy, manualProxy;
 	
 	@FXML
 	private JFXComboBox<String> proxyScheme;
 	
 	@FXML
-	private JFXTextField proxyAddress;
-	
-	@FXML
-	private JFXTextField proxyPort;
+	private JFXTextField proxyAddress, proxyPort;
 	
 	@FXML
 	private JFXCheckBox manualProxyValidator;
@@ -84,6 +79,16 @@ public class ConfigurationController extends AbstractViewerController {
 			alwaysOnTop.setSelected(ConfigUtil.isAlwaysOnTop());
 			
 			hotKeyMakingMode = new AtomicBoolean(false);
+			
+			String theme = ConfigUtil.getTheme();
+			switch (theme) {
+			case Theme.WIN:
+				winTheme.setSelected(true);
+				break;
+			case Theme.MAC:
+				macTheme.setSelected(true);
+				break;
+			}
 			
 			stageOpacity.valueProperty().addListener((observable, oldValue, newValue) -> {
 				App.getStage().setOpacity(newValue.doubleValue() / 100);
@@ -292,6 +297,17 @@ public class ConfigurationController extends AbstractViewerController {
 	private void alwaysOnTop() throws Exception {
 		ConfigUtil.setAlwaysOnTop(alwaysOnTop.selectedProperty().get());
 		App.getStage().setAlwaysOnTop(alwaysOnTop.selectedProperty().get());
+	}
+	
+	@FXML
+	private void theme() throws Exception {
+		if (winTheme.selectedProperty().get()) {
+			ConfigUtil.setTheme(Theme.WIN);
+		} else if (macTheme.selectedProperty().get()) {
+			ConfigUtil.setTheme(Theme.MAC);
+		}
+		
+		EventHandler.callEvent(getClass(), BizConst.EVENT_APPLY_THEME, false);
 	}
 	
 	@FXML

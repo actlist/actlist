@@ -14,6 +14,11 @@ public class BizConst {
 	public static final String EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS = "EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS";
 	public static final String EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN = "EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN";
 	
+	public static final String EVENT_APPLY_THEME			 = "EVENT_APPLY_THEME";
+	
+	public static final String EVENT_SHOW_ABOUT_VIEW 		 = "EVENT_SHOW_ABOUT_VIEW";
+	public static final String EVENT_SHOW_CONFIGURATION_VIEW = "EVENT_SHOW_CONFIGURATION_VIEW";
+	
 	/**
 	 * Actlist application will register the tray icon when this event is called.
 	 */
@@ -56,7 +61,6 @@ public class BizConst {
 	 * Plugin's applicationCloseRequested() method will be called when this event is called.
 	 */
 	public static final String EVENT_APPLICATION_CLOSE_REQUESTED = "EVENT_APPLICATION_CLOSE_REQUESTED";
-	
 	
 	public static final String APPLICATION_NAME = "Actlist";
 	
