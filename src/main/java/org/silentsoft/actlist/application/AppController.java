@@ -340,6 +340,15 @@ public class AppController implements EventListener {
     }
     
     @FXML
+    private void showExploreView() {
+    	try {
+    		Desktop.getDesktop().browse(URI.create("http://actlist.silentsoft.org/plugins/"));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    @FXML
     private void showAboutView() {
     	contentPane.setCenter(new About().getViewer());
     }
