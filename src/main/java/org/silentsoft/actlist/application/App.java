@@ -218,6 +218,8 @@ public class App extends Application implements EventListener {
 				System.setOut(console.getPrintStream());
 				System.setErr(console.getPrintStream());
 				
+				System.out.println(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
+				
 				BorderPane root = new BorderPane();
 				root.setStyle("-fx-background-color: transparent;");
 				root.setTop(createMenuBar());

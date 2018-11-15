@@ -17,7 +17,7 @@ import javafx.scene.layout.HBox;
 public class AboutController extends AbstractViewerController {
 
 	@FXML
-	private Label version;
+	private Label version, runtime;
 	
 	@FXML
 	private HBox newVersionBox;
@@ -28,6 +28,7 @@ public class AboutController extends AbstractViewerController {
 	@Override
 	public void initialize(Parent viewer, Object... parameters) {
 		version.setText(BuildVersion.VERSION);
+		runtime.setText(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
 		
 		boolean isAvailableNewActlist = (boolean) SharedMemory.getDataMap().getOrDefault(BizConst.KEY_IS_AVAILABLE_NEW_ACTLIST, false);
 		if (isAvailableNewActlist) {
