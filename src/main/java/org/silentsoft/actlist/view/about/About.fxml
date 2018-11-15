@@ -12,9 +12,9 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" stylesheets="@../../application/App.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.about.AboutController">
+<AnchorPane prefHeight="310.0" prefWidth="310.0" stylesheets="@../../application/App.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.about.AboutController">
    <children>
-      <VBox alignment="CENTER" layoutX="50.0" spacing="15.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="50.0" spacing="15.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -66,5 +66,10 @@
             </HBox>
          </children>
       </VBox>
+      <Label fx:id="runtime" alignment="CENTER" style="-fx-background-color: #d9d9d9;" textFill="#505050" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font name="Verdana Italic" size="10.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
