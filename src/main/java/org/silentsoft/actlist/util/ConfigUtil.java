@@ -161,6 +161,14 @@ public class ConfigUtil {
 		getActlistConfig().put("theme", theme);
 	}
 	
+	public static boolean isMacTheme() {
+		return Theme.MAC.equalsIgnoreCase(getTheme());
+	}
+	
+	public static boolean isWinTheme() {
+		return Theme.WIN.equalsIgnoreCase(getTheme());
+	}
+	
 	public class ProxyMode {
 		// Do not make as enum type. It must be a string for simple json serialize/deserialize.
 		public static final String NONE = "NONE";
