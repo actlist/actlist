@@ -93,6 +93,20 @@ public class Console implements EventListener {
 		makeResizable(stage, root);
 	}
 	
+	public void notifyFocusState(boolean isFocused) {
+		if (ConfigUtil.isMacTheme()) {
+			if (isFocused) {
+				leftCloseButton.setStyle("-fx-background-color: red; -fx-background-radius: 5em;");
+				leftMinimizeButton.setStyle("-fx-background-color: orange; -fx-background-radius: 5em;");
+				leftMaximizeButton.setStyle("-fx-background-color: #59bf53; -fx-background-radius: 5em;");
+			} else {
+				leftCloseButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+				leftMinimizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+				leftMaximizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+			}
+		}
+	}
+	
 	/**
 	 * makes a stage draggable using a given node.
 	 * @param stage
@@ -264,9 +278,9 @@ public class Console implements EventListener {
     
     @FXML
     private void showControls() {
-    	((SVGPath) leftCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) leftMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) leftCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(30, 30, 30)"));
+    	((SVGPath) leftMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(30, 30, 30)"));
+    	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(30, 30, 30)"));
     }
     
     @FXML

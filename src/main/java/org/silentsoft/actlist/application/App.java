@@ -175,6 +175,9 @@ public class App extends Application implements EventListener {
 		stage.setHeight(ConfigUtil.getStageHeight());
 		stage.setOpacity(ConfigUtil.getStageOpacity());
 		stage.setAlwaysOnTop(ConfigUtil.isAlwaysOnTop());
+		stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+			appController.notifyFocusState(newValue);
+		});
 		
 //		if (ConfigUtil.isAnimationEffect()) {
 //			AnimationUtils.createTransition(app, AnimationType.BOUNCE_IN).play();
@@ -214,6 +217,10 @@ public class App extends Application implements EventListener {
 				Parent app = fxmlLoader.load();
 				Console console = fxmlLoader.getController();
 				console.initialize(consoleStage);
+				
+				consoleStage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+					console.notifyFocusState(newValue);
+				});
 				
 				System.setOut(console.getPrintStream());
 				System.setErr(console.getPrintStream());

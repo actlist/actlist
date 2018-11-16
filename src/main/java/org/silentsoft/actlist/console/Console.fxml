@@ -18,9 +18,9 @@
    <children>
 		<AnchorPane fx:id="root" minHeight="90.0" minWidth="190.0" prefHeight="490.0" prefWidth="390.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
 		   <children>
-		      <BorderPane fx:id="head" maxHeight="25.0" prefHeight="25.0" style="-fx-background-color: rgb(35, 35, 35);" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+		      <BorderPane fx:id="head" maxHeight="25.0" prefHeight="25.0" style="-fx-background-color: rgb(30, 30, 30);" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
 		         <left>
-                  <HBox fx:id="leftBox" alignment="CENTER" onMouseEntered="#showControls" onMouseExited="#hideControls" prefHeight="25.0" prefWidth="67.0" spacing="8.0" style="-fx-background-color: rgb(35, 35, 35);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <HBox fx:id="leftBox" alignment="CENTER" onMouseEntered="#showControls" onMouseExited="#hideControls" prefHeight="25.0" prefWidth="67.0" spacing="8.0" style="-fx-background-color: rgb(30, 30, 30);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label fx:id="leftCloseButton" alignment="CENTER" maxHeight="10.0" maxWidth="10.0" minHeight="10.0" minWidth="10.0" style="-fx-background-color: red; -fx-background-radius: 5em;">
                            <cursor>

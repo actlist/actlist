@@ -158,6 +158,20 @@ public class AppController implements EventListener {
 		enableDragAndDrop();
 	}
 	
+	public void notifyFocusState(boolean isFocused) {
+		if (ConfigUtil.isMacTheme()) {
+			if (isFocused) {
+				sideCloseButton.setStyle("-fx-background-color: red; -fx-background-radius: 5em;");
+				sideMinimizeButton.setStyle("-fx-background-color: orange; -fx-background-radius: 5em;");
+				sideMaximizeButton.setStyle("-fx-background-color: #59bf53; -fx-background-radius: 5em;");
+			} else {
+				sideCloseButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+				sideMinimizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+				sideMaximizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
+			}
+		}
+	}
+	
 	/**
 	 * makes a stage draggable using a given node.
 	 * @param stage
