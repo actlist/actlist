@@ -603,8 +603,8 @@ public class AppController implements EventListener {
 			}
 			
 			if (componentBox.getChildren().isEmpty()) {
-				Label label = new Label();
-				label.setText("No plugins available.");
+				Label firstLine = new Label();
+				firstLine.setText("No plugins available.");
 				
 				Hyperlink explore = new Hyperlink();
 				explore.setText("Explore");
@@ -614,9 +614,15 @@ public class AppController implements EventListener {
 					showExploreView();
 				});
 				
-				VBox vBox = new VBox(label, explore);
+				Label dragAndDrop = new Label();
+				dragAndDrop.setText("or drag and drop.");
+				
+				HBox secondLine = new HBox(explore, dragAndDrop);
+				secondLine.setAlignment(Pos.CENTER);
+				
+				VBox vBox = new VBox(firstLine, secondLine);
 				vBox.setAlignment(Pos.CENTER);
-				vBox.setSpacing(20.0);
+				vBox.setSpacing(15.0);
 				AnchorPane.setTopAnchor(vBox, 0.0);
 				AnchorPane.setRightAnchor(vBox, 0.0);
 				AnchorPane.setBottomAnchor(vBox, 0.0);
