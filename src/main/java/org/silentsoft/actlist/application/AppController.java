@@ -55,6 +55,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
@@ -111,6 +112,8 @@ public class AppController implements EventListener {
 	@FXML
 	private VBox componentBox;
 	
+	private TextArea consoleTextArea;
+	
 	private PopOver updatePopOver;
 	
 	private MaximizeProperty maximizeProperty;
@@ -119,6 +122,8 @@ public class AppController implements EventListener {
 	
 	protected void initialize() {
 		EventHandler.addListener(this);
+		
+		initConsole();
 		
 		root.setPrefWidth(ConfigUtil.getRootWidth());
 		root.setPrefHeight(ConfigUtil.getRootHeight());
@@ -170,6 +175,23 @@ public class AppController implements EventListener {
 				sideMaximizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
 			}
 		}
+	}
+	
+	private void initConsole() {
+		consoleTextArea = new TextArea();
+		consoleTextArea.setContextMenu(new ContextMenu()); // disable context menu.
+		consoleTextArea.setEditable(false);
+		consoleTextArea.setFont(Font.font("Consolas", 13.0));
+		{
+			StringBuffer style = new StringBuffer();
+			style.append("-fx-control-inner-background: rgb(30, 30, 30); ");
+			style.append("-fx-background-color: -fx-control-inner-background; ");			
+			style.append("-fx-background-radius: 0; ");
+			style.append("-fx-faint-focus-color: transparent;");
+			
+			consoleTextArea.setStyle(style.toString());
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_CONSOLE_TEXT_AREA, consoleTextArea);
 	}
 	
 	/**
@@ -360,6 +382,11 @@ public class AppController implements EventListener {
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
+    }
+    
+    @FXML
+    private void showConsoleView() {
+    	contentPane.setCenter(consoleTextArea);
     }
     
     @FXML

@@ -6,6 +6,7 @@ public class BizConst {
 	public static final String KEY_DEACTIVATED_PLUGINS = "KEY_DEACTIVATED_PLUGINS";
 	public static final String KEY_PRIORITY_OF_PLUGINS = "KEY_PRIORITY_OF_PLUGINS";
 	public static final String KEY_COMPONENT_BOX = "KEY_COMPONENT_BOX";
+	public static final String KEY_CONSOLE_TEXT_AREA = "KEY_CONSOLE_TEXT_AREA";
 	public static final String KEY_PLUGIN_MAP = "KEY_PLUGIN_MAP";
 	
 	public static final String KEY_IS_AVAILABLE_NEW_ACTLIST = "KEY_IS_AVAILABLE_NEW_ACTLIST";

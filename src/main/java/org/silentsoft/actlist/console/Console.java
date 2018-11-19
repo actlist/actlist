@@ -9,6 +9,7 @@ import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.util.ConfigUtil.Theme;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
+import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.model.Delta;
 import org.silentsoft.ui.model.MaximizeProperty;
 import org.silentsoft.ui.util.StageDragResizer;
@@ -70,7 +71,14 @@ public class Console implements EventListener {
 			@Override
 			public void write(int b) throws IOException {
 				Platform.runLater(() -> {
-					console.appendText(String.valueOf((char) b));
+					String log = String.valueOf((char) b);
+					
+					console.appendText(log);
+					
+					Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
+					if (appConsole instanceof TextArea) {
+						((TextArea) appConsole).appendText(log);
+					}
 				});
 			}
 		}, true);
