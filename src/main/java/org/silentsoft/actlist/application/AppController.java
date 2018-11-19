@@ -30,6 +30,7 @@ import org.silentsoft.actlist.util.ConfigUtil.Theme;
 import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.actlist.view.about.About;
 import org.silentsoft.actlist.view.configuration.Configuration;
+import org.silentsoft.actlist.view.explore.Explore;
 import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
 import org.silentsoft.core.util.SystemUtil;
@@ -52,6 +53,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -377,11 +379,7 @@ public class AppController implements EventListener {
     
     @FXML
     private void showExploreView() {
-    	try {
-    		Desktop.getDesktop().browse(URI.create("http://actlist.silentsoft.org/plugins/"));
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
+    	contentPane.setCenter(new Explore().getViewer());
     }
     
     @FXML
@@ -608,17 +606,26 @@ public class AppController implements EventListener {
 				Label label = new Label();
 				label.setText("No plugins available.");
 				
-				HBox hBox = new HBox(label);
-				hBox.setAlignment(Pos.CENTER);
-				AnchorPane.setTopAnchor(hBox, 0.0);
-				AnchorPane.setRightAnchor(hBox, 0.0);
-				AnchorPane.setBottomAnchor(hBox, 0.0);
-				AnchorPane.setLeftAnchor(hBox, 0.0);
+				Hyperlink explore = new Hyperlink();
+				explore.setText("Explore");
+				explore.setOnMouseReleased(mouseEvent -> {
+					explore.setVisited(false);
+					
+					showExploreView();
+				});
 				
-				AnchorPane pane = new AnchorPane(hBox);
+				VBox vBox = new VBox(label, explore);
+				vBox.setAlignment(Pos.CENTER);
+				vBox.setSpacing(20.0);
+				AnchorPane.setTopAnchor(vBox, 0.0);
+				AnchorPane.setRightAnchor(vBox, 0.0);
+				AnchorPane.setBottomAnchor(vBox, 0.0);
+				AnchorPane.setLeftAnchor(vBox, 0.0);
+				
+				AnchorPane pane = new AnchorPane(vBox);
 				pane.setStyle("-fx-background-color: #ffffff;");
-				pane.setPrefWidth(200);
-				pane.setPrefHeight(140);
+				pane.setPrefWidth(310);
+				pane.setPrefHeight(310);
 
 				componentBox.getChildren().add(pane);
 			}
@@ -807,6 +814,9 @@ public class AppController implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_SHOW_EXPLORE_VIEW:
+			showExploreView();
 			break;
 		case BizConst.EVENT_SHOW_ABOUT_VIEW:
 			showAboutView();
