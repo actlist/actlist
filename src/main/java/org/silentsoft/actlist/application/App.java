@@ -271,6 +271,12 @@ public class App extends Application implements EventListener {
 		
 		TrayIconHandler.addSeparator();
 		
+		TrayIconHandler.addItem("Explore Other Plugins", actionEvent -> {
+			showExplore();
+		});
+		
+		TrayIconHandler.addSeparator();
+		
 		TrayIconHandler.addItem("Open Plugins Directory", actionEvent -> {
 			try {
 				File pluginsDirectory = Paths.get(System.getProperty("user.dir"), "plugins").toFile();
@@ -458,27 +464,12 @@ public class App extends Application implements EventListener {
 		return false;
 	}
 	
-	/*
-	private Stage aboutStage;
-	private void showAbout() {
+	private void showExplore() {
 		Platform.runLater(() -> {
-			if (aboutStage == null) {
-				aboutStage = new Stage();
-				aboutStage.initOwner(App.getStage());
-				aboutStage.initStyle(StageStyle.UTILITY);
-				aboutStage.setResizable(false);
-				{
-					BorderPane scene = new BorderPane();
-					scene.setTop(createMenuBar());
-					scene.setCenter(new About().getViewer());
-					
-					aboutStage.setScene(new Scene(scene));
-				}
-			}
-			aboutStage.show();
+			bringToFront();
+			EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_EXPLORE_VIEW, false);
 		});
 	}
-	*/
 	
 	private void showAbout() {
 		Platform.runLater(() -> {
@@ -492,29 +483,6 @@ public class App extends Application implements EventListener {
 			consoleStage.show();
 		});
 	}
-	
-	/*
-	private Stage configurationStage;
-	private void showConfiguration() {
-		Platform.runLater(() -> {
-			if (configurationStage == null) {
-				configurationStage = new Stage();
-				configurationStage.initOwner(App.getStage());
-				configurationStage.setTitle("Actlist Configuration");
-				configurationStage.setResizable(false);
-				{
-					BorderPane scene = new BorderPane();
-					scene.setTop(createMenuBar());
-					scene.setCenter(new Configuration().getViewer());
-					
-					configurationStage.setScene(new Scene(scene));
-				}
-				configurationStage.getIcons().addAll(getIcons());
-			}
-			configurationStage.show();
-		});
-	}
-	*/
 	
 	private void showConfiguration() {
 		Platform.runLater(() -> {
