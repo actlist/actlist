@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -101,6 +103,9 @@ public class AppController implements EventListener {
 	
 	@FXML
 	private VBox sideNav;
+	
+	@FXML
+	private Region navPlugins, navExplore, navConsole, navAbout, navConfiguration;
 	
 	@FXML
 	private Label appUpdateAlarmLabel;
@@ -374,27 +379,66 @@ public class AppController implements EventListener {
     
     @FXML
     private void showPluginsView() {
+    	toggleNav(navPlugins);
     	contentPane.setCenter(componentBox);
     }
     
     @FXML
     private void showExploreView() {
+    	toggleNav(navExplore);
     	contentPane.setCenter(new Explore().getViewer());
     }
     
     @FXML
     private void showConsoleView() {
+    	toggleNav(navConsole);
     	contentPane.setCenter(consoleTextArea);
     }
     
     @FXML
     private void showAboutView() {
+    	toggleNav(navAbout);
     	contentPane.setCenter(new About().getViewer());
     }
     
     @FXML
     private void showConfigurationView() {
+    	toggleNav(navConfiguration);
     	contentPane.setCenter(new Configuration().getViewer());
+    }
+    
+    @FXML
+    private void eventNavMouseEntered(MouseEvent mouseEvent) {
+    	if (mouseEvent.getSource() instanceof Region) {
+    		Region region = (Region) mouseEvent.getSource();
+    		if (region.getOpacity() == 1.0) {
+    			// do nothing
+    		} else {
+    			region.setOpacity(0.9);
+    		}
+    	}
+    }
+    
+    @FXML
+    private void eventNavMouseExited(MouseEvent mouseEvent) {
+    	if (mouseEvent.getSource() instanceof Region) {
+    		Region region = (Region) mouseEvent.getSource();
+    		if (region.getOpacity() == 1.0) {
+    			// do nothing
+    		} else {
+    			region.setOpacity(0.75);
+    		}
+    	}
+    }
+    
+    private void toggleNav(Region target) {
+    	Arrays.asList(navPlugins, navExplore, navConsole, navAbout, navConfiguration).forEach(region -> {
+    		if (region == target) {
+    			region.setOpacity(1.0);
+    		} else {
+    			region.setOpacity(0.75);
+    		}
+    	});
     }
     
     private void initUpdatePopOver() {
