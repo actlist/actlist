@@ -73,3 +73,10 @@
 	-fx-background-insets: 2, 0, 0;
 	-fx-background-radius: 0em;
 }
+
+/* bug : transparent track-background does not works properly in web-view */
+.web-view .scroll-bar:horizontal .track-background,
+.web-view .scroll-bar:vertical .track-background {
+    -fx-background-color: derive(lightgray, 90%);
+    -fx-background-insets: 0;
+}
