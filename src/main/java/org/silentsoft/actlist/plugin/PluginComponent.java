@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
@@ -310,17 +311,19 @@ public class PluginComponent implements EventListener {
 									trayNotification.setMessage(newValue.getMessage());
 								}
 								
-								if (newValue.getDuration() == null) {
-									trayNotification.setOnDismiss((actionEvent) -> {
-										synchronized (trayNotifications) {
-											trayNotifications.remove(trayNotification);
-										}
-										
+								trayNotification.setOnDismiss((actionEvent) -> {
+									synchronized (trayNotifications) {
+										trayNotifications.remove(newValue);
+									}
+									
+									if (newValue.getDuration() == null) {
 										EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_BRING_TO_FRONT);
 										/*AnimationUtils.createTransition(lblPluginName, jidefx.animation.AnimationType.FLASH).play();*/
 										// TODO : scrollTo
-									});
-									
+									}
+								});
+								
+								if (newValue.getDuration() == null) {
 									trayNotification.showAndWait();
 								} else {
 									trayNotification.showAndDismiss(newValue.getDuration());
@@ -329,36 +332,46 @@ public class PluginComponent implements EventListener {
 								plugin.showTrayNotificationObject().set(null);
 							}
 						});
-						plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
-							if (newValue != null) {
-								synchronized (trayNotifications) {
-									if (trayNotifications.containsKey(newValue)) {
-										tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
-										trayNotification.setOnDismiss((actionEvent) -> {
-											trayNotifications.remove(newValue);
-										});
-										trayNotification.dismiss();
+						{
+							Consumer<tray.notification.TrayNotification> dismiss = (trayNotification) -> {
+								new Thread(() -> {
+									while (trayNotification.isTrayShowing() == false) {
+										try {
+											Thread.sleep(500);
+										} catch (Exception e) {
+											
+										}
 									}
-								}
-								
-								plugin.dismissTrayNotificationObject().set(null);
-							}
-						});
-						plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
-							if (newValue) {
-								synchronized (trayNotifications) {
-									for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
-										tray.notification.TrayNotification trayNotification = entrySet.getValue();
-										trayNotification.setOnDismiss((actionEvent) -> {
-											trayNotifications.remove(newValue);
-										});
+									Platform.runLater(() -> {
 										trayNotification.dismiss();
+									});
+								}).start();
+							};
+							plugin.dismissTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
+								if (newValue != null) {
+									synchronized (trayNotifications) {
+										if (trayNotifications.containsKey(newValue)) {
+											tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
+											dismiss.accept(trayNotification);
+										}
 									}
 									
-									plugin.shouldDismissTrayNotifications().set(false);
+									plugin.dismissTrayNotificationObject().set(null);
 								}
-							}
-						});
+							});
+							plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
+								if (newValue) {
+									synchronized (trayNotifications) {
+										for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
+											tray.notification.TrayNotification trayNotification = entrySet.getValue();
+											dismiss.accept(trayNotification);
+										}
+										
+										plugin.shouldDismissTrayNotifications().set(false);
+									}
+								}
+							});
+						}
 						plugin.shouldBrowseActlistArchives().addListener((observable, oldValue, newValue) -> {
 							if (newValue) {
 								try {
