@@ -53,7 +53,7 @@ public class ExploreController extends AbstractViewerController {
 			webView.getEngine().setUserAgent(userAgent.toString());
 		}
 		
-		webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
+		ChangeListener<Worker.State> stateChangeListener = new ChangeListener<Worker.State>() {
 			@Override
 			public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 				if (State.SUCCEEDED.equals(newValue)) {
@@ -81,9 +81,49 @@ public class ExploreController extends AbstractViewerController {
 							}, false);
 			        	}
 			        }
+			    } else if (State.FAILED.equals(newValue)) {
+			    	webView.getEngine().getLoadWorker().stateProperty().removeListener(this);
+			    	
+			    	StringBuffer html = new StringBuffer();
+			    	html.append("<html>");
+			    	html.append("    <head>");
+			    	html.append("        <style>");
+			    	html.append("            .container {");
+			    	html.append("                display: table;");
+			    	html.append("                width: 100%;");
+			    	html.append("                height: 100%;");
+			    	html.append("            ");
+			    	html.append("            }");
+			    	html.append("            .content {");
+			    	html.append("                display: table-cell;");
+			    	html.append("                vertical-align: middle;");
+			    	html.append("                text-align: center;");
+			    	html.append("            ");
+			    	html.append("            }");
+			    	html.append("            span {");
+			    	html.append("                font-family: Verdana;");
+			    	html.append("            ");
+			    	html.append("            }");
+			    	html.append("        </style>");
+			    	html.append("    </head>");
+			    	html.append("    <body>");
+			    	html.append("        <div class='container'>");
+			    	html.append("            <div class='content'>");
+			    	html.append("                <div>");
+			    	html.append("                    <svg width='24' height='24'><path d='M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM11.48 20v-6.26H8L13 4v6.26h3.35L11.48 20z'/></svg>");
+			    	html.append("                </div>");
+			    	html.append("                <div>");
+			    	html.append("                    <span>Network unavailable.</span>");
+			    	html.append("                </div>");
+			    	html.append("            </div>");
+			    	html.append("        </div>");
+			    	html.append("    </body>");
+			    	html.append("</html>");
+			    	webView.getEngine().loadContent(html.toString());
 			    }
 			}
-		});
+		};
+		webView.getEngine().getLoadWorker().stateProperty().addListener(stateChangeListener);
 		
 		webView.getEngine().load("http://actlist.silentsoft.org/explore/");
 	}
