@@ -148,8 +148,8 @@ public class App extends Application implements EventListener {
 	}
 	
 	private void updateProxyHost() {
-		String proxyHost = null;
-		String proxyPort = null;
+		String proxyHost = "";
+		String proxyPort = "";
 		
 		HttpHost proxy = RESTfulAPI.getProxyHost();
 		if (proxy != null) {
