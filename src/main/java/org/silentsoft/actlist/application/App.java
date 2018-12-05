@@ -16,6 +16,7 @@ import java.util.function.Function;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import org.apache.http.HttpHost;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.console.Console;
@@ -142,8 +143,25 @@ public class App extends Application implements EventListener {
 		}).start();
 	}
 	
-	private void heavyLifting() throws Exception {
-		RESTfulAPI.getProxyHost();
+	private void heavyLifting() {
+		updateProxyHost();
+	}
+	
+	private void updateProxyHost() {
+		String proxyHost = null;
+		String proxyPort = null;
+		
+		HttpHost proxy = RESTfulAPI.getProxyHost();
+		if (proxy != null) {
+			proxyHost = proxy.getHostName();
+			proxyPort = String.valueOf(proxy.getPort());
+		}
+		
+		System.setProperty("http.proxyHost", proxyHost);
+		System.setProperty("http.proxyPort", proxyPort);
+		
+		System.setProperty("https.proxyHost", proxyHost);
+		System.setProperty("https.proxyPort", proxyPort);
 	}
 	
 	private void initializeWithoutFxThread() throws Exception {
@@ -546,6 +564,9 @@ public class App extends Application implements EventListener {
 			break;
 		case BizConst.EVENT_APPLICATION_EXIT:
 			exit();
+			break;
+		case BizConst.EVENT_UPDATE_PROXY_HOST:
+			updateProxyHost();
 			break;
 		}
 	}
