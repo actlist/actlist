@@ -379,30 +379,35 @@ public class AppController implements EventListener {
     
     @FXML
     private void showPluginsView() {
+    	adjustHead(navPlugins);
     	toggleNav(navPlugins);
     	contentPane.setCenter(componentBox);
     }
     
     @FXML
     private void showExploreView() {
+    	adjustHead(navExplore);
     	toggleNav(navExplore);
     	contentPane.setCenter(new Explore().getViewer());
     }
     
     @FXML
     private void showConsoleView() {
+    	adjustHead(navConsole);
     	toggleNav(navConsole);
     	contentPane.setCenter(consoleTextArea);
     }
     
     @FXML
     private void showAboutView() {
+    	adjustHead(navAbout);
     	toggleNav(navAbout);
     	contentPane.setCenter(new About().getViewer());
     }
     
     @FXML
     private void showConfigurationView() {
+    	adjustHead(navConfiguration);
     	toggleNav(navConfiguration);
     	contentPane.setCenter(new Configuration().getViewer());
     }
@@ -428,6 +433,32 @@ public class AppController implements EventListener {
     		} else {
     			region.setOpacity(0.75);
     		}
+    	}
+    }
+    
+    private void adjustHead(Region nav) {
+    	if (nav == navConsole) {
+    		// dark
+    		head.setStyle("-fx-background-color: rgb(30, 30, 30);");
+    		
+    		headMinimizeButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
+    		headMaximizeButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
+    		headCloseButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
+    		
+    		((SVGPath) headMinimizeButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
+    		((SVGPath) headMaximizeButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
+    		((SVGPath) headCloseButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
+    	} else {
+    		// bright
+    		head.setStyle("-fx-background-color: #cfcfcf, #ffffff; -fx-background-insets: 0 0 0 0, 0 0 1 0;");
+    		
+    		headMinimizeButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
+    		headMaximizeButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
+    		headCloseButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
+    		
+    		((SVGPath) headMinimizeButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
+    		((SVGPath) headMaximizeButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
+    		((SVGPath) headCloseButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
     	}
     }
     
