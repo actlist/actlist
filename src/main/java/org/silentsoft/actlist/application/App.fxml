@@ -142,6 +142,7 @@
                            </children>
                         </HBox>
                      </left>
+                     <!--
                      <center>
                         <Label text="Actlist" textFill="WHITE" BorderPane.alignment="CENTER">
                            <font>
@@ -149,6 +150,7 @@
                            </font>
                         </Label>
                      </center>
+                     -->
                   </BorderPane>
                </top>
 		      </BorderPane>
