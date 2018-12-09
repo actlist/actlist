@@ -772,6 +772,8 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
+		updateAlarmLabel.setVisible(false);
+		
 		/**
 		 * this aboutStage must be closed when if already opened.
 		 * because the newPluginURI variable will be set by another thread.
@@ -795,6 +797,8 @@ public class PluginComponent implements EventListener {
 	
 	@FXML
 	private void showWarningText() {
+		warningLabel.setVisible(false);
+		
 		try {
 			String warningText = plugin.getWarningText();
 			if (ObjectUtil.isNotEmpty(warningText)) {
