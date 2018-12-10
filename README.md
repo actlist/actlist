@@ -34,21 +34,27 @@ Mac OS X:
 
 To create an Actlist plugin, you need to do some of the following:
 * Create a new Java project and configure to Maven project.
-* Add maven repository
+* Add `repository`, `parent` and `dependency` information to `pom.xml`
   ```
-  <repository>
-      <id>silentsoft-repository</id>
-      <url>http://nexus.silentsoft.org/repository/maven-releases</url>
-  </repository>
-  ```
-* Add dependency
-  ```
-  <dependency>
+  <repositories>
+      <repository>
+          <id>silentsoft-repository</id>
+          <url>http://nexus.silentsoft.org/repository/maven-releases</url>
+      </repository>
+  </repositories>
+  <parent>
       <groupId>org.silentsoft</groupId>
-      <artifactId>actlist-plugin</artifactId>
-      <version>1.3.0</version>
-      <scope>provided</scope>
-  </dependency>
+      <artifactId>actlist-plugin-sdk</artifactId>
+      <version>1.0.0</version>
+  </parent>
+  <dependencies>
+      <dependency>
+          <groupId>org.silentsoft</groupId>
+          <artifactId>actlist-plugin</artifactId>
+          <version>1.3.0</version>
+          <scope>provided</scope>
+      </dependency>
+  </dependencies>
   ```
 * Generate executable main class called `Plugin` where in default package (please do not assign package).
 * Inherit the `ActlistPlugin` class in your `Plugin` class.
