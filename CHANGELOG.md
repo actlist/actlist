@@ -1,3 +1,16 @@
+* 1.4.0
+    * new features
+      * brand new UI
+      * supports platform theme
+      * new plugin explore menu
+    * changes
+      * java version will be displayed on About view
+      * update/warning label will be disappeared after interactions
+      * minor changes on first meet prompt label
+    * fixed bugs
+      * http/https proxy host issue
+      * scroll bar broken issue on WebView
+      * tray notification dismiss issue
 * 1.3.0
     * new features
       * supports platform restriction function in plugin
