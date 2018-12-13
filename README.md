@@ -17,7 +17,7 @@ Actlist will helps you to execute your desire things.
 
 Just do focus only on coding to create what you want. and you can share with others to makes better world.
 
-![](http://actlist.silentsoft.org/img/preview.png?token=02b15478)
+![](http://actlist.silentsoft.org/img/preview.png?token=da8b296e)
 
 ### Installation
 
@@ -51,7 +51,7 @@ To create an Actlist plugin, you need to do some of the following:
       <dependency>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin</artifactId>
-          <version>1.3.0</version>
+          <version>1.4.0</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
