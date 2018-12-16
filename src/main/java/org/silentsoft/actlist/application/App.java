@@ -513,6 +513,7 @@ public class App extends Application implements EventListener {
 		getProvider().reset();
 		getProvider().stop();
 		
+		EventHandler.callEvent(getClass(), BizConst.EVENT_APPLICATION_CLOSE_REQUESTED, false);
 		System.exit(0);
 	}
 
