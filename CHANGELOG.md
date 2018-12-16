@@ -1,3 +1,5 @@
+* 1.4.1
+    * minor bugfix
 * 1.4.0
     * new features
       * brand new UI

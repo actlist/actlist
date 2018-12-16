@@ -1063,7 +1063,7 @@ public class PluginComponent implements EventListener {
 					break;
 				}
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}
 		}
 	}
