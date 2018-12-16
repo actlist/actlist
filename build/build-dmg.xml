@@ -292,6 +292,7 @@
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="actlist.jar"/>
 			<fx:fileset dir="dist" includes="actlist.jar.config"/>
+			<fx:fileset dir="dist" includes="plugins/*"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
 		</fx:resources>
 	
