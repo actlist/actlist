@@ -318,7 +318,7 @@ public class AppController implements EventListener {
     			ConfigUtil.setStageWidth(App.getStage().getWidth());
     			ConfigUtil.setStageHeight(App.getStage().getHeight());
     		} catch (Exception e) {
-    			
+    			e.printStackTrace();
     		}
     	});
     }
@@ -669,7 +669,7 @@ public class AppController implements EventListener {
 				}
 			}
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		} finally {
 			// I have to show the main stage even if weird things happens
 			if (SharedMemory.getDataMap().get(BizConst.KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS) == null) {
@@ -850,7 +850,7 @@ public class AppController implements EventListener {
     		
             FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), buffer.toString());
     	} catch (Exception e) {
-    		
+    		e.printStackTrace();
     	}
     }
 	
@@ -879,7 +879,7 @@ public class AppController implements EventListener {
     		
             FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), buffer.toString());
     	} catch (Exception e) {
-    		
+    		e.printStackTrace();
     	}
     }
 	
