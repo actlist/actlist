@@ -67,10 +67,10 @@ public class App extends Preloader {
 				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
 			} else {
 				actlistConfig = new ActlistConfig();
-				actlistConfig.put("rootWidth", 380.0);
-				actlistConfig.put("rootHeight", 340.0);
-				actlistConfig.put("stageWidth", 390.0);  // left shadow(5) + root(380) + right shadow(5)
-				actlistConfig.put("stageHeight", 350.0); // top shadow(5) + root(340) + bottom shadow(5)
+				actlistConfig.put("rootWidth", 452.0);
+				actlistConfig.put("rootHeight", 345.0);
+				actlistConfig.put("stageWidth", 462.0);  // left shadow(5) + root(452) + right shadow(5)
+				actlistConfig.put("stageHeight", 355.0); // top shadow(5) + root(345) + bottom shadow(5)
 				actlistConfig.put("stageOpacity", 1.0);
 				actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
