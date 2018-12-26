@@ -175,6 +175,13 @@
 			<artifactId>jfoenix</artifactId>
 			<version>${jfoenix.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>TrayNotification</groupId>
+			<artifactId>TrayNotification</artifactId>
+			<version>TrayNotification</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/libs/TrayNotification.jar</systemPath>
+		</dependency>
 	</dependencies>
 	
 	<dependencyManagement>
