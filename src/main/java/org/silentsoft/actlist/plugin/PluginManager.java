@@ -1,17 +1,21 @@
 package org.silentsoft.actlist.plugin;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
+import org.silentsoft.core.util.ObjectUtil;
 import org.silentsoft.io.memory.SharedMemory;
 
 import javafx.fxml.FXMLLoader;
@@ -43,12 +47,34 @@ public class PluginManager {
 		}
 		
 		URLClassLoader urlClassLoader = null;
-		Class<?> pluginClass = null;
 		
 		boolean isErrorOccur = false;
 		try {
+			Class<?> pluginClass = null;
+			InputStream inputStream = null;
+			
 			urlClassLoader = new URLClassLoader(new URL[]{ target.toUri().toURL() });
-			pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+			
+			try {
+				URL manifestURL = urlClassLoader.findResource(BizConst.MANIFEST_MF_PATH);
+				inputStream = manifestURL.openStream();
+				
+				Manifest manifest = new Manifest(inputStream);
+				String mainClass = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS).trim();
+				if (ObjectUtil.isNotEmpty(mainClass)) {
+					pluginClass = urlClassLoader.loadClass(mainClass);
+				}
+			} catch (Exception | Error e) {
+				e.printStackTrace();
+			} finally {
+				if (pluginClass == null) {
+					pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+				}
+				
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			}
 			
 			if (ActlistPlugin.class.isAssignableFrom(pluginClass) == false) {
 				isErrorOccur = true;
@@ -87,7 +113,30 @@ public class PluginManager {
 	
 	public static void load(String pluginFileName, boolean activated, Integer index) throws Exception {
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName).toUri().toURL() });
-		Class<?> pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+		
+		Class<?> pluginClass = null;
+		InputStream inputStream = null;
+		
+		try {
+			URL manifestURL = urlClassLoader.findResource(BizConst.MANIFEST_MF_PATH);
+			inputStream = manifestURL.openStream();
+			
+			Manifest manifest = new Manifest(inputStream);
+			String mainClass = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS).trim();
+			if (ObjectUtil.isNotEmpty(mainClass)) {
+				pluginClass = urlClassLoader.loadClass(mainClass);
+			}
+		} catch (Exception | Error e) {
+			e.printStackTrace();
+		} finally {
+			if (pluginClass == null) {
+				pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+			}
+			
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
 		
 		if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
 			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
