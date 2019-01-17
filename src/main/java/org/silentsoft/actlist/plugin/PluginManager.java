@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.silentsoft.actlist.BizConst;
@@ -56,7 +57,7 @@ public class PluginManager {
 			urlClassLoader = new URLClassLoader(new URL[]{ target.toUri().toURL() });
 			
 			try {
-				URL manifestURL = urlClassLoader.findResource(BizConst.MANIFEST_MF_PATH);
+				URL manifestURL = urlClassLoader.findResource(JarFile.MANIFEST_NAME);
 				inputStream = manifestURL.openStream();
 				
 				Manifest manifest = new Manifest(inputStream);
@@ -118,7 +119,7 @@ public class PluginManager {
 		InputStream inputStream = null;
 		
 		try {
-			URL manifestURL = urlClassLoader.findResource(BizConst.MANIFEST_MF_PATH);
+			URL manifestURL = urlClassLoader.findResource(JarFile.MANIFEST_NAME);
 			inputStream = manifestURL.openStream();
 			
 			Manifest manifest = new Manifest(inputStream);
