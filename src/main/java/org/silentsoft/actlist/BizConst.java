@@ -67,6 +67,5 @@ public class BizConst {
 	public static final String APPLICATION_NAME = "Actlist";
 	
 	public static final String PLUGIN_CLASS_NAME = "Plugin";
-	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF";
 	
 }
