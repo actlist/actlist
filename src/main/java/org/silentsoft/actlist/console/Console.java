@@ -1,7 +1,6 @@
 package org.silentsoft.actlist.console;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.silentsoft.actlist.BizConst;
@@ -67,17 +66,25 @@ public class Console implements EventListener {
 		
 		console.setContextMenu(new ContextMenu()); // disable context menu.
 		
-		printStream = new PrintStream(new OutputStream() {
+		printStream = new PrintStream(new ByteArrayOutputStream() {
 			@Override
-			public void write(int b) throws IOException {
+			public synchronized void write(byte[] b, int off, int len) {
+				super.write(b, off, len);
+				
 				Platform.runLater(() -> {
-					String log = String.valueOf((char) b);
-					
-					console.appendText(log);
-					
-					Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
-					if (appConsole instanceof TextArea) {
-						((TextArea) appConsole).appendText(log);
+					try {
+						String log = toString("UTF-8");
+						
+						console.setText(log);
+						console.setScrollTop(Double.MAX_VALUE);
+						
+						Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
+						if (appConsole instanceof TextArea) {
+							((TextArea) appConsole).setText(log);
+							((TextArea) appConsole).setScrollTop(Double.MAX_VALUE);
+						}
+					} catch (Exception e) {
+						;
 					}
 				});
 			}
