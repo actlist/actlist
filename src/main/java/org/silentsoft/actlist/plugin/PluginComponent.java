@@ -759,7 +759,7 @@ public class PluginComponent implements EventListener {
 		hBox.setOnMouseExited(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: white;");
 		});
-		hBox.setOnMouseClicked(action);
+		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, action);
 		
 		return hBox;
 	}
