@@ -71,22 +71,21 @@ public class Console implements EventListener {
 			public synchronized void write(byte[] b, int off, int len) {
 				super.write(b, off, len);
 				
-				Platform.runLater(() -> {
-					try {
-						String log = toString("UTF-8");
-						
-						console.setText(log);
-						console.setScrollTop(Double.MAX_VALUE);
+				try {
+					String log = toString("UTF-8");
+					reset();
+					
+					Platform.runLater(() -> {
+						console.appendText(log);
 						
 						Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
 						if (appConsole instanceof TextArea) {
-							((TextArea) appConsole).setText(log);
-							((TextArea) appConsole).setScrollTop(Double.MAX_VALUE);
+							((TextArea) appConsole).appendText(log);
 						}
-					} catch (Exception e) {
-						;
-					}
-				});
+					});
+				} catch (Exception e) {
+					;
+				}
 			}
 		}, true);
 		
