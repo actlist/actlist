@@ -105,10 +105,16 @@ public class AppController implements EventListener {
 	private VBox sideNav;
 	
 	@FXML
-	private Region navPlugins, navExplore, navConsole, navAbout, navConfiguration;
+	private Region navPluginsMac, navExploreMac, navConsoleMac, navAboutMac, navConfigurationMac;
 	
 	@FXML
-	private Label appUpdateAlarmLabel;
+	private Region navPluginsWin, navExploreWin, navConsoleWin, navAboutWin, navConfigurationWin;
+	
+	@FXML
+	private Label appUpdateAlarmLabelMac;
+
+	@FXML
+	private Label appUpdateAlarmLabelWin;
 	
 	@FXML
 	private ScrollPane scrollPane;
@@ -352,63 +358,67 @@ public class AppController implements EventListener {
     }
     
     private void applyTheme() {
-    	String theme = ConfigUtil.getTheme();
-    	switch (theme) {
-    	case Theme.WIN:
-    		if (body.getTop() == null) {
-    			body.setTop(head);
-    		}
-    		
-    		if (sideArea.getChildren().indexOf(sideControls) != -1) {
-    			sideArea.getChildren().remove(sideControls);
-    		}
-    		
-    		break;
-    	case Theme.MAC:
-    		if (body.getTop() != null) {
-    			body.setTop(null);
-    		}
-    		
-    		if (sideArea.getChildren().indexOf(sideControls) == -1) {
-    			sideArea.getChildren().add(0, sideControls);
-    		}
-    		
-    		break;
+    	if (isWinTheme()) {
+    		body.setTop(head);
+    		body.setLeft(null);    		
+    	} else if (isMacTheme()) {
+    		body.setTop(null);
+    		body.setLeft(sideArea);
     	}
     }
     
     @FXML
     private void showPluginsView() {
-    	adjustHead(navPlugins);
-    	toggleNav(navPlugins);
+    	if (isWinTheme()) {
+    		toggleNav(navPluginsWin);
+    	} else if (isMacTheme()) {
+    		toggleNav(navPluginsMac);
+    	}
+    	
     	contentPane.setCenter(componentBox);
     }
     
     @FXML
     private void showExploreView() {
-    	adjustHead(navExplore);
-    	toggleNav(navExplore);
+    	if (isWinTheme()) {
+    		toggleNav(navExploreWin);
+    	} else if (isMacTheme()) {
+    		toggleNav(navExploreMac);
+    	}
+    	
     	contentPane.setCenter(new Explore().getViewer());
     }
     
     @FXML
     private void showConsoleView() {
-    	adjustHead(navConsole);
-    	toggleNav(navConsole);
+    	if (isWinTheme()) {
+    		toggleNav(navConsoleWin);
+    	} else if (isMacTheme()) {
+    		toggleNav(navConsoleMac);
+    	}
+    	
     	contentPane.setCenter(consoleTextArea);
     }
     
     @FXML
     private void showAboutView() {
-    	adjustHead(navAbout);
-    	toggleNav(navAbout);
+    	if (isWinTheme()) {
+    		toggleNav(navAboutWin);
+    	} else if (isMacTheme()) {
+    		toggleNav(navAboutMac);
+    	}
+    	
     	contentPane.setCenter(new About().getViewer());
     }
     
     @FXML
     private void showConfigurationView() {
-    	adjustHead(navConfiguration);
-    	toggleNav(navConfiguration);
+    	if (isWinTheme()) {
+    		toggleNav(navConfigurationWin);
+    	} else if (isMacTheme()) {
+    		toggleNav(navConfigurationMac);
+    	}
+    	
     	contentPane.setCenter(new Configuration().getViewer());
     }
     
@@ -436,40 +446,32 @@ public class AppController implements EventListener {
     	}
     }
     
-    private void adjustHead(Region nav) {
-    	if (nav == navConsole) {
-    		// dark
-    		head.setStyle("-fx-background-color: rgb(30, 30, 30);");
-    		
-    		headMinimizeButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
-    		headMaximizeButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
-    		headCloseButton.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 5em;");
-    		
-    		((SVGPath) headMinimizeButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
-    		((SVGPath) headMaximizeButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
-    		((SVGPath) headCloseButton.getGraphic()).setFill(Paint.valueOf("#1e1e1e"));
-    	} else {
-    		// bright
-    		head.setStyle("-fx-background-color: #cfcfcf, #ffffff; -fx-background-insets: 0 0 0 0, 0 0 1 0;");
-    		
-    		headMinimizeButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
-    		headMaximizeButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
-    		headCloseButton.setStyle("-fx-background-color: #3e3e3e; -fx-background-radius: 5em;");
-    		
-    		((SVGPath) headMinimizeButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
-    		((SVGPath) headMaximizeButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
-    		((SVGPath) headCloseButton.getGraphic()).setFill(Paint.valueOf("#ffffff"));
+    private void toggleNav(Region target) {
+    	if (isWinTheme()) {
+    		Arrays.asList(navPluginsWin, navExploreWin, navConsoleWin, navAboutWin, navConfigurationWin).forEach(region -> {
+        		if (region == target) {
+        			region.setOpacity(1.0);
+        		} else {
+        			region.setOpacity(0.75);
+        		}
+        	});
+    	} else if (isMacTheme()) {
+    		Arrays.asList(navPluginsMac, navExploreMac, navConsoleMac, navAboutMac, navConfigurationMac).forEach(region -> {
+        		if (region == target) {
+        			region.setOpacity(1.0);
+        		} else {
+        			region.setOpacity(0.75);
+        		}
+        	});
     	}
     }
     
-    private void toggleNav(Region target) {
-    	Arrays.asList(navPlugins, navExplore, navConsole, navAbout, navConfiguration).forEach(region -> {
-    		if (region == target) {
-    			region.setOpacity(1.0);
-    		} else {
-    			region.setOpacity(0.75);
-    		}
-    	});
+    private boolean isWinTheme() {
+    	return Theme.WIN.equals(ConfigUtil.getTheme());
+    }
+    
+    private boolean isMacTheme() {
+    	return Theme.MAC.equals(ConfigUtil.getTheme());
     }
     
     private void initUpdatePopOver() {
@@ -552,15 +554,27 @@ public class AppController implements EventListener {
         			
         			if (isAvailableNewActlist) {
         				Platform.runLater(() -> {
-        					appUpdateAlarmLabel.setVisible(true);
+        					if (isWinTheme()) {
+        						appUpdateAlarmLabelWin.setVisible(true);
+        					} else if (isMacTheme()) {
+        						appUpdateAlarmLabelMac.setVisible(true);
+        					}
         					
-							FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), appUpdateAlarmLabel);
-							fadeTransition.setFromValue(1.0);
-							fadeTransition.setToValue(0.3);
-							fadeTransition.setCycleCount(6);
-							fadeTransition.setAutoReverse(true);
-							
-							fadeTransition.play();
+        					FadeTransition fadeTransition = null;
+        					if (isWinTheme()) {
+        						fadeTransition = new FadeTransition(Duration.millis(400), appUpdateAlarmLabelWin);
+        					} else if (isMacTheme()) {
+        						fadeTransition = new FadeTransition(Duration.millis(400), appUpdateAlarmLabelMac);
+        					}
+        					
+        					if (fadeTransition != null) {
+								fadeTransition.setFromValue(1.0);
+								fadeTransition.setToValue(0.3);
+								fadeTransition.setCycleCount(6);
+								fadeTransition.setAutoReverse(true);
+								
+								fadeTransition.play();
+        					}
         				});
         			}
         		} catch (Exception e) {
@@ -603,13 +617,21 @@ public class AppController implements EventListener {
     @FXML
     private void showUpdatePopOver() {
     	if (updatePopOver.isShowing() == false) {
-			updatePopOver.show(appUpdateAlarmLabel);
+    		if (isWinTheme()) {
+    			updatePopOver.show(appUpdateAlarmLabelWin);
+    		} else if (isMacTheme()) {
+    			updatePopOver.show(appUpdateAlarmLabelMac);
+    		}
 		}
     }
     
     private void hideUpdatePopOver() {
     	updatePopOver.hide();
-    	appUpdateAlarmLabel.setVisible(false);
+    	if (isWinTheme()) {
+    		appUpdateAlarmLabelWin.setVisible(false);
+    	} else if (isMacTheme()) {
+    		appUpdateAlarmLabelMac.setVisible(false);
+    	}
     }
     
 	private void loadPlugins() {
