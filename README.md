@@ -34,8 +34,11 @@ Mac OS X:
 
 To create an Actlist plugin, you need to do some of the following:
 * Create a new Java project and configure to Maven project.
-* Add `repository`, `parent` and `dependency` information to `pom.xml`
+* Add `property`, `repository`, `parent` and `dependency` information to `pom.xml`
   ```
+  <properties>
+      <mainClass>your.pkg.Plugin</mainClass>
+  </properties>
   <repositories>
       <repository>
           <id>silentsoft-repository</id>
@@ -45,18 +48,18 @@ To create an Actlist plugin, you need to do some of the following:
   <parent>
       <groupId>org.silentsoft</groupId>
       <artifactId>actlist-plugin-sdk</artifactId>
-      <version>1.0.0</version>
+      <version>2.0.0</version>
   </parent>
   <dependencies>
       <dependency>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin</artifactId>
-          <version>1.4.1</version>
+          <version>1.4.2</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
   ```
-* Generate executable main class called `Plugin` where in default package (please do not assign package).
+* Generate executable main class called `your.pkg.Plugin.java` that you assigned from `mainClass` property on `pom.xml`
 * Inherit the `ActlistPlugin` class in your `Plugin` class.
 * (Optional) to make a plugin that contains graphic things, you can write the `Plugin.fxml` file where in the same location.
 * (Optional) you can set the plugin's icon image to display on about menu (Right click > About) through `Plugin.png`. if not exists `Plugin.png` then default Actlist logo image will be displayed.
