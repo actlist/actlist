@@ -1,3 +1,14 @@
+* 1.4.2
+    * new features
+      * supports `mainClass` property on plugin's MANIFEST.MF
+    * improvements
+      * fully supported debugging experience
+      * UTF-8 console logging
+    * changes
+      * Win theme UI/UX
+      * default stage/root size
+    * bugfix
+      * event bubbling on context menu
 * 1.4.1
     * minor bugfix
 * 1.4.0

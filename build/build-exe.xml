@@ -33,28 +33,28 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.4.1">
-				<filename name="actlist-plugin-1.4.1.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.4.2">
+				<filename name="actlist-plugin-1.4.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.0">
-				<filename name="silentsoft-core-1.1.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.1">
+				<filename name="silentsoft-core-1.1.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-io/1.1.0">
-				<filename name="silentsoft-io-1.1.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-io/1.1.1">
+				<filename name="silentsoft-io-1.1.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.0">
-				<filename name="silentsoft-ui-1.1.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.1">
+				<filename name="silentsoft-ui-1.1.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.1.0">
-				<filename name="silentsoft-net-1.1.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.1.1">
+				<filename name="silentsoft-net-1.1.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -211,11 +211,11 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.4.1.jar"/>
-				<include name="silentsoft-core-1.1.0.jar"/>
-				<include name="silentsoft-io-1.1.0.jar"/>
-				<include name="silentsoft-ui-1.1.0.jar"/>
-				<include name="silentsoft-net-1.1.0.jar"/>
+				<include name="actlist-plugin-1.4.2.jar"/>
+				<include name="silentsoft-core-1.1.1.jar"/>
+				<include name="silentsoft-io-1.1.1.jar"/>
+				<include name="silentsoft-ui-1.1.1.jar"/>
+				<include name="silentsoft-net-1.1.1.jar"/>
 				<include name="jackson-databind-2.4.2.jar"/>
 				<include name="commons-codec-1.6.jar"/>
 				<include name="httpcore-4.3.3.jar"/>
@@ -325,7 +325,7 @@
 			<fx:resources refid="appRes"/>
 	
 			<manifest>
-				<attribute name="Implementation-Vendor" value="Silentsoft"/>
+				<attribute name="Implementation-Vendor" value="silentsoft.org"/>
 				<attribute name="Implementation-Title" value="Actlist"/>
 				<attribute name="Implementation-Version" value="${version}"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
@@ -354,7 +354,7 @@
 				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
 			</fx:platform>
 			
-			<fx:info title="actlist" vendor="Silentsoft"/>
+			<fx:info title="actlist" vendor="silentsoft.org"/>
 	
 			<fx:application refId="fxApplication"/>
 			<fx:resources refid="appRes"/>
