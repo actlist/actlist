@@ -136,7 +136,7 @@
                         </HBox>
                      </right>
                      <bottom>
-                        <HBox alignment="CENTER" prefHeight="45.0" spacing="30.0" style="-fx-border-color: rgb(55, 55, 55); -fx-border-width: 1 0 0 0; -fx-border-insets: 0 10 0 10;" BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER" prefHeight="45.0" spacing="50.0" style="-fx-border-color: rgb(55, 55, 55); -fx-border-width: 1 0 0 0; -fx-border-insets: 0 10 0 10;" BorderPane.alignment="CENTER">
                            <children>
                               <Region fx:id="navPluginsWin" maxHeight="18.0" maxWidth="18.0" minHeight="18.0" minWidth="18.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showPluginsView" prefHeight="18.0" prefWidth="18.0" style="-fx-shape: &quot;M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z&quot;; -fx-background-color: #ececec;">
                                  <cursor>
@@ -190,6 +190,9 @@
                            <font>
                               <Font name="Verdana" size="13.0" />
                            </font>
+                           <padding>
+                              <Insets right="22.0" />
+                           </padding>
                         </Label>
                      </center>
                   </BorderPane>
