@@ -262,29 +262,21 @@ public class Console implements EventListener {
     	String theme = ConfigUtil.getTheme();
     	switch (theme) {
     	case Theme.WIN:
-    		if (head.getLeft() != null) {
-    			head.setLeft(null);
-    		}
+    		head.setLeft(null);
     		
     		icon.setVisible(true);
     		title.setVisible(true);
     		
-    		if (head.getRight() == null) {
-    			head.setRight(rightBox);
-    		}
+    		head.setRight(rightBox);
     		
     		break;
     	case Theme.MAC:
-    		if (head.getRight() != null) {
-    			head.setRight(null);
-    		}
+    		head.setRight(null);
     		
     		icon.setVisible(false);
     		title.setVisible(false);
     		
-    		if (head.getLeft() == null) {
-    			head.setLeft(leftBox);
-    		}
+    		head.setLeft(leftBox);
     		
     		break;
     	}
