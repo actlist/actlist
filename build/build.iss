@@ -5,7 +5,7 @@
 ;#define AppArchitecture "@AppArchitecture@"
 
 #define AppName "Actlist"
-#define AppPublisher "Silentsoft"
+#define AppPublisher "silentsoft.org"
 #define AppURL "https://actlist.silentsoft.org/"
 #define AppExeName "Actlist.exe"
 #define AppIcoName "Actlist.ico"

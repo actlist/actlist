@@ -3,12 +3,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist</artifactId>
-	<version>1.4.1</version>
+	<version>1.4.2</version>
 
 	<repositories>
 		<repository>
 			<id>silentsoft-repository</id>
 			<url>http://nexus.silentsoft.org/repository/maven-releases</url>
+		</repository>
+		<repository>
+			<id>silentsoft-snapshot-repository</id>
+			<url>http://nexus.silentsoft.org/repository/maven-snapshots</url>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -27,11 +34,13 @@
 		<junit.version>4.8.1</junit.version>
 
 		<!-- Silentsoft -->
-		<silentsoft.ui.version>1.1.0</silentsoft.ui.version>
-		<silentsoft.net.version>1.1.0</silentsoft.net.version>
+		<silentsoft.io.version>1.1.1</silentsoft.io.version>
+		<silentsoft.core.version>1.1.1</silentsoft.core.version>
+		<silentsoft.ui.version>1.1.1</silentsoft.ui.version>
+		<silentsoft.net.version>1.1.1</silentsoft.net.version>
 
 		<!-- Actlist -->
-		<actlist.plugin.version>1.4.1</actlist.plugin.version>
+		<actlist.plugin.version>1.4.2</actlist.plugin.version>
 
 		<!-- Native -->
 		<jna.version>4.5.1</jna.version>
@@ -144,6 +153,16 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.silentsoft</groupId>
+			<artifactId>silentsoft-io</artifactId>
+			<version>${silentsoft.io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.silentsoft</groupId>
+			<artifactId>silentsoft-core</artifactId>
+			<version>${silentsoft.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.silentsoft</groupId>
