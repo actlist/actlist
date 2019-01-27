@@ -369,55 +369,35 @@ public class AppController implements EventListener {
     
     @FXML
     private void showPluginsView() {
-    	if (isWinTheme()) {
-    		toggleNav(navPluginsWin);
-    	} else if (isMacTheme()) {
-    		toggleNav(navPluginsMac);
-    	}
+		toggleNav(navPluginsWin, navPluginsMac);
     	
     	contentPane.setCenter(componentBox);
     }
     
     @FXML
     private void showExploreView() {
-    	if (isWinTheme()) {
-    		toggleNav(navExploreWin);
-    	} else if (isMacTheme()) {
-    		toggleNav(navExploreMac);
-    	}
+    	toggleNav(navExploreWin, navExploreMac);
     	
     	contentPane.setCenter(new Explore().getViewer());
     }
     
     @FXML
     private void showConsoleView() {
-    	if (isWinTheme()) {
-    		toggleNav(navConsoleWin);
-    	} else if (isMacTheme()) {
-    		toggleNav(navConsoleMac);
-    	}
+    	toggleNav(navConsoleWin, navConsoleMac);
     	
     	contentPane.setCenter(consoleTextArea);
     }
     
     @FXML
     private void showAboutView() {
-    	if (isWinTheme()) {
-    		toggleNav(navAboutWin);
-    	} else if (isMacTheme()) {
-    		toggleNav(navAboutMac);
-    	}
+    	toggleNav(navAboutWin, navAboutMac);
     	
     	contentPane.setCenter(new About().getViewer());
     }
     
     @FXML
     private void showConfigurationView() {
-    	if (isWinTheme()) {
-    		toggleNav(navConfigurationWin);
-    	} else if (isMacTheme()) {
-    		toggleNav(navConfigurationMac);
-    	}
+    	toggleNav(navConfigurationWin, navConfigurationMac);
     	
     	contentPane.setCenter(new Configuration().getViewer());
     }
@@ -446,24 +426,14 @@ public class AppController implements EventListener {
     	}
     }
     
-    private void toggleNav(Region target) {
-    	if (isWinTheme()) {
-    		Arrays.asList(navPluginsWin, navExploreWin, navConsoleWin, navAboutWin, navConfigurationWin).forEach(region -> {
-        		if (region == target) {
-        			region.setOpacity(1.0);
-        		} else {
-        			region.setOpacity(0.75);
-        		}
-        	});
-    	} else if (isMacTheme()) {
-    		Arrays.asList(navPluginsMac, navExploreMac, navConsoleMac, navAboutMac, navConfigurationMac).forEach(region -> {
-        		if (region == target) {
-        			region.setOpacity(1.0);
-        		} else {
-        			region.setOpacity(0.75);
-        		}
-        	});
-    	}
+    private void toggleNav(Region targetWin, Region targetMac) {
+    	Arrays.asList(navPluginsWin, navExploreWin, navConsoleWin, navAboutWin, navConfigurationWin, navPluginsMac, navExploreMac, navConsoleMac, navAboutMac, navConfigurationMac).forEach(region -> {
+    		if (region == targetWin || region == targetMac) {
+    			region.setOpacity(1.0);
+    		} else {
+    			region.setOpacity(0.75);
+    		}
+    	});
     }
     
     private boolean isWinTheme() {
@@ -527,7 +497,6 @@ public class AppController implements EventListener {
 		vBox.setPrefHeight(103.0);
 		
 		updatePopOver.setContentNode(vBox);
-		updatePopOver.setArrowLocation(ArrowLocation.BOTTOM_LEFT);
     }
     
     private void checkUpdate() {
@@ -554,11 +523,8 @@ public class AppController implements EventListener {
         			
         			if (isAvailableNewActlist) {
         				Platform.runLater(() -> {
-        					if (isWinTheme()) {
-        						appUpdateAlarmLabelWin.setVisible(true);
-        					} else if (isMacTheme()) {
-        						appUpdateAlarmLabelMac.setVisible(true);
-        					}
+    						appUpdateAlarmLabelWin.setVisible(true);
+    						appUpdateAlarmLabelMac.setVisible(true);
         					
         					FadeTransition fadeTransition = null;
         					if (isWinTheme()) {
@@ -618,8 +584,10 @@ public class AppController implements EventListener {
     private void showUpdatePopOver() {
     	if (updatePopOver.isShowing() == false) {
     		if (isWinTheme()) {
+    			updatePopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
     			updatePopOver.show(appUpdateAlarmLabelWin);
     		} else if (isMacTheme()) {
+    			updatePopOver.setArrowLocation(ArrowLocation.BOTTOM_LEFT);
     			updatePopOver.show(appUpdateAlarmLabelMac);
     		}
 		}
@@ -627,11 +595,9 @@ public class AppController implements EventListener {
     
     private void hideUpdatePopOver() {
     	updatePopOver.hide();
-    	if (isWinTheme()) {
-    		appUpdateAlarmLabelWin.setVisible(false);
-    	} else if (isMacTheme()) {
-    		appUpdateAlarmLabelMac.setVisible(false);
-    	}
+    	
+		appUpdateAlarmLabelWin.setVisible(false);
+		appUpdateAlarmLabelMac.setVisible(false);
     }
     
 	private void loadPlugins() {
