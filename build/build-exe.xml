@@ -33,8 +33,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.4.2">
-				<filename name="actlist-plugin-1.4.2.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.4.3">
+				<filename name="actlist-plugin-1.4.3.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -118,6 +118,16 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
+			<fileset dir="${user.home}/.m2/repository/org/apache/maven/maven-model/3.6.0">
+				<filename name="maven-model-3.6.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${user.home}/.m2/repository/org/codehaus/plexus/plexus-utils/3.1.0">
+				<filename name="plexus-utils-3.1.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
 			<fileset dir="${user.home}/.m2/repository/de/codecentric/centerdevice/centerdevice-nsmenufx/2.1.5">
 				<filename name="centerdevice-nsmenufx-2.1.5.jar"/>
 			</fileset>
@@ -168,8 +178,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${basedir}/../libs">
-				<filename name="TrayNotification.jar"/>
+			<fileset dir="${user.home}/.m2/repository/com/github/PlusHaze/TrayNotification/5393c3a54f">
+				<filename name="TrayNotification-5393c3a54f.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -211,7 +221,7 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.4.2.jar"/>
+				<include name="actlist-plugin-1.4.3.jar"/>
 				<include name="silentsoft-core-1.1.1.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
 				<include name="silentsoft-ui-1.1.1.jar"/>
@@ -220,8 +230,10 @@
 				<include name="commons-codec-1.6.jar"/>
 				<include name="httpcore-4.3.3.jar"/>
 				<include name="slf4j-api-1.7.5.jar"/>
-				<include name="TrayNotification.jar"/>
+				<include name="TrayNotification-5393c3a54f.jar"/>
 				<include name="jna-4.5.1.jar"/>
+				<include name="maven-model-3.6.0.jar"/>
+				<include name="plexus-utils-3.1.0.jar"/>
 				<include name="centerdevice-nsmenufx-2.1.5.jar"/>
 				<include name="controlsfx-8.40.10.jar"/>
 				<include name="httpmime-4.3.6.jar"/>

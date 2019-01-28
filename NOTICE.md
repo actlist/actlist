@@ -48,6 +48,14 @@ __log4j 1.2.17__
  * https://github.com/apache/log4j
  * Apache License 2.0
 
+__maven-model 3.6.0__
+ * https://github.com/apache/maven
+ * Apache License 2.0
+
+__plexus-utils 3.1.0__
+ * https://github.com/codehaus-plexus/plexus-utils
+ * Apache License 2.0
+
 __centerdevice-nsmenufx 2.1.5__
  * https://github.com/codecentric/NSMenuFX
  * BSD-3-Clause
@@ -92,7 +100,7 @@ __ini4j 0.5.4__
  * https://github.com/michaelPf85/ini4j
  * Apache License 2.0
 
-__PlusHaze-TrayNotification__
+__PlusHaze-TrayNotification 5393c3a54f__
  * https://github.com/PlusHaze/TrayNotification
  * MIT License
 

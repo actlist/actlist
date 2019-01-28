@@ -1,3 +1,5 @@
+* 1.4.3
+    * critical dependency patch
 * 1.4.2
     * new features
       * supports `mainClass` property on plugin's MANIFEST.MF

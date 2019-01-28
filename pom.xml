@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist</artifactId>
-	<version>1.4.2</version>
+	<version>1.4.3</version>
 
 	<repositories>
 		<repository>
@@ -16,6 +16,10 @@
 			<snapshots>
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>http://jitpack.io</url>
 		</repository>
 	</repositories>
 
@@ -34,21 +38,22 @@
 		<junit.version>4.8.1</junit.version>
 
 		<!-- Silentsoft -->
-		<silentsoft.io.version>1.1.1</silentsoft.io.version>
 		<silentsoft.core.version>1.1.1</silentsoft.core.version>
 		<silentsoft.ui.version>1.1.1</silentsoft.ui.version>
 		<silentsoft.net.version>1.1.1</silentsoft.net.version>
 
 		<!-- Actlist -->
-		<actlist.plugin.version>1.4.2</actlist.plugin.version>
+		<actlist.plugin.version>1.4.3</actlist.plugin.version>
 
 		<!-- Native -->
 		<jna.version>4.5.1</jna.version>
 
 		<!-- 3rd party -->
+		<maven-model.version>3.6.0</maven-model.version>
 		<centerdevice-nsmenufx.version>2.1.5</centerdevice-nsmenufx.version>
-		<jkeymaster.version>1.2</jkeymaster.version>
 		<jfoenix.version>1.0.0</jfoenix.version>
+		<plushaze-traynotification.tag>5393c3a54f</plushaze-traynotification.tag>
+		<jkeymaster.version>1.2</jkeymaster.version>
 	</properties>
 
 	<build>
@@ -156,11 +161,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.silentsoft</groupId>
-			<artifactId>silentsoft-io</artifactId>
-			<version>${silentsoft.io.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.silentsoft</groupId>
 			<artifactId>silentsoft-core</artifactId>
 			<version>${silentsoft.core.version}</version>
 		</dependency>
@@ -180,14 +180,14 @@
 			<version>${actlist.plugin.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-model</artifactId>
+			<version>${maven-model.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>de.codecentric.centerdevice</groupId>
 			<artifactId>centerdevice-nsmenufx</artifactId>
 			<version>${centerdevice-nsmenufx.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.tulskiy</groupId>
-			<artifactId>jkeymaster</artifactId>
-			<version>${jkeymaster.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jfoenix</groupId>
@@ -195,11 +195,14 @@
 			<version>${jfoenix.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>TrayNotification</groupId>
+			<groupId>com.github.PlusHaze</groupId>
 			<artifactId>TrayNotification</artifactId>
-			<version>TrayNotification</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/libs/TrayNotification.jar</systemPath>
+			<version>${plushaze-traynotification.tag}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tulskiy</groupId>
+			<artifactId>jkeymaster</artifactId>
+			<version>${jkeymaster.version}</version>
 		</dependency>
 	</dependencies>
 	
