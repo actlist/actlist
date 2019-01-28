@@ -54,7 +54,7 @@ To create an Actlist plugin, you need to do some of the following:
       <dependency>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin</artifactId>
-          <version>1.4.2</version>
+          <version>1.4.3</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>
@@ -67,6 +67,8 @@ To create an Actlist plugin, you need to do some of the following:
 
 Here is an example source code of `Plugin.java`
 ```
+package your.pkg;
+
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 
 public class Plugin extends ActlistPlugin {
@@ -84,10 +86,10 @@ public class Plugin extends ActlistPlugin {
          * setPluginUpdateCheckURI(URI.create("http://your-server.name"), URI.create("http://location-of-archives"));
          */
         
-        setPluginAuthor("Silentsoft");
+        setPluginAuthor("silentsoft");
         /**
          * or you could use hyper-link via
-         * setPluginAuthor("Silentsoft", URI.create("http://silentsoft.org"));
+         * setPluginAuthor("silentsoft", URI.create("http://silentsoft.org"));
          */
         
         setPluginDescription("You can set the description of your plugin");
