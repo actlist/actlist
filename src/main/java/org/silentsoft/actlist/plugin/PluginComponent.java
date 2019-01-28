@@ -45,6 +45,7 @@ import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
 import org.silentsoft.io.memory.SharedMemory;
 
+import com.github.plushaze.traynotification.animations.Animations;
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
@@ -85,7 +86,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import tray.animations.AnimationType;
 
 
 public class PluginComponent implements EventListener {
@@ -126,7 +126,7 @@ public class PluginComponent implements EventListener {
 	
 	private ObservableList<Node> functions;
 	
-	private HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification> trayNotifications = new HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, tray.notification.TrayNotification>();
+	private HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, com.github.plushaze.traynotification.notification.TrayNotification> trayNotifications = new HashMap<org.silentsoft.actlist.plugin.tray.TrayNotification, com.github.plushaze.traynotification.notification.TrayNotification>();
 	
 	private boolean isAvailableNewPlugin = false;
 	private URI newPluginURI;
@@ -287,7 +287,7 @@ public class PluginComponent implements EventListener {
 						});
 						plugin.showTrayNotificationObject().addListener((observable, oldValue, newValue) -> {
 							if (newValue != null) {
-								tray.notification.TrayNotification trayNotification = new tray.notification.TrayNotification();
+								com.github.plushaze.traynotification.notification.TrayNotification trayNotification = new com.github.plushaze.traynotification.notification.TrayNotification();
 								
 								synchronized (trayNotifications) {
 									trayNotifications.put(newValue, trayNotification);
@@ -295,7 +295,7 @@ public class PluginComponent implements EventListener {
 								
 								trayNotification.setRectangleFill(Paint.valueOf("#222222"));
 								trayNotification.setImage(App.getIcons().get(4)); // 128x128
-								trayNotification.setAnimationType(AnimationType.POPUP);
+								trayNotification.setAnimation(Animations.POPUP);
 								
 								String titleValue = (plugin.getPluginName() == null || plugin.getPluginName().trim().isEmpty()) ? pluginFileName : plugin.getPluginName();
 								String titlePrefix = String.format("[%s] ", titleValue);
@@ -333,7 +333,7 @@ public class PluginComponent implements EventListener {
 							}
 						});
 						{
-							Consumer<tray.notification.TrayNotification> dismiss = (trayNotification) -> {
+							Consumer<com.github.plushaze.traynotification.notification.TrayNotification> dismiss = (trayNotification) -> {
 								new Thread(() -> {
 									while (trayNotification.isTrayShowing() == false) {
 										try {
@@ -351,7 +351,7 @@ public class PluginComponent implements EventListener {
 								if (newValue != null) {
 									synchronized (trayNotifications) {
 										if (trayNotifications.containsKey(newValue)) {
-											tray.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
+											com.github.plushaze.traynotification.notification.TrayNotification trayNotification = trayNotifications.get(newValue);
 											dismiss.accept(trayNotification);
 										}
 									}
@@ -362,8 +362,8 @@ public class PluginComponent implements EventListener {
 							plugin.shouldDismissTrayNotifications().addListener((observable, oldValue, newValue) -> {
 								if (newValue) {
 									synchronized (trayNotifications) {
-										for (Entry<TrayNotification, tray.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
-											tray.notification.TrayNotification trayNotification = entrySet.getValue();
+										for (Entry<TrayNotification, com.github.plushaze.traynotification.notification.TrayNotification> entrySet : trayNotifications.entrySet()) {
+											com.github.plushaze.traynotification.notification.TrayNotification trayNotification = entrySet.getValue();
 											dismiss.accept(trayNotification);
 										}
 										
