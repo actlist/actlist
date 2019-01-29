@@ -42,7 +42,7 @@ To create an Actlist plugin, you need to do some of the following:
   <repositories>
       <repository>
           <id>silentsoft-repository</id>
-          <url>http://nexus.silentsoft.org/repository/maven-releases</url>
+          <url>http://nexus.silentsoft.org/repository/maven-public</url>
       </repository>
   </repositories>
   <parent>
