@@ -36,7 +36,7 @@ Mac OS X:
 
   ##### 1. using starter-kit
     ```
-    $ git clone https://github.com/silentsoft/actlist-plugin-starter-kit
+    $ git clone https://github.com/silentsoft/actlist-plugin-starter-kit.git
     ```
   ---
   ##### 2. or creating java project manually
