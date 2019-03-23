@@ -608,13 +608,30 @@ public class AppController implements EventListener {
 				pluginsDirectory.mkdirs();
 			}
 			
+			List<String> purgeTargetPlugins = readPurgeTargetPlugins();
+			SharedMemory.getDataMap().put(BizConst.KEY_PURGE_TARGET_PLUGINS, purgeTargetPlugins);
+			
 			List<String> deactivatedPlugins = readDeactivatedPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 			
 			List<String> priorityOfPlugins = readPriorityOfPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
 			
-			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
+			// purge
+			for (int i=purgeTargetPlugins.size()-1; i>=0; i--) {
+				Path path = Paths.get(System.getProperty("user.dir"), "plugins", purgeTargetPlugins.get(i));
+				if (Files.exists(path)) {
+					try {
+						Files.delete(path);
+						purgeTargetPlugins.remove(i);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					purgeTargetPlugins.remove(i);
+				}
+			}
+			savePurgeTargetPlugins();
 			
 			// extract plugins
 			List<String> plugins = new ArrayList<String>();
@@ -624,8 +641,26 @@ public class AppController implements EventListener {
 				}
 			});
 			
+			// delete unused config file
+			Path configDirectory = Paths.get(System.getProperty("user.dir"), "plugins", "config");
+			if (Files.exists(configDirectory) && Files.isDirectory(configDirectory)) {
+				Files.walk(configDirectory, 1).forEach(path -> {
+					String fileName = path.getFileName().toString();
+					if (fileName.toLowerCase().endsWith(".config")) {
+						fileName = fileName.substring(0, fileName.length()-".config".length());
+						if (plugins.contains(fileName) == false) {
+							try {
+								Files.delete(path);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+			}
+			
 			// transform priority
-			for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
+			for (int i=priorityOfPlugins.size()-1; i>=0; i--) {
 				String plugin = priorityOfPlugins.get(i);
 				
 				if (plugins.contains(plugin)) {
@@ -665,39 +700,7 @@ public class AppController implements EventListener {
 				EventHandler.callEvent(getClass(), BizConst.EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS);
 			}
 			
-			if (componentBox.getChildren().isEmpty()) {
-				Label firstLine = new Label();
-				firstLine.setText("No plugins available.");
-				
-				Hyperlink explore = new Hyperlink();
-				explore.setText("Explore");
-				explore.setOnMouseReleased(mouseEvent -> {
-					explore.setVisited(false);
-					
-					showExploreView();
-				});
-				
-				Label dragAndDrop = new Label();
-				dragAndDrop.setText("or drag and drop.");
-				
-				HBox secondLine = new HBox(explore, dragAndDrop);
-				secondLine.setAlignment(Pos.CENTER);
-				
-				VBox vBox = new VBox(firstLine, secondLine);
-				vBox.setAlignment(Pos.CENTER);
-				vBox.setSpacing(15.0);
-				AnchorPane.setTopAnchor(vBox, 0.0);
-				AnchorPane.setRightAnchor(vBox, 0.0);
-				AnchorPane.setBottomAnchor(vBox, 0.0);
-				AnchorPane.setLeftAnchor(vBox, 0.0);
-				
-				AnchorPane pane = new AnchorPane(vBox);
-				pane.setStyle("-fx-background-color: #ffffff;");
-				pane.setPrefWidth(310);
-				pane.setPrefHeight(310);
-
-				componentBox.getChildren().add(pane);
-			}
+			createPromptComponent();
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
@@ -823,6 +826,25 @@ public class AppController implements EventListener {
 		return false;
 	}
 	
+	private List<String> readPurgeTargetPlugins() {
+		return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), true);
+	}
+	
+	private void savePurgeTargetPlugins() {
+		try {
+			StringBuffer buffer = new StringBuffer();
+			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
+			for (String purgeTargetPlugin : purgeTargetPlugins) {
+				buffer.append(purgeTargetPlugin);
+				buffer.append("\r\n");
+			}
+			
+			FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), buffer.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private List<String> readDeactivatedPlugins() {
     	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true);
     }
@@ -876,6 +898,51 @@ public class AppController implements EventListener {
 		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
 		PluginManager.load(fileName, !deactivatedPlugins.contains(fileName));
 	}
+	
+	private void createPromptComponent() {
+		Runnable action = () -> {
+			synchronized (componentBox) {
+				if (componentBox.getChildren().isEmpty()) {
+					Label firstLine = new Label();
+					firstLine.setText("No plugins available.");
+					
+					Hyperlink explore = new Hyperlink();
+					explore.setText("Explore");
+					explore.setOnMouseReleased(mouseEvent -> {
+						explore.setVisited(false);
+						
+						showExploreView();
+					});
+					
+					Label dragAndDrop = new Label();
+					dragAndDrop.setText("or drag and drop.");
+					
+					HBox secondLine = new HBox(explore, dragAndDrop);
+					secondLine.setAlignment(Pos.CENTER);
+					
+					VBox vBox = new VBox(firstLine, secondLine);
+					vBox.setAlignment(Pos.CENTER);
+					vBox.setSpacing(15.0);
+					AnchorPane.setTopAnchor(vBox, 0.0);
+					AnchorPane.setRightAnchor(vBox, 0.0);
+					AnchorPane.setBottomAnchor(vBox, 0.0);
+					AnchorPane.setLeftAnchor(vBox, 0.0);
+					
+					AnchorPane pane = new AnchorPane(vBox);
+					pane.setStyle("-fx-background-color: #ffffff;");
+					pane.setPrefWidth(310);
+					pane.setPrefHeight(310);
+
+					componentBox.getChildren().add(pane);
+				}
+			}
+		};
+		if (Platform.isFxApplicationThread()) {
+			action.run();
+		} else {
+			Platform.runLater(action);
+		}
+	}
 
 	@Override
 	public void onEvent(String event) {
@@ -892,11 +959,17 @@ public class AppController implements EventListener {
 		case BizConst.EVENT_SHOW_CONFIGURATION_VIEW:
 			showConfigurationView();
 			break;
+		case BizConst.EVENT_SAVE_PURGE_TARGET_PLUGINS:
+			savePurgeTargetPlugins();
+			break;
 		case BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS:
 			saveDeactivatedPlugins();
 			break;
 		case BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS:
 			savePriorityOfPlugins();
+			break;
+		case BizConst.EVENT_CREATE_PROMPT_COMPONENT:
+			createPromptComponent();
 			break;
 		}
 	}

@@ -6,9 +6,11 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
@@ -23,6 +25,12 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 		return doGet(uri, getProxyHost(), param, returnType, (request) -> {
 			request.setHeaders(createHeaders());
 		});
+	}
+	
+	public static <T> T doGet(String uri, Consumer<HttpResponse> afterResponse) throws Exception {
+		return doGet(uri, getProxyHost(), null, (request) -> {
+			request.setHeaders(createHeaders());
+		}, afterResponse);
 	}
 	
 	public static <T> T doPost(String uri, Object param, Class<T> returnType) throws Exception {

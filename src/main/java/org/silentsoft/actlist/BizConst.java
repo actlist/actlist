@@ -3,6 +3,7 @@ package org.silentsoft.actlist;
 public class BizConst {
 
 	public static final String KEY_ACTLIST_CONFIG = "KEY_ACTLIST_CONFIG";
+	public static final String KEY_PURGE_TARGET_PLUGINS = "KEY_PURGE_TARGET_PLUGINS";
 	public static final String KEY_DEACTIVATED_PLUGINS = "KEY_DEACTIVATED_PLUGINS";
 	public static final String KEY_PRIORITY_OF_PLUGINS = "KEY_PRIORITY_OF_PLUGINS";
 	public static final String KEY_COMPONENT_BOX = "KEY_COMPONENT_BOX";
@@ -38,6 +39,10 @@ public class BizConst {
 	 */
 	public static final String EVENT_APPLICATION_EXIT            = "EVENT_APPLICATION_EXIT";
 	/**
+	 * Actlist application will save purge target plugins list when this event is called.
+	 */
+	public static final String EVENT_SAVE_PURGE_TARGET_PLUGINS   = "EVENT_SAVE_PURGE_TARGET_PLUGINS";
+	/**
 	 * Actlist application will save deactivated plugins list when this event is called.
 	 */
 	public static final String EVENT_SAVE_DEACTIVATED_PLUGINS    = "EVENT_SAVE_DEACTIVATED_PLUGINS";
@@ -45,6 +50,10 @@ public class BizConst {
 	 * Actlist application will save priority of plugins list when this event is called.
 	 */
 	public static final String EVENT_SAVE_PRIORITY_OF_PLUGINS    = "EVENT_SAVE_PRIORITY_OF_PLUGINS";
+	/**
+	 * Actlist application will create a prompt component when there is no any other plugin component.
+	 */
+	public static final String EVENT_CREATE_PROMPT_COMPONENT     = "EVENT_CREATE_PROMPT_COMPONENT";
 
 	/**
 	 * Plugin's master proxy host information will be updated when this event is called.

@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -17,6 +18,7 @@ import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.core.util.ObjectUtil;
+import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.memory.SharedMemory;
 
 import javafx.fxml.FXMLLoader;
@@ -105,7 +107,20 @@ public class PluginManager {
 	
 	public static void delete(String pluginFileName) throws Exception {
 		unload(pluginFileName);
-		Files.delete(Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName));
+		
+		try {
+			Files.delete(Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName));
+		} catch (Exception e) {
+			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
+			purgeTargetPlugins.add(pluginFileName);
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_SAVE_PURGE_TARGET_PLUGINS);
+		}
+		
+		try {
+			Files.deleteIfExists(Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")));
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public static void load(String pluginFileName, boolean activated) throws Exception {
@@ -164,21 +179,25 @@ public class PluginManager {
 		}
 	}
 	
-	public static void unload(String pluginFileName) throws Exception {
+	private static void unload(String pluginFileName) throws Exception {
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-		for (int i=0, j=componentBox.getChildren().size(); i<j; i++) {
-			PluginComponent pluginComponent = (PluginComponent) componentBox.getChildren().get(i).getUserData();
-			if (pluginComponent.getPluginFileName().equals(pluginFileName)) {
-				pluginComponent.clear();
-				
-				componentBox.getChildren().remove(i);
-				
-				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-				pluginMap.get(pluginFileName).close();
-				pluginMap.remove(pluginFileName);
-				
-				break;
+		synchronized (componentBox) {
+			for (int i=0, j=componentBox.getChildren().size(); i<j; i++) {
+				PluginComponent pluginComponent = (PluginComponent) componentBox.getChildren().get(i).getUserData();
+				if (pluginComponent.getPluginFileName().equals(pluginFileName)) {
+					pluginComponent.clear();
+					
+					componentBox.getChildren().remove(i);
+					
+					HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+					pluginMap.get(pluginFileName).close();
+					pluginMap.remove(pluginFileName);
+					
+					break;
+				}
 			}
+			
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_CREATE_PROMPT_COMPONENT);
 		}
 	}
 	

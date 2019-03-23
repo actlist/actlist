@@ -2,11 +2,17 @@ package org.silentsoft.actlist.plugin;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,13 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.controlsfx.control.PopOver;
@@ -471,30 +481,106 @@ public class PluginComponent implements EventListener {
 						    			if (result.containsKey("available")) {
 						    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
 						    				if (isAvailableNewPlugin) {
-						    					if (result.containsKey("url")) {
+						    					AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
+						    					
+						    					if (result.containsKey("jar")) {
 						    						try {
-						    							newPluginURI = new URI(String.valueOf(result.get("url")));
-						        					} catch (Exception e) {
-						        						e.printStackTrace();
-						        					}
+						    							String jar = String.valueOf(result.get("jar")).trim();
+						    							RESTfulAPI.doGet(jar, (afterResponse) -> {
+						    								try {
+						    									HttpEntity entity = afterResponse.getEntity();
+							    								if (entity != null) {
+							    									InputStream content = entity.getContent();
+							    									
+							    									// create a partial file
+							    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+							    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
+							    									if (Files.notExists(partialFilePath.getParent())) {
+								    									Files.createDirectories(partialFilePath.getParent());							    										
+							    									}
+							    									Files.createFile(partialFilePath);
+							    									
+							    									// write into partial file
+							    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
+							    									IOUtils.copy(content, fileStream);
+							    									fileStream.close();
+							    									
+							    									// test valid jar or not
+							    									new JarFile(partialFilePath.toString()).close();
+							    									
+							    									// determine jar file name
+							    									String newPluginFileName = String.valueOf(Paths.get(jar).getFileName());
+							    									if (newPluginFileName.toLowerCase().endsWith(".jar") == false) {
+							    										newPluginFileName = newPluginFileName.concat(".jar");
+							    									}
+							    									
+							    									// check whether duplicated or not and if so, pick a uuid as a file name
+							    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", newPluginFileName);
+							    									if (Files.exists(newPluginFilePath)) {
+							    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+							    									}
+							    									
+							    									// move the partial file to the plugins directory
+							    									Files.move(partialFilePath, newPluginFilePath);
+							    									
+							    									// copy current .config for the new one
+							    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
+							    									if (Files.exists(currentConfigFile)) {
+							    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFilePath.getFileName().toString().concat(".config"));
+							    										Files.copy(currentConfigFile, newPluginFilePath, StandardCopyOption.REPLACE_EXISTING);
+							    									}
+							    									
+							    									
+							    									VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+							    									synchronized (componentBox) {
+							    										int index = componentBox.getChildren().indexOf(root);
+								    									
+								    									// delete current plugin (invisible)
+								    									PluginManager.delete(pluginFileName);
+								    									
+								    									// load a new one to previous index of component box
+								    									PluginManager.load(newPluginFileName, isActivated(), index);
+								    									
+								    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+							    									}
+							    									
+							    									succeedToAutoUpdate.set(true);
+							    								}
+						    								} catch (Exception e) {
+						    									e.printStackTrace();
+						    								}
+						    							});
+						    						} catch (Exception e) {
+						    							e.printStackTrace();
+						    						}
 						    					}
 						    					
-						    					try {
-						    						plugin.pluginUpdateFound();
-						    					} catch (Exception e) {
-						    						e.printStackTrace();
-						    					}
+						    					if (succeedToAutoUpdate.get() == false) {
+						    						if (result.containsKey("url")) {
+							    						try {
+							    							newPluginURI = new URI(String.valueOf(result.get("url")));
+							        					} catch (Exception e) {
+							        						e.printStackTrace();
+							        					}
+							    					}
+							    					
+							    					try {
+							    						plugin.pluginUpdateFound();
+							    					} catch (Exception e) {
+							    						e.printStackTrace();
+							    					}
 
-						    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-					    						if (pluginArchivesURI != null) {
-					    							newPluginURI = pluginArchivesURI;
-					    						}
-						    					
-						    					if (newPluginURI != null) {
-						    						updateAlarmLabel.setVisible(true);
-						    						playFadeTransition(updateAlarmLabel);
-						    					} else {
-						    						updateAlarmLabel.setVisible(false);
+							    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+						    						if (pluginArchivesURI != null) {
+						    							newPluginURI = pluginArchivesURI;
+						    						}
+							    					
+							    					if (newPluginURI != null) {
+							    						updateAlarmLabel.setVisible(true);
+							    						playFadeTransition(updateAlarmLabel);
+							    					} else {
+							    						updateAlarmLabel.setVisible(false);
+							    					}
 						    					}
 						    				}
 						    			}
@@ -861,7 +947,7 @@ public class PluginComponent implements EventListener {
 		label.setTextFill(Paint.valueOf("#db0018"));
 		
 		return createFunctionBox(label, mouseEvent -> {
-			Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Are you sure you want to delete this plugin ?");
+			Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Are you sure you want to delete this plugin? You may need to restart the application for the best effect.");
 			if (result.isPresent() && result.get() == ButtonType.OK) {
 				try {
 					PluginManager.delete(pluginFileName);
@@ -916,19 +1002,11 @@ public class PluginComponent implements EventListener {
 					}
 					
 					((VBox) popOver.getContentNode()).getChildren().addAll(functions);
-					
-					/**
-					 * NO ! It's not works properly on windows system yet !
-					   if (plugin.getFunctionMap().size() > 0) {
-					       ((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-					   }
-					 */
 				}
 				
-				/*
-				 * NO ! It's not works properly on windows system yet !
-				   ((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
-				 */
+				((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+				
+				((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 				
 				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
 				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
