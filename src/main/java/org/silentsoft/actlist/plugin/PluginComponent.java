@@ -130,8 +130,6 @@ public class PluginComponent implements EventListener {
 	
 	private ActlistPlugin plugin;
 	
-	private boolean initialized = false;
-	
 	private PopOver popOver;
 	
 	private ObservableList<Node> functions;
@@ -159,8 +157,6 @@ public class PluginComponent implements EventListener {
 				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
 				
 				plugin = pluginClass.newInstance();
-				
-				initialized = true;
 				
 				SupportedPlatform currentPlatform = null;
 				{
@@ -647,6 +643,10 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
+	private boolean isInitialized() {
+		return (plugin == null) ? false : true;
+	}
+	
 	void clear() {
 		if (isActivated()) {
 			try {
@@ -656,8 +656,10 @@ public class PluginComponent implements EventListener {
 			}
 		}
 		
-		plugin.classLoaderObject().set(null);
-		plugin = null;
+		if (isInitialized()) {
+			plugin.classLoaderObject().set(null);
+			plugin = null;
+		}
 	}
 	
 	private void playFadeTransition(Node node) {
@@ -943,7 +945,7 @@ public class PluginComponent implements EventListener {
 		if (e.getButton() == MouseButton.SECONDARY) {
 			((VBox) popOver.getContentNode()).getChildren().clear();
 			
-			if (initialized) {
+			if (isInitialized()) {
 				((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
 				
 				if (isActivated()) {
