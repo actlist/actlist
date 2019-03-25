@@ -66,6 +66,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -91,6 +92,9 @@ public class AppController implements EventListener {
 	
 	@FXML
 	private BorderPane body;
+	
+	@FXML
+	private Pane handPaneMac;
 	
 	@FXML
 	private VBox sideArea;
@@ -159,6 +163,11 @@ public class AppController implements EventListener {
 			makeMinimizable(App.getStage(), sideMinimizeButton);
 			makeMaximizable(App.getStage(), sideMaximizeButton);
 			makeClosable(App.getStage(), sideCloseButton);
+		}
+		{
+			// for native drag experience on Mac theme
+			makeDraggable(App.getStage(), handPaneMac);
+			makeNormalizable(App.getStage(), handPaneMac);
 		}
 		applyTheme();
 		
@@ -360,10 +369,14 @@ public class AppController implements EventListener {
     private void applyTheme() {
     	if (isWinTheme()) {
     		body.setTop(head);
-    		body.setLeft(null);    		
+    		body.setLeft(null);
+    		
+    		handPaneMac.setVisible(false);
     	} else if (isMacTheme()) {
     		body.setTop(null);
     		body.setLeft(sideArea);
+    		
+    		handPaneMac.setVisible(true);
     	}
     }
     
