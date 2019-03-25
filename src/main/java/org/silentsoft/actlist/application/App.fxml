@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
@@ -198,6 +199,7 @@
                   </BorderPane>
                </top>
 		      </BorderPane>
+            <Pane fx:id="handPaneMac" prefHeight="14.0" AnchorPane.leftAnchor="69.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0" />
 		   </children>
 		</AnchorPane>
    </children>
