@@ -91,8 +91,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -132,6 +130,8 @@ public class PluginComponent implements EventListener {
 	
 	private ActlistPlugin plugin;
 	
+	private boolean initialized = false;
+	
 	private PopOver popOver;
 	
 	private ObservableList<Node> functions;
@@ -154,11 +154,13 @@ public class PluginComponent implements EventListener {
 				makeConsumable();
 				makeDraggable();
 				
-				plugin = pluginClass.newInstance();
-				
 				popOver = new PopOver(new VBox());
 				((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+				
+				plugin = pluginClass.newInstance();
+				
+				initialized = true;
 				
 				SupportedPlatform currentPlatform = null;
 				{
@@ -276,10 +278,6 @@ public class PluginComponent implements EventListener {
 						} else {
 							togActivator.setSelected(activated);
 						}
-						
-//						popOver = new PopOver(new VBox());
-//						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
-//						popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
 						
 						plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
 							if (oldValue == newValue) {
@@ -527,19 +525,22 @@ public class PluginComponent implements EventListener {
 							    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
 							    									if (Files.exists(currentConfigFile)) {
 							    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFilePath.getFileName().toString().concat(".config"));
-							    										Files.copy(currentConfigFile, newPluginFilePath, StandardCopyOption.REPLACE_EXISTING);
+							    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
 							    									}
 							    									
+							    									// show loading box (NOTE; The current graphics will be disappeared. So it doesn't have to mark it back as false.)
+							    									pluginLoadingBox.setVisible(true); // for head
+							    									displayLoadingBar(true);           // for body
 							    									
 							    									VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 							    									synchronized (componentBox) {
-							    										int index = componentBox.getChildren().indexOf(root);
+							    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
 								    									
 								    									// delete current plugin (invisible)
 								    									PluginManager.delete(pluginFileName);
 								    									
-								    									// load a new one to previous index of component box
-								    									PluginManager.load(newPluginFileName, isActivated(), index);
+								    									// load a new one to current position
+								    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
 								    									
 								    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 							    									}
@@ -895,53 +896,6 @@ public class PluginComponent implements EventListener {
 		}
 	}
 	
-	private HBox createUpgradeFunction() {
-		return createFunctionBox(new Label("Upgrade"), mouseEvent -> {
-			ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
-			
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Select a new Actlist plugin file to upgrade");
-			fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
-			fileChooser.getExtensionFilters().add(jarFilter);
-			fileChooser.setSelectedExtensionFilter(jarFilter);
-			
-			File file = fileChooser.showOpenDialog(App.getStage());
-			
-			if (file == null) {
-				return;
-			}
-			
-			if (file.getName().equals(pluginFileName) == false && Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
-				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-				if (pluginMap.containsKey(file.getName())) {
-					MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
-					return;
-				}
-			}
-			
-			try {
-				pluginLoadingBox.setVisible(true);
-				
-				boolean succeedToInstall = PluginManager.install(file);
-				if (succeedToInstall) {
-					VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-					int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
-					
-					PluginManager.delete(pluginFileName);
-					
-					PluginManager.load(file.getName(), true, indexOfThisPlugin);
-					
-					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				MessageBox.showError(App.getStage(), "Oops... something is weird !");
-			} finally {
-				pluginLoadingBox.setVisible(false);
-			}
-		});
-	}
-	
 	private HBox createDeleteFunction() {
 		Label label = new Label("Delete");
 		label.setTextFill(Paint.valueOf("#db0018"));
@@ -987,31 +941,33 @@ public class PluginComponent implements EventListener {
 	@FXML
 	private void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseButton.SECONDARY) {
-			if (popOver != null) { // if the plugin had thrown an Exception then popOver might be null.
-				((VBox) popOver.getContentNode()).getChildren().clear();
-				
+			((VBox) popOver.getContentNode()).getChildren().clear();
+			
+			if (initialized) {
 				((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
-				/**
-				 * NO ! It's not works properly on windows system yet !
-				   ((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
-				 */
 				
 				if (isActivated()) {
 					if (plugin.getFunctionMap().size() > 0) {
-						((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+						((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
 					}
 					
 					((VBox) popOver.getContentNode()).getChildren().addAll(functions);
 				}
 				
-				((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-				
-				((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
-				
-				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
+				((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
 			}
+			
+			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
+			
+			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
+			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 		}
+	}
+	
+	private Separator createCustomSeparator() {
+		Separator separator = new Separator(Orientation.HORIZONTAL);
+		separator.setStyle("-fx-padding: 0.083333em 0.0em 0.0em 0.0em;"); /* 1 0 0 0 */
+		return separator;
 	}
 	
 	@FXML
