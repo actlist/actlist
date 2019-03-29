@@ -553,30 +553,31 @@ public class PluginComponent implements EventListener {
 						    					}
 						    					
 						    					if (succeedToAutoUpdate.get() == false) {
+						    						URI pluginArchivesURI = plugin.getPluginArchivesURI();
+						    						if (pluginArchivesURI != null) {
+						    							newPluginURI = pluginArchivesURI;
+						    						}
+						    						
 						    						if (result.containsKey("url")) {
 							    						try {
 							    							newPluginURI = new URI(String.valueOf(result.get("url")));
+							    							plugin.setPluginArchivesURI(newPluginURI);
 							        					} catch (Exception e) {
 							        						e.printStackTrace();
 							        					}
+							    					}
+						    						
+						    						if (newPluginURI != null) {
+							    						updateAlarmLabel.setVisible(true);
+							    						playFadeTransition(updateAlarmLabel);
+							    					} else {
+							    						updateAlarmLabel.setVisible(false);
 							    					}
 							    					
 							    					try {
 							    						plugin.pluginUpdateFound();
 							    					} catch (Exception e) {
 							    						e.printStackTrace();
-							    					}
-
-							    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-						    						if (pluginArchivesURI != null) {
-						    							newPluginURI = pluginArchivesURI;
-						    						}
-							    					
-							    					if (newPluginURI != null) {
-							    						updateAlarmLabel.setVisible(true);
-							    						playFadeTransition(updateAlarmLabel);
-							    					} else {
-							    						updateAlarmLabel.setVisible(false);
 							    					}
 						    					}
 						    				}
