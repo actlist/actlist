@@ -457,7 +457,7 @@ public class PluginComponent implements EventListener {
 										if (uri.matches("(?i).*\\.js")) {
 											StringBuffer script = new StringBuffer();
 											script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
-											script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class));
+											script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class, plugin.getBeforeRequest()));
 											
 											ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
 											Object _result = scriptEngine.eval(script.toString());
@@ -465,7 +465,7 @@ public class PluginComponent implements EventListener {
 												result = (Map) _result;
 											}
 										} else {
-							    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class);
+							    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class, plugin.getBeforeRequest());
 										}
 						    			
 						    			if (result == null) {
@@ -480,7 +480,7 @@ public class PluginComponent implements EventListener {
 						    					if (result.containsKey("jar")) {
 						    						try {
 						    							String jar = String.valueOf(result.get("jar")).trim();
-						    							RESTfulAPI.doGet(jar, (afterResponse) -> {
+						    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
 						    								try {
 						    									HttpEntity entity = afterResponse.getEntity();
 							    								if (entity != null) {
