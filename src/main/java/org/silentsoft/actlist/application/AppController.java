@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -654,6 +655,15 @@ public class AppController implements EventListener {
 				}
 			});
 			
+			// remove not exist deactivated plugin
+			for (int i=deactivatedPlugins.size()-1; i>=0; i--) {
+				String plugin = deactivatedPlugins.get(i);
+				if (plugins.contains(plugin) == false) {
+					deactivatedPlugins.remove(i);
+				}
+			}
+			saveDeactivatedPlugins();
+			
 			// delete unused config file
 			Path configDirectory = Paths.get(System.getProperty("user.dir"), "plugins", "config");
 			if (Files.exists(configDirectory) && Files.isDirectory(configDirectory)) {
@@ -802,9 +812,10 @@ public class AppController implements EventListener {
 		boolean possible = true;
 		if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
 			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-			if (pluginMap.containsKey(file.getName())) {
+			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
+			if (pluginMap.containsKey(file.getName()) || purgeTargetPlugins.contains(file.getName())) {
 				possible = false;
-				MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
+				MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin");
 			}
 		}
 		return possible;
@@ -840,13 +851,16 @@ public class AppController implements EventListener {
 	}
 	
 	private List<String> readPurgeTargetPlugins() {
-		return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), true);
+		return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), true).stream().distinct().collect(Collectors.toList());
 	}
 	
 	private void savePurgeTargetPlugins() {
 		try {
-			StringBuffer buffer = new StringBuffer();
 			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
+			purgeTargetPlugins = purgeTargetPlugins.stream().distinct().collect(Collectors.toList());
+			SharedMemory.getDataMap().put(BizConst.KEY_PURGE_TARGET_PLUGINS, purgeTargetPlugins);
+			
+			StringBuffer buffer = new StringBuffer();
 			for (String purgeTargetPlugin : purgeTargetPlugins) {
 				buffer.append(purgeTargetPlugin);
 				buffer.append("\r\n");
@@ -859,13 +873,16 @@ public class AppController implements EventListener {
 	}
 	
 	private List<String> readDeactivatedPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true);
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true).stream().distinct().collect(Collectors.toList());
     }
     
     private void saveDeactivatedPlugins() {
     	try {
-    		StringBuffer buffer = new StringBuffer();
     		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+    		deactivatedPlugins = deactivatedPlugins.stream().distinct().collect(Collectors.toList());
+    		SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
+    		
+    		StringBuffer buffer = new StringBuffer();
     		for (String deactivatedPlugin : deactivatedPlugins) {
     			buffer.append(deactivatedPlugin);
     			buffer.append("\r\n");
@@ -878,7 +895,7 @@ public class AppController implements EventListener {
     }
 	
     private List<String> readPriorityOfPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true);
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true).stream().distinct().collect(Collectors.toList());
     }
     
     private void savePriorityOfPlugins() {
