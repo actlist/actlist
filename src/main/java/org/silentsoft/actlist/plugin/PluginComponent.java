@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -475,110 +477,152 @@ public class PluginComponent implements EventListener {
 						    			if (result.containsKey("available")) {
 						    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
 						    				if (isAvailableNewPlugin) {
-						    					AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
+						    					AtomicReference<Runnable> updateAction = new AtomicReference<Runnable>(null);
 						    					
-						    					if (result.containsKey("jar")) {
+						    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+					    						if (pluginArchivesURI != null) {
+					    							newPluginURI = pluginArchivesURI;
+					    						}
+					    						
+					    						if (result.containsKey("url")) {
 						    						try {
-						    							String jar = String.valueOf(result.get("jar")).trim();
-						    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
-						    								try {
-						    									HttpEntity entity = afterResponse.getEntity();
-							    								if (entity != null) {
-							    									InputStream content = entity.getContent();
-							    									
-							    									// create a partial file
-							    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-							    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
-							    									if (Files.notExists(partialFilePath.getParent())) {
-								    									Files.createDirectories(partialFilePath.getParent());							    										
-							    									}
-							    									Files.createFile(partialFilePath);
-							    									
-							    									// write into partial file
-							    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
-							    									IOUtils.copy(content, fileStream);
-							    									fileStream.close();
-							    									
-							    									// test valid jar or not
-							    									new JarFile(partialFilePath.toString()).close();
-							    									
-							    									// determine jar file name
-							    									String newPluginFileName = String.valueOf(Paths.get(jar).getFileName());
-							    									if (newPluginFileName.toLowerCase().endsWith(".jar") == false) {
-							    										newPluginFileName = newPluginFileName.concat(".jar");
-							    									}
-							    									
-							    									// check whether duplicated or not and if so, pick a uuid as a file name
-							    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", newPluginFileName);
-							    									if (Files.exists(newPluginFilePath)) {
-							    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
-							    									}
-							    									
-							    									// move the partial file to the plugins directory
-							    									Files.move(partialFilePath, newPluginFilePath);
-							    									
-							    									// copy current .config for the new one
-							    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
-							    									if (Files.exists(currentConfigFile)) {
-							    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFilePath.getFileName().toString().concat(".config"));
-							    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
-							    									}
-							    									
-							    									// show loading box (NOTE; The current graphics will be disappeared. So it doesn't have to mark it back as false.)
-							    									pluginLoadingBox.setVisible(true); // for head
-							    									displayLoadingBar(true);           // for body
-							    									
-							    									VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-							    									synchronized (componentBox) {
-							    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
-								    									
-								    									// delete current plugin (invisible)
-								    									PluginManager.delete(pluginFileName);
-								    									
-								    									// load a new one to current position
-								    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
-								    									
-								    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-							    									}
-							    									
-							    									succeedToAutoUpdate.set(true);
-							    								}
-						    								} catch (Exception e) {
-						    									e.printStackTrace();
-						    								}
-						    							});
-						    						} catch (Exception e) {
-						    							e.printStackTrace();
-						    						}
+						    							newPluginURI = new URI(String.valueOf(result.get("url")));
+						    							plugin.setPluginArchivesURI(newPluginURI);
+						        					} catch (Exception e) {
+						        						e.printStackTrace();
+						        					}
+						    					}
+					    						
+					    						if (newPluginURI != null) {
+						    						updateAction.set(() -> {
+						    							showAboutStage();
+						    							updateAlarmLabel.setVisible(false);
+						    						});
 						    					}
 						    					
-						    					if (succeedToAutoUpdate.get() == false) {
-						    						URI pluginArchivesURI = plugin.getPluginArchivesURI();
-						    						if (pluginArchivesURI != null) {
-						    							newPluginURI = pluginArchivesURI;
-						    						}
-						    						
-						    						if (result.containsKey("url")) {
-							    						try {
-							    							newPluginURI = new URI(String.valueOf(result.get("url")));
-							    							plugin.setPluginArchivesURI(newPluginURI);
-							        					} catch (Exception e) {
-							        						e.printStackTrace();
-							        					}
-							    					}
-						    						
-						    						if (newPluginURI != null) {
-							    						updateAlarmLabel.setVisible(true);
-							    						playFadeTransition(updateAlarmLabel);
-							    					} else {
-							    						updateAlarmLabel.setVisible(false);
-							    					}
-							    					
-							    					try {
-							    						plugin.pluginUpdateFound();
-							    					} catch (Exception e) {
-							    						e.printStackTrace();
-							    					}
+						    					if (result.containsKey("jar")) {
+						    						String jar = String.valueOf(result.get("jar")).trim();
+						    						updateAction.set(() -> {
+						    							AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
+						    							
+						    							// show loading box
+				    									pluginLoadingBox.setVisible(true); // for head
+				    									displayLoadingBar(true);           // for body
+						    							
+				    									new Thread(() -> {
+				    										try {
+								    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
+								    								try {
+								    									HttpEntity entity = afterResponse.getEntity();
+									    								if (entity != null) {
+									    									InputStream content = entity.getContent();
+									    									
+									    									// create a partial file
+									    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+									    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
+									    									if (Files.notExists(partialFilePath.getParent())) {
+										    									Files.createDirectories(partialFilePath.getParent());							    										
+									    									}
+									    									Files.createFile(partialFilePath);
+									    									
+									    									// write into partial file
+									    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
+									    									IOUtils.copy(content, fileStream);
+									    									fileStream.close();
+									    									
+									    									// test valid jar or not
+									    									new JarFile(partialFilePath.toString()).close();
+									    									
+									    									// determine jar file name
+									    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+									    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
+									    										_newPluginFileName = _newPluginFileName.concat(".jar");
+									    									}
+									    									
+									    									// check whether duplicated or not and if so, pick a uuid as a file name
+									    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
+									    									if (Files.exists(newPluginFilePath)) {
+									    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+									    									}
+									    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
+									    									
+									    									// move the partial file to the plugins directory
+									    									Files.move(partialFilePath, newPluginFilePath);
+									    									
+									    									// copy current .config for the new one
+									    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
+									    									if (Files.exists(currentConfigFile)) {
+									    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFileName.concat(".config"));
+									    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
+									    									}
+									    									
+									    									CountDownLatch latch = new CountDownLatch(1);
+									    									Platform.runLater(() -> {
+									    										try {
+									    											VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+											    									synchronized (componentBox) {
+											    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
+												    									
+											    										// about deactivated.ini
+											    										if (isActivated() == false) {
+												    										List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+												    										deactivatedPlugins.add(newPluginFileName);
+												    										EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+												    									}
+											    										
+												    									// delete current plugin (invisible)
+												    									PluginManager.delete(pluginFileName);
+												    									
+												    									// load a new one to current position
+												    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
+												    									
+												    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+											    									}
+									    										} catch (Exception | Error e) {
+									    											e.printStackTrace();
+									    										} finally {
+									    											latch.countDown();
+									    										}
+									    									});
+									    									latch.await();
+									    									
+									    									succeedToAutoUpdate.set(true);
+									    								}
+								    								} catch (Exception e) {
+								    									e.printStackTrace();
+								    								}
+								    							});
+								    						} catch (Exception e) {
+								    							e.printStackTrace();
+								    						}
+							    							
+							    							if (succeedToAutoUpdate.get() == false) {
+							    								Platform.runLater(() -> {
+							    									pluginLoadingBox.setVisible(false); // for head
+							    									displayLoadingBar(false);           // for body
+							    									
+								    								showAboutStage();
+								    								updateAlarmLabel.setVisible(false);
+							    								});
+							    							}
+				    									}).start();
+						    						});
+						    					}
+						    											    					
+						    					if (updateAction.get() != null) {
+						    						updateAlarmLabel.setOnMouseClicked((mouseEvent) -> {
+						    							updateAction.get().run();
+						    						});
+						    						updateAlarmLabel.setVisible(true);
+						    						playFadeTransition(updateAlarmLabel);
+						    					} else {
+						    						updateAlarmLabel.setVisible(false);
+						    					}
+						    					
+						    					try {
+						    						plugin.pluginUpdateFound();
+						    					} catch (Exception e) {
+						    						e.printStackTrace();
 						    					}
 						    				}
 						    			}
@@ -862,8 +906,6 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
-		updateAlarmLabel.setVisible(false);
-		
 		/**
 		 * this aboutStage must be closed when if already opened.
 		 * because the newPluginURI variable will be set by another thread.
@@ -917,7 +959,7 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void displayLoadingBar(boolean shouldShowLoadingBar) {
-		if (plugin.existsGraphic()) {
+		if (isActivated() && plugin.existsGraphic()) {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
