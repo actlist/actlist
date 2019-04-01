@@ -90,7 +90,7 @@ Mac OS X:
               setPluginVersion("1.0.0");
               /**
                * you can induce to use the latest version of the plugin to your users via
-               * setPluginUpdateCheckURI(URI.create("http://your-server.name"), URI.create("http://location-of-archives"));
+               * setPluginUpdateCheckURI(URI.create("http://your-server.name"));
                */
       
               setPluginAuthor("John Doe");
