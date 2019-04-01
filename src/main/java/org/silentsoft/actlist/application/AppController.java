@@ -761,9 +761,7 @@ public class AppController implements EventListener {
 				return;
 			}
 			
-			if (possibleToInstallThePlugin(file)) {
-				installAndLoadThePlugin(file);
-			}
+			installAndLoadThePlugin(file, true);
 		});
 		ContextMenu contextMenu = new ContextMenu(menuItem);
 		scrollPane.setOnMouseReleased(mouseEvent -> {
@@ -774,21 +772,23 @@ public class AppController implements EventListener {
 	}
 	
 	private void enableDragAndDrop() {
-		Predicate<Dragboard> containsSingleJarFile = (dragboard) -> {
+		Predicate<Dragboard> containsJarFileOnly = (dragboard) -> {
 			if (dragboard.hasFiles()) {
 				List<File> files = dragboard.getFiles();
-				if (files.size() == 1) {
-					File file = files.get(0);
-					if (file.isFile() && file.getName().toLowerCase().endsWith(".jar")) {
-						return true;
+				for (File file : files) {
+					if (file.isFile() == false || file.getName().toLowerCase().endsWith(".jar") == false) {
+						return false;
 					}
 				}
+			} else {
+				return false;
 			}
-			return false;
+			
+			return true;
 		};
 		
 		scrollPane.setOnDragOver(dragEvent -> {
-			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
+			if (containsJarFileOnly.test(dragEvent.getDragboard())) {
 				dragEvent.acceptTransferModes(TransferMode.COPY);
 			} else {
 				dragEvent.consume();
@@ -796,10 +796,9 @@ public class AppController implements EventListener {
 		});
 		scrollPane.setOnDragDropped(dragEvent -> {
 			dragEvent.setDropCompleted(false);
-			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
-				File file = dragEvent.getDragboard().getFiles().get(0);
-				if (possibleToInstallThePlugin(file)) {
-					installAndLoadThePlugin(file);
+			if (containsJarFileOnly.test(dragEvent.getDragboard())) {
+				for (File file : dragEvent.getDragboard().getFiles()) {
+					installAndLoadThePlugin(file, false);
 					
 					dragEvent.setDropCompleted(true);
 				}
@@ -808,24 +807,11 @@ public class AppController implements EventListener {
 		});
 	}
 	
-	private boolean possibleToInstallThePlugin(File file) {
-		boolean possible = true;
-		if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
-			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
-			if (pluginMap.containsKey(file.getName()) || purgeTargetPlugins.contains(file.getName())) {
-				possible = false;
-				MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin");
-			}
-		}
-		return possible;
-	}
-	
-	private void installAndLoadThePlugin(File file) {
+	private void installAndLoadThePlugin(File file, boolean strict) {
 		try {
-			boolean succeedToInstall = PluginManager.install(file);
-			if (succeedToInstall) {
-				PluginManager.load(file.getName(), true);
+			Path path = PluginManager.install(file, strict);
+			if (path != null) {
+				PluginManager.load(String.valueOf(path.getFileName()), true);
 				
 				savePriorityOfPlugins();
 			}
