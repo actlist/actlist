@@ -442,227 +442,11 @@ public class PluginComponent implements EventListener {
 						pluginLoadingBox.setVisible(false);
 						
 						new Thread(() -> {
-							Runnable checkUpdate = () -> {
-								try {
-									URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
-									if (pluginUpdateCheckURI != null) {
-										Map<String, Object> result = null;
-										
-										ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-						    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
-						    			/* below values are unnecessary. version value is enough.
-						    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
-						    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
-						    			*/
-										
-										String uri = pluginUpdateCheckURI.toString();
-										if (uri.matches("(?i).*\\.js")) {
-											StringBuffer script = new StringBuffer();
-											script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
-											script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class, plugin.getBeforeRequest()));
-											
-											ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
-											Object _result = scriptEngine.eval(script.toString());
-											if (_result instanceof Map) {
-												result = (Map) _result;
-											}
-										} else {
-							    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class, plugin.getBeforeRequest());
-										}
-						    			
-						    			if (result == null) {
-						    				return;
-						    			}
-						    			
-						    			if (result.containsKey("available")) {
-						    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
-						    				if (isAvailableNewPlugin) {
-						    					AtomicReference<Runnable> updateAction = new AtomicReference<Runnable>(null);
-						    					
-						    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-					    						if (pluginArchivesURI != null) {
-					    							newPluginURI = pluginArchivesURI;
-					    						}
-					    						
-					    						if (result.containsKey("url")) {
-						    						try {
-						    							newPluginURI = new URI(String.valueOf(result.get("url")));
-						    							plugin.setPluginArchivesURI(newPluginURI);
-						        					} catch (Exception e) {
-						        						e.printStackTrace();
-						        					}
-						    					}
-					    						
-					    						if (newPluginURI != null) {
-						    						updateAction.set(() -> {
-						    							showAboutStage();
-						    							updateAlarmLabel.setVisible(false);
-						    						});
-						    					}
-						    					
-						    					if (result.containsKey("jar")) {
-						    						String jar = String.valueOf(result.get("jar")).trim();
-						    						updateAction.set(() -> {
-						    							AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
-						    							
-						    							// show loading box
-				    									pluginLoadingBox.setVisible(true); // for head
-				    									displayLoadingBar(true);           // for body
-						    							
-				    									new Thread(() -> {
-				    										try {
-								    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
-								    								try {
-								    									HttpEntity entity = afterResponse.getEntity();
-									    								if (entity != null) {
-									    									InputStream content = entity.getContent();
-									    									
-									    									// create a partial file
-									    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-									    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
-									    									if (Files.notExists(partialFilePath.getParent())) {
-										    									Files.createDirectories(partialFilePath.getParent());							    										
-									    									}
-									    									Files.createFile(partialFilePath);
-									    									
-									    									// write into partial file
-									    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
-									    									IOUtils.copy(content, fileStream);
-									    									fileStream.close();
-									    									
-									    									// test valid jar or not
-									    									new JarFile(partialFilePath.toString()).close();
-									    									
-									    									// determine jar file name
-									    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
-									    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
-									    										_newPluginFileName = _newPluginFileName.concat(".jar");
-									    									}
-									    									
-									    									// check whether duplicated or not and if so, pick a uuid as a file name
-									    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
-									    									if (Files.exists(newPluginFilePath)) {
-									    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
-									    									}
-									    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
-									    									
-									    									// move the partial file to the plugins directory
-									    									Files.move(partialFilePath, newPluginFilePath);
-									    									
-									    									// copy current .config for the new one
-									    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
-									    									if (Files.exists(currentConfigFile)) {
-									    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFileName.concat(".config"));
-									    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
-									    									}
-									    									
-									    									CountDownLatch latch = new CountDownLatch(1);
-									    									Platform.runLater(() -> {
-									    										try {
-									    											VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-											    									synchronized (componentBox) {
-											    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
-												    									
-											    										// about deactivated.ini
-											    										if (isActivated() == false) {
-												    										List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
-												    										deactivatedPlugins.add(newPluginFileName);
-												    										EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
-												    									}
-											    										
-												    									// delete current plugin (invisible)
-												    									PluginManager.delete(pluginFileName);
-												    									
-												    									// load a new one to current position
-												    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
-												    									
-												    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-											    									}
-									    										} catch (Exception | Error e) {
-									    											e.printStackTrace();
-									    										} finally {
-									    											latch.countDown();
-									    										}
-									    									});
-									    									latch.await();
-									    									
-									    									succeedToAutoUpdate.set(true);
-									    								}
-								    								} catch (Exception e) {
-								    									e.printStackTrace();
-								    								}
-								    							});
-								    						} catch (Exception e) {
-								    							e.printStackTrace();
-								    						}
-							    							
-							    							if (succeedToAutoUpdate.get() == false) {
-							    								Platform.runLater(() -> {
-							    									pluginLoadingBox.setVisible(false); // for head
-							    									displayLoadingBar(false);           // for body
-							    									
-								    								showAboutStage();
-								    								updateAlarmLabel.setVisible(false);
-							    								});
-							    							}
-				    									}).start();
-						    						});
-						    					}
-						    											    					
-						    					if (updateAction.get() != null) {
-						    						updateAlarmLabel.setOnMouseClicked((mouseEvent) -> {
-						    							updateAction.get().run();
-						    						});
-						    						updateAlarmLabel.setVisible(true);
-						    						playFadeTransition(updateAlarmLabel);
-						    					} else {
-						    						updateAlarmLabel.setVisible(false);
-						    					}
-						    					
-						    					try {
-						    						plugin.pluginUpdateFound();
-						    					} catch (Exception e) {
-						    						e.printStackTrace();
-						    					}
-						    				}
-						    			}
-						    			
-						    			if (result.containsKey("killSwitch")) {
-						    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(String.valueOf(result.get("killSwitch")).trim());
-						    				if (hasTurnedOnKillSwitch) {
-						    					String message = "The plugin's kill switch has turned on by the author.";
-						    					
-						    					makeDisable(new Exception(message), false);
-						    					
-						    					warningLabel.setOnMouseClicked(mouseEvent -> {
-													MessageBox.showInformation(App.getStage(), message);
-												});
-												warningLabel.setVisible(true);
-												playFadeTransition(warningLabel);
-						    				}
-						    			}
-						    			
-						    			if (result.containsKey("endOfService")) {
-						    				boolean hasEndOfService = Boolean.parseBoolean(String.valueOf(result.get("endOfService")));
-											if (hasEndOfService) {
-												warningLabel.setOnMouseClicked(mouseEvent -> {
-													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
-												});
-												warningLabel.setVisible(true);
-												playFadeTransition(warningLabel);
-											}
-						    			}
-									}
-								} catch (Exception e) {
-									e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
-								}
-							};
-							
 							boolean shouldCheck = true;
 							Date latestCheckDate= null;
-							while (true) {
+							while (plugin != null) {
 								if (shouldCheck) {
-									checkUpdate.run();
+									checkForUpdates.run();
 									latestCheckDate = Calendar.getInstance().getTime();
 								}
 								try {
@@ -674,6 +458,7 @@ public class PluginComponent implements EventListener {
 								}
 							}
 						}).start();
+						
 					}
 				});
 			} catch (Throwable e) {
@@ -876,8 +661,6 @@ public class PluginComponent implements EventListener {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				popOver.hide();
 			}
 		}));
 	}
@@ -893,7 +676,26 @@ public class PluginComponent implements EventListener {
 		hBox.setOnMouseExited(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: white;");
 		});
-		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, action);
+		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+			try {
+				popOver.hide();
+			} catch (Exception e) {
+				
+			}
+			
+			// for immediately hiding popover
+			new Thread(() -> {
+				Platform.runLater(() -> {
+					try {
+						if (action != null) {
+							action.handle(mouseEvent);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			}).start();
+		});
 		
 		return hBox;
 	}
@@ -939,6 +741,236 @@ public class PluginComponent implements EventListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private volatile Runnable checkForUpdates = () -> {
+		try {
+			URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
+			if (pluginUpdateCheckURI != null) {
+				Map<String, Object> result = null;
+				
+				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+    			/* below values are unnecessary. version value is enough.
+    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+    			*/
+				
+				String uri = pluginUpdateCheckURI.toString();
+				if (uri.matches("(?i).*\\.js")) {
+					StringBuffer script = new StringBuffer();
+					script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
+					script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class, plugin.getBeforeRequest()));
+					
+					ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+					Object _result = scriptEngine.eval(script.toString());
+					if (_result instanceof Map) {
+						result = (Map) _result;
+					}
+				} else {
+	    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class, plugin.getBeforeRequest());
+				}
+    			
+    			if (result == null) {
+    				return;
+    			}
+    			
+    			if (result.containsKey("available")) {
+    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
+    				if (isAvailableNewPlugin) {
+    					AtomicReference<Runnable> updateAction = new AtomicReference<Runnable>(null);
+    					
+    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+						if (pluginArchivesURI != null) {
+							newPluginURI = pluginArchivesURI;
+						}
+						
+						if (result.containsKey("url")) {
+    						try {
+    							newPluginURI = new URI(String.valueOf(result.get("url")));
+    							plugin.setPluginArchivesURI(newPluginURI);
+        					} catch (Exception e) {
+        						e.printStackTrace();
+        					}
+    					}
+						
+						if (newPluginURI != null) {
+    						updateAction.set(() -> {
+    							showAboutStage();
+    							updateAlarmLabel.setVisible(false);
+    						});
+    					}
+    					
+    					if (result.containsKey("jar")) {
+    						String jar = String.valueOf(result.get("jar")).trim();
+    						updateAction.set(() -> {
+    							AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
+    							
+    							// show loading box
+								pluginLoadingBox.setVisible(true); // for head
+								displayLoadingBar(true);           // for body
+    							
+								new Thread(() -> {
+									try {
+		    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
+		    								try {
+		    									HttpEntity entity = afterResponse.getEntity();
+			    								if (entity != null) {
+			    									InputStream content = entity.getContent();
+			    									
+			    									// create a partial file
+			    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+			    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
+			    									if (Files.notExists(partialFilePath.getParent())) {
+				    									Files.createDirectories(partialFilePath.getParent());							    										
+			    									}
+			    									Files.createFile(partialFilePath);
+			    									
+			    									// write into partial file
+			    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
+			    									IOUtils.copy(content, fileStream);
+			    									fileStream.close();
+			    									
+			    									// test valid jar or not
+			    									new JarFile(partialFilePath.toString()).close();
+			    									
+			    									// determine jar file name
+			    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
+			    										_newPluginFileName = _newPluginFileName.concat(".jar");
+			    									}
+			    									
+			    									// check whether duplicated or not and if so, pick a uuid as a file name
+			    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
+			    									if (Files.exists(newPluginFilePath)) {
+			    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+			    									}
+			    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
+			    									
+			    									// move the partial file to the plugins directory
+			    									Files.move(partialFilePath, newPluginFilePath);
+			    									
+			    									// copy current .config for the new one
+			    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
+			    									if (Files.exists(currentConfigFile)) {
+			    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFileName.concat(".config"));
+			    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
+			    									}
+			    									
+			    									CountDownLatch latch = new CountDownLatch(1);
+			    									Platform.runLater(() -> {
+			    										try {
+			    											VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+					    									synchronized (componentBox) {
+					    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
+						    									
+					    										// about deactivated.ini
+					    										if (isActivated() == false) {
+						    										List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+						    										deactivatedPlugins.add(newPluginFileName);
+						    										EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+						    									}
+					    										
+						    									// delete current plugin (invisible)
+						    									PluginManager.delete(pluginFileName);
+						    									
+						    									// load a new one to current position
+						    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
+						    									
+						    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+					    									}
+			    										} catch (Exception | Error e) {
+			    											e.printStackTrace();
+			    										} finally {
+			    											latch.countDown();
+			    										}
+			    									});
+			    									latch.await();
+			    									
+			    									succeedToAutoUpdate.set(true);
+			    								}
+		    								} catch (Exception e) {
+		    									e.printStackTrace();
+		    								}
+		    							});
+		    						} catch (Exception e) {
+		    							e.printStackTrace();
+		    						}
+	    							
+	    							if (succeedToAutoUpdate.get() == false) {
+	    								Platform.runLater(() -> {
+	    									pluginLoadingBox.setVisible(false); // for head
+	    									displayLoadingBar(false);           // for body
+	    									
+		    								showAboutStage();
+		    								updateAlarmLabel.setVisible(false);
+	    								});
+	    							}
+								}).start();
+    						});
+    					}
+    											    					
+    					if (updateAction.get() != null) {
+    						updateAlarmLabel.setOnMouseClicked((event) -> {
+    							updateAction.get().run();
+    						});
+    						updateAlarmLabel.setVisible(true);
+    						playFadeTransition(updateAlarmLabel);
+    					} else {
+    						updateAlarmLabel.setVisible(false);
+    					}
+    					
+    					try {
+    						plugin.pluginUpdateFound();
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					}
+    				}
+    			}
+    			
+    			if (result.containsKey("killSwitch")) {
+    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(String.valueOf(result.get("killSwitch")).trim());
+    				if (hasTurnedOnKillSwitch) {
+    					String message = "The plugin's kill switch has turned on by the author.";
+    					
+    					makeDisable(new Exception(message), false);
+    					
+    					warningLabel.setOnMouseClicked(event -> {
+							MessageBox.showInformation(App.getStage(), message);
+						});
+						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
+    				}
+    			}
+    			
+    			if (result.containsKey("endOfService")) {
+    				boolean hasEndOfService = Boolean.parseBoolean(String.valueOf(result.get("endOfService")));
+					if (hasEndOfService) {
+						warningLabel.setOnMouseClicked(event -> {
+							MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
+						});
+						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
+					}
+    			}
+			}
+		} catch (Exception | Error e) {
+			e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+		}
+	};
+	
+	private HBox createCheckForUpdatesFunction() {
+		return createFunctionBox(new Label("Check for updates"), mouseEvent -> {
+			pluginLoadingBox.setVisible(true); // for head
+			displayLoadingBar(true);           // for body
+			
+			new Thread(() -> {
+				checkForUpdates.run();
+				
+				pluginLoadingBox.setVisible(false); // for head
+				displayLoadingBar(false);           // for body
+			}).start();
+		});
 	}
 	
 	private HBox createDeleteFunction() {
@@ -1002,6 +1034,7 @@ public class PluginComponent implements EventListener {
 				((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
 			}
 			
+			((VBox) popOver.getContentNode()).getChildren().add(createCheckForUpdatesFunction());
 			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 			
 			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
