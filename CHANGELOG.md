@@ -1,3 +1,13 @@
+* 1.5.0
+    * new features
+      * supports automatic plugin updates
+      * `Check for updates` context menu
+      * `Delete` context menu
+    * improvements
+      * multiple jar DnD experience
+      * native drag experience on Mac theme
+    * breaking changes
+      * pluginArchivesURI will respect server's update check response
 * 1.4.3
     * critical dependency patch
 * 1.4.2
