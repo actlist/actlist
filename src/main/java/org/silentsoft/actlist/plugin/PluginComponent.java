@@ -2,11 +2,17 @@ package org.silentsoft.actlist.plugin;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,13 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.controlsfx.control.PopOver;
@@ -81,8 +93,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -144,11 +154,11 @@ public class PluginComponent implements EventListener {
 				makeConsumable();
 				makeDraggable();
 				
-				plugin = pluginClass.newInstance();
-				
 				popOver = new PopOver(new VBox());
 				((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+				
+				plugin = pluginClass.newInstance();
 				
 				SupportedPlatform currentPlatform = null;
 				{
@@ -266,10 +276,6 @@ public class PluginComponent implements EventListener {
 						} else {
 							togActivator.setSelected(activated);
 						}
-						
-//						popOver = new PopOver(new VBox());
-//						((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
-//						popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
 						
 						plugin.shouldShowLoadingBar().addListener((observable, oldValue, newValue) -> {
 							if (oldValue == newValue) {
@@ -436,105 +442,11 @@ public class PluginComponent implements EventListener {
 						pluginLoadingBox.setVisible(false);
 						
 						new Thread(() -> {
-							Runnable checkUpdate = () -> {
-								try {
-									URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
-									if (pluginUpdateCheckURI != null) {
-										Map<String, Object> result = null;
-										
-										ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-						    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
-						    			/* below values are unnecessary. version value is enough.
-						    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
-						    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
-						    			*/
-										
-										String uri = pluginUpdateCheckURI.toString();
-										if (uri.matches("(?i).*\\.js")) {
-											StringBuffer script = new StringBuffer();
-											script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
-											script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class));
-											
-											ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
-											Object _result = scriptEngine.eval(script.toString());
-											if (_result instanceof Map) {
-												result = (Map) _result;
-											}
-										} else {
-							    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class);
-										}
-						    			
-						    			if (result == null) {
-						    				return;
-						    			}
-						    			
-						    			if (result.containsKey("available")) {
-						    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
-						    				if (isAvailableNewPlugin) {
-						    					if (result.containsKey("url")) {
-						    						try {
-						    							newPluginURI = new URI(String.valueOf(result.get("url")));
-						        					} catch (Exception e) {
-						        						e.printStackTrace();
-						        					}
-						    					}
-						    					
-						    					try {
-						    						plugin.pluginUpdateFound();
-						    					} catch (Exception e) {
-						    						e.printStackTrace();
-						    					}
-
-						    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
-					    						if (pluginArchivesURI != null) {
-					    							newPluginURI = pluginArchivesURI;
-					    						}
-						    					
-						    					if (newPluginURI != null) {
-						    						updateAlarmLabel.setVisible(true);
-						    						playFadeTransition(updateAlarmLabel);
-						    					} else {
-						    						updateAlarmLabel.setVisible(false);
-						    					}
-						    				}
-						    			}
-						    			
-						    			if (result.containsKey("killSwitch")) {
-						    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(String.valueOf(result.get("killSwitch")).trim());
-						    				if (hasTurnedOnKillSwitch) {
-						    					String message = "The plugin's kill switch has turned on by the author.";
-						    					
-						    					makeDisable(new Exception(message), false);
-						    					
-						    					warningLabel.setOnMouseClicked(mouseEvent -> {
-													MessageBox.showInformation(App.getStage(), message);
-												});
-												warningLabel.setVisible(true);
-												playFadeTransition(warningLabel);
-						    				}
-						    			}
-						    			
-						    			if (result.containsKey("endOfService")) {
-						    				boolean hasEndOfService = Boolean.parseBoolean(String.valueOf(result.get("endOfService")));
-											if (hasEndOfService) {
-												warningLabel.setOnMouseClicked(mouseEvent -> {
-													MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
-												});
-												warningLabel.setVisible(true);
-												playFadeTransition(warningLabel);
-											}
-						    			}
-									}
-								} catch (Exception e) {
-									e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
-								}
-							};
-							
 							boolean shouldCheck = true;
 							Date latestCheckDate= null;
-							while (true) {
+							while (plugin != null) {
 								if (shouldCheck) {
-									checkUpdate.run();
+									checkForUpdates.run();
 									latestCheckDate = Calendar.getInstance().getTime();
 								}
 								try {
@@ -546,6 +458,7 @@ public class PluginComponent implements EventListener {
 								}
 							}
 						}).start();
+						
 					}
 				});
 			} catch (Throwable e) {
@@ -560,6 +473,10 @@ public class PluginComponent implements EventListener {
 		}).start();
 	}
 	
+	private boolean isInitialized() {
+		return (plugin == null) ? false : true;
+	}
+	
 	void clear() {
 		if (isActivated()) {
 			try {
@@ -569,8 +486,10 @@ public class PluginComponent implements EventListener {
 			}
 		}
 		
-		plugin.classLoaderObject().set(null);
-		plugin = null;
+		if (isInitialized()) {
+			plugin.classLoaderObject().set(null);
+			plugin = null;
+		}
 	}
 	
 	private void playFadeTransition(Node node) {
@@ -742,8 +661,6 @@ public class PluginComponent implements EventListener {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				popOver.hide();
 			}
 		}));
 	}
@@ -759,7 +676,26 @@ public class PluginComponent implements EventListener {
 		hBox.setOnMouseExited(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: white;");
 		});
-		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, action);
+		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+			try {
+				popOver.hide();
+			} catch (Exception e) {
+				
+			}
+			
+			// for immediately hiding popover
+			new Thread(() -> {
+				Platform.runLater(() -> {
+					try {
+						if (action != null) {
+							action.handle(mouseEvent);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			}).start();
+		});
 		
 		return hBox;
 	}
@@ -772,8 +708,6 @@ public class PluginComponent implements EventListener {
 	}
 	@FXML
 	private void showAboutStage() {
-		updateAlarmLabel.setVisible(false);
-		
 		/**
 		 * this aboutStage must be closed when if already opened.
 		 * because the newPluginURI variable will be set by another thread.
@@ -809,50 +743,233 @@ public class PluginComponent implements EventListener {
 		}
 	}
 	
-	private HBox createUpgradeFunction() {
-		return createFunctionBox(new Label("Upgrade"), mouseEvent -> {
-			ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
-			
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Select a new Actlist plugin file to upgrade");
-			fileChooser.setInitialDirectory(Paths.get(System.getProperty("user.dir"), "plugins").toFile());
-			fileChooser.getExtensionFilters().add(jarFilter);
-			fileChooser.setSelectedExtensionFilter(jarFilter);
-			
-			File file = fileChooser.showOpenDialog(App.getStage());
-			
-			if (file == null) {
-				return;
-			}
-			
-			if (file.getName().equals(pluginFileName) == false && Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
-				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-				if (pluginMap.containsKey(file.getName())) {
-					MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
-					return;
-				}
-			}
-			
-			try {
-				pluginLoadingBox.setVisible(true);
+	private volatile Runnable checkForUpdates = () -> {
+		try {
+			URI pluginUpdateCheckURI = plugin.getPluginUpdateCheckURI();
+			if (pluginUpdateCheckURI != null) {
+				Map<String, Object> result = null;
 				
-				boolean succeedToInstall = PluginManager.install(file);
-				if (succeedToInstall) {
-					VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-					int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
+				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+    			param.add(new BasicNameValuePair("version", plugin.getPluginVersion()));
+    			/* below values are unnecessary. version value is enough.
+    			param.add(new BasicNameValuePair("os", SystemUtil.getOSName()));
+    			param.add(new BasicNameValuePair("architecture", SystemUtil.getPlatformArchitecture()));
+    			*/
+				
+				String uri = pluginUpdateCheckURI.toString();
+				if (uri.matches("(?i).*\\.js")) {
+					StringBuffer script = new StringBuffer();
+					script.append(String.format("var version = '%s';", plugin.getPluginVersion())).append("\r\n");
+					script.append(RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, String.class, plugin.getBeforeRequest()));
 					
-					PluginManager.delete(pluginFileName);
-					
-					PluginManager.load(file.getName(), true, indexOfThisPlugin);
-					
-					EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+					ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+					Object _result = scriptEngine.eval(script.toString());
+					if (_result instanceof Map) {
+						result = (Map) _result;
+					}
+				} else {
+	    			result = RESTfulAPI.doGet(pluginUpdateCheckURI.toString(), param, Map.class, plugin.getBeforeRequest());
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				MessageBox.showError(App.getStage(), "Oops... something is weird !");
-			} finally {
-				pluginLoadingBox.setVisible(false);
+    			
+    			if (result == null) {
+    				return;
+    			}
+    			
+    			if (result.containsKey("available")) {
+    				isAvailableNewPlugin = Boolean.parseBoolean(String.valueOf(result.get("available")));
+    				if (isAvailableNewPlugin) {
+    					AtomicReference<Runnable> updateAction = new AtomicReference<Runnable>(null);
+    					
+    					URI pluginArchivesURI = plugin.getPluginArchivesURI();
+						if (pluginArchivesURI != null) {
+							newPluginURI = pluginArchivesURI;
+						}
+						
+						if (result.containsKey("url")) {
+    						try {
+    							newPluginURI = new URI(String.valueOf(result.get("url")));
+    							plugin.setPluginArchivesURI(newPluginURI);
+        					} catch (Exception e) {
+        						e.printStackTrace();
+        					}
+    					}
+						
+						if (newPluginURI != null) {
+    						updateAction.set(() -> {
+    							showAboutStage();
+    							updateAlarmLabel.setVisible(false);
+    						});
+    					}
+    					
+    					if (result.containsKey("jar")) {
+    						String jar = String.valueOf(result.get("jar")).trim();
+    						updateAction.set(() -> {
+    							AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
+    							
+    							// show loading box
+								pluginLoadingBox.setVisible(true); // for head
+								displayLoadingBar(true);           // for body
+    							
+								new Thread(() -> {
+									try {
+		    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
+		    								try {
+		    									HttpEntity entity = afterResponse.getEntity();
+			    								if (entity != null) {
+			    									InputStream content = entity.getContent();
+			    									
+			    									// create a partial file
+			    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+			    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
+			    									if (Files.notExists(partialFilePath.getParent())) {
+				    									Files.createDirectories(partialFilePath.getParent());							    										
+			    									}
+			    									Files.createFile(partialFilePath);
+			    									
+			    									// write into partial file
+			    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
+			    									IOUtils.copy(content, fileStream);
+			    									fileStream.close();
+			    									
+			    									// test valid jar or not
+			    									new JarFile(partialFilePath.toString()).close();
+			    									
+			    									// determine jar file name
+			    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
+			    										_newPluginFileName = _newPluginFileName.concat(".jar");
+			    									}
+			    									
+			    									// check whether duplicated or not and if so, pick a uuid as a file name
+			    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
+			    									if (Files.exists(newPluginFilePath)) {
+			    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+			    									}
+			    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
+			    									
+			    									// move the partial file to the plugins directory
+			    									Files.move(partialFilePath, newPluginFilePath);
+			    									
+			    									// copy current .config for the new one
+			    									Path currentConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config"));
+			    									if (Files.exists(currentConfigFile)) {
+			    										Path newConfigFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", newPluginFileName.concat(".config"));
+			    										Files.copy(currentConfigFile, newConfigFile, StandardCopyOption.REPLACE_EXISTING);
+			    									}
+			    									
+			    									CountDownLatch latch = new CountDownLatch(1);
+			    									Platform.runLater(() -> {
+			    										try {
+			    											VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+					    									synchronized (componentBox) {
+					    										int indexOfThisPlugin = componentBox.getChildren().indexOf(root);
+						    									
+					    										// about deactivated.ini
+					    										if (isActivated() == false) {
+						    										List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+						    										deactivatedPlugins.add(newPluginFileName);
+						    										EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+						    									}
+					    										
+						    									// delete current plugin (invisible)
+						    									PluginManager.delete(pluginFileName);
+						    									
+						    									// load a new one to current position
+						    									PluginManager.load(newPluginFileName, isActivated(), indexOfThisPlugin);
+						    									
+						    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+					    									}
+			    										} catch (Exception | Error e) {
+			    											e.printStackTrace();
+			    										} finally {
+			    											latch.countDown();
+			    										}
+			    									});
+			    									latch.await();
+			    									
+			    									succeedToAutoUpdate.set(true);
+			    								}
+		    								} catch (Exception e) {
+		    									e.printStackTrace();
+		    								}
+		    							});
+		    						} catch (Exception e) {
+		    							e.printStackTrace();
+		    						}
+	    							
+	    							if (succeedToAutoUpdate.get() == false) {
+	    								Platform.runLater(() -> {
+	    									pluginLoadingBox.setVisible(false); // for head
+	    									displayLoadingBar(false);           // for body
+	    									
+		    								showAboutStage();
+		    								updateAlarmLabel.setVisible(false);
+	    								});
+	    							}
+								}).start();
+    						});
+    					}
+    											    					
+    					if (updateAction.get() != null) {
+    						updateAlarmLabel.setOnMouseClicked((event) -> {
+    							updateAction.get().run();
+    						});
+    						updateAlarmLabel.setVisible(true);
+    						playFadeTransition(updateAlarmLabel);
+    					} else {
+    						updateAlarmLabel.setVisible(false);
+    					}
+    					
+    					try {
+    						plugin.pluginUpdateFound();
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					}
+    				}
+    			}
+    			
+    			if (result.containsKey("killSwitch")) {
+    				boolean hasTurnedOnKillSwitch = "on".equalsIgnoreCase(String.valueOf(result.get("killSwitch")).trim());
+    				if (hasTurnedOnKillSwitch) {
+    					String message = "The plugin's kill switch has turned on by the author.";
+    					
+    					makeDisable(new Exception(message), false);
+    					
+    					warningLabel.setOnMouseClicked(event -> {
+							MessageBox.showInformation(App.getStage(), message);
+						});
+						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
+    				}
+    			}
+    			
+    			if (result.containsKey("endOfService")) {
+    				boolean hasEndOfService = Boolean.parseBoolean(String.valueOf(result.get("endOfService")));
+					if (hasEndOfService) {
+						warningLabel.setOnMouseClicked(event -> {
+							MessageBox.showInformation(App.getStage(), "This plugin has reached end of service by the author.");
+						});
+						warningLabel.setVisible(true);
+						playFadeTransition(warningLabel);
+					}
+    			}
 			}
+		} catch (Exception | Error e) {
+			e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+		}
+	};
+	
+	private HBox createCheckForUpdatesFunction() {
+		return createFunctionBox(new Label("Check for updates"), mouseEvent -> {
+			pluginLoadingBox.setVisible(true); // for head
+			displayLoadingBar(true);           // for body
+			
+			new Thread(() -> {
+				checkForUpdates.run();
+				
+				pluginLoadingBox.setVisible(false); // for head
+				displayLoadingBar(false);           // for body
+			}).start();
 		});
 	}
 	
@@ -861,7 +978,7 @@ public class PluginComponent implements EventListener {
 		label.setTextFill(Paint.valueOf("#db0018"));
 		
 		return createFunctionBox(label, mouseEvent -> {
-			Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Are you sure you want to delete this plugin ?");
+			Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Are you sure you want to delete this plugin? You may need to restart the application for the best effect.");
 			if (result.isPresent() && result.get() == ButtonType.OK) {
 				try {
 					PluginManager.delete(pluginFileName);
@@ -874,7 +991,7 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void displayLoadingBar(boolean shouldShowLoadingBar) {
-		if (plugin.existsGraphic()) {
+		if (isActivated() && plugin.existsGraphic()) {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
@@ -901,39 +1018,35 @@ public class PluginComponent implements EventListener {
 	@FXML
 	private void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseButton.SECONDARY) {
-			if (popOver != null) { // if the plugin had thrown an Exception then popOver might be null.
-				((VBox) popOver.getContentNode()).getChildren().clear();
-				
+			((VBox) popOver.getContentNode()).getChildren().clear();
+			
+			if (isInitialized()) {
 				((VBox) popOver.getContentNode()).getChildren().add(createAboutFunction());
-				/**
-				 * NO ! It's not works properly on windows system yet !
-				   ((VBox) popOver.getContentNode()).getChildren().add(createUpgradeFunction());
-				 */
 				
 				if (isActivated()) {
 					if (plugin.getFunctionMap().size() > 0) {
-						((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
+						((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
 					}
 					
 					((VBox) popOver.getContentNode()).getChildren().addAll(functions);
-					
-					/**
-					 * NO ! It's not works properly on windows system yet !
-					   if (plugin.getFunctionMap().size() > 0) {
-					       ((VBox) popOver.getContentNode()).getChildren().add(new Separator(Orientation.HORIZONTAL));
-					   }
-					 */
 				}
 				
-				/*
-				 * NO ! It's not works properly on windows system yet !
-				   ((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
-				 */
+				((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
 				
-				// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-				popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
+				((VBox) popOver.getContentNode()).getChildren().add(createCheckForUpdatesFunction());
 			}
+			
+			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
+			
+			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
+			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
 		}
+	}
+	
+	private Separator createCustomSeparator() {
+		Separator separator = new Separator(Orientation.HORIZONTAL);
+		separator.setStyle("-fx-padding: 0.083333em 0.0em 0.0em 0.0em;"); /* 1 0 0 0 */
+		return separator;
 	}
 	
 	@FXML

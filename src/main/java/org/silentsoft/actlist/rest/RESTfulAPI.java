@@ -5,10 +5,14 @@ import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
@@ -23,6 +27,27 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 		return doGet(uri, getProxyHost(), param, returnType, (request) -> {
 			request.setHeaders(createHeaders());
 		});
+	}
+	
+	public static <T> T doGet(String uri, Object param, Class<T> returnType, Consumer<HttpRequest> beforeRequest) throws Exception {
+		return doGet(uri, getProxyHost(), param, returnType, (request) -> {
+			if (beforeRequest != null) {
+				beforeRequest.accept(request);
+			}
+			
+			request.setHeaders(createHeaders(request.getAllHeaders()));
+		});
+	}
+	
+	
+	public static <T> T doGet(String uri, Consumer<HttpRequest> beforeRequest, Consumer<HttpResponse> afterResponse) throws Exception {
+		return doGet(uri, getProxyHost(), null, (request) -> {
+			if (beforeRequest != null) {
+				beforeRequest.accept(request);
+			}
+			
+			request.setHeaders(createHeaders(request.getAllHeaders()));
+		}, afterResponse);
 	}
 	
 	public static <T> T doPost(String uri, Object param, Class<T> returnType) throws Exception {
@@ -61,30 +86,36 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 	}
 	
 	private static Header[] createHeaders() {
+		return createHeaders(null);
+	}
+	
+	private static Header[] createHeaders(Header[] append) {
 		ArrayList<Header> headers = new ArrayList<Header>();
 		
-		StringBuffer userAgent = new StringBuffer();
-		userAgent.append("Actlist-");
-		
-		userAgent.append(BuildVersion.VERSION);
-		
-		if (SystemUtil.isWindows()) {
-			userAgent.append(" windows-");
-		} else if (SystemUtil.isMac()) {
-			userAgent.append(" macosx-");
-		} else if (SystemUtil.isLinux()) {
-			userAgent.append(" linux-");
-		} else {
-			userAgent.append(" unknown-");
+		if (append != null) {
+			headers.addAll(Arrays.asList(append));
 		}
-		userAgent.append(SystemUtil.getOSArchitecture());
 		
-		userAgent.append(" platform-");
-		userAgent.append(SystemUtil.getPlatformArchitecture());
-		
+		StringBuffer userAgent = new StringBuffer();
+		{
+			userAgent.append("Actlist-");
+			userAgent.append(BuildVersion.VERSION);
+			if (SystemUtil.isWindows()) {
+				userAgent.append(" windows-");
+			} else if (SystemUtil.isMac()) {
+				userAgent.append(" macosx-");
+			} else if (SystemUtil.isLinux()) {
+				userAgent.append(" linux-");
+			} else {
+				userAgent.append(" unknown-");
+			}
+			userAgent.append(SystemUtil.getOSArchitecture());
+			userAgent.append(" platform-");
+			userAgent.append(SystemUtil.getPlatformArchitecture());
+		}
 		headers.add(new BasicHeader("user-agent", userAgent.toString()));
 		
-		return headers.size() == 0 ? null : headers.toArray(new Header[headers.size()]);
+		return headers.toArray(new Header[headers.size()]);
 	}
 	
 }
