@@ -1032,9 +1032,10 @@ public class PluginComponent implements EventListener {
 				}
 				
 				((VBox) popOver.getContentNode()).getChildren().add(createCustomSeparator());
+				
+				((VBox) popOver.getContentNode()).getChildren().add(createCheckForUpdatesFunction());
 			}
 			
-			((VBox) popOver.getContentNode()).getChildren().add(createCheckForUpdatesFunction());
 			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 			
 			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
