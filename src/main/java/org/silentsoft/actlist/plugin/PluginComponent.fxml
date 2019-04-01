@@ -43,7 +43,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Label>
-                  <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showAboutStage" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
+                  <Label fx:id="updateAlarmLabel" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>

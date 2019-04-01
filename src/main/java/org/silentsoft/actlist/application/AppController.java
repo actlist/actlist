@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -66,6 +67,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -91,6 +93,9 @@ public class AppController implements EventListener {
 	
 	@FXML
 	private BorderPane body;
+	
+	@FXML
+	private Pane handPaneMac;
 	
 	@FXML
 	private VBox sideArea;
@@ -159,6 +164,11 @@ public class AppController implements EventListener {
 			makeMinimizable(App.getStage(), sideMinimizeButton);
 			makeMaximizable(App.getStage(), sideMaximizeButton);
 			makeClosable(App.getStage(), sideCloseButton);
+		}
+		{
+			// for native drag experience on Mac theme
+			makeDraggable(App.getStage(), handPaneMac);
+			makeNormalizable(App.getStage(), handPaneMac);
 		}
 		applyTheme();
 		
@@ -360,10 +370,14 @@ public class AppController implements EventListener {
     private void applyTheme() {
     	if (isWinTheme()) {
     		body.setTop(head);
-    		body.setLeft(null);    		
+    		body.setLeft(null);
+    		
+    		handPaneMac.setVisible(false);
     	} else if (isMacTheme()) {
     		body.setTop(null);
     		body.setLeft(sideArea);
+    		
+    		handPaneMac.setVisible(true);
     	}
     }
     
@@ -608,13 +622,30 @@ public class AppController implements EventListener {
 				pluginsDirectory.mkdirs();
 			}
 			
+			List<String> purgeTargetPlugins = readPurgeTargetPlugins();
+			SharedMemory.getDataMap().put(BizConst.KEY_PURGE_TARGET_PLUGINS, purgeTargetPlugins);
+			
 			List<String> deactivatedPlugins = readDeactivatedPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
 			
 			List<String> priorityOfPlugins = readPriorityOfPlugins();
 			SharedMemory.getDataMap().put(BizConst.KEY_PRIORITY_OF_PLUGINS, priorityOfPlugins);
 			
-			// Do I need to clean up the /plugins/config if not exists at /plugins/(.jar) ?
+			// purge
+			for (int i=purgeTargetPlugins.size()-1; i>=0; i--) {
+				Path path = Paths.get(System.getProperty("user.dir"), "plugins", purgeTargetPlugins.get(i));
+				if (Files.exists(path)) {
+					try {
+						Files.delete(path);
+						purgeTargetPlugins.remove(i);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					purgeTargetPlugins.remove(i);
+				}
+			}
+			savePurgeTargetPlugins();
 			
 			// extract plugins
 			List<String> plugins = new ArrayList<String>();
@@ -624,8 +655,35 @@ public class AppController implements EventListener {
 				}
 			});
 			
+			// remove not exist deactivated plugin
+			for (int i=deactivatedPlugins.size()-1; i>=0; i--) {
+				String plugin = deactivatedPlugins.get(i);
+				if (plugins.contains(plugin) == false) {
+					deactivatedPlugins.remove(i);
+				}
+			}
+			saveDeactivatedPlugins();
+			
+			// delete unused config file
+			Path configDirectory = Paths.get(System.getProperty("user.dir"), "plugins", "config");
+			if (Files.exists(configDirectory) && Files.isDirectory(configDirectory)) {
+				Files.walk(configDirectory, 1).forEach(path -> {
+					String fileName = path.getFileName().toString();
+					if (fileName.toLowerCase().endsWith(".config")) {
+						fileName = fileName.substring(0, fileName.length()-".config".length());
+						if (plugins.contains(fileName) == false) {
+							try {
+								Files.delete(path);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				});
+			}
+			
 			// transform priority
-			for (int i = priorityOfPlugins.size() - 1; i >= 0; i--) {
+			for (int i=priorityOfPlugins.size()-1; i>=0; i--) {
 				String plugin = priorityOfPlugins.get(i);
 				
 				if (plugins.contains(plugin)) {
@@ -665,39 +723,7 @@ public class AppController implements EventListener {
 				EventHandler.callEvent(getClass(), BizConst.EVENT_NOTIFY_PRELOADER_PREPARING_PLUGINS);
 			}
 			
-			if (componentBox.getChildren().isEmpty()) {
-				Label firstLine = new Label();
-				firstLine.setText("No plugins available.");
-				
-				Hyperlink explore = new Hyperlink();
-				explore.setText("Explore");
-				explore.setOnMouseReleased(mouseEvent -> {
-					explore.setVisited(false);
-					
-					showExploreView();
-				});
-				
-				Label dragAndDrop = new Label();
-				dragAndDrop.setText("or drag and drop.");
-				
-				HBox secondLine = new HBox(explore, dragAndDrop);
-				secondLine.setAlignment(Pos.CENTER);
-				
-				VBox vBox = new VBox(firstLine, secondLine);
-				vBox.setAlignment(Pos.CENTER);
-				vBox.setSpacing(15.0);
-				AnchorPane.setTopAnchor(vBox, 0.0);
-				AnchorPane.setRightAnchor(vBox, 0.0);
-				AnchorPane.setBottomAnchor(vBox, 0.0);
-				AnchorPane.setLeftAnchor(vBox, 0.0);
-				
-				AnchorPane pane = new AnchorPane(vBox);
-				pane.setStyle("-fx-background-color: #ffffff;");
-				pane.setPrefWidth(310);
-				pane.setPrefHeight(310);
-
-				componentBox.getChildren().add(pane);
-			}
+			createPromptComponent();
 		}
 		
 		App.getStage().showingProperty().addListener((observable, oldValue, newValue) -> {
@@ -735,9 +761,7 @@ public class AppController implements EventListener {
 				return;
 			}
 			
-			if (possibleToInstallThePlugin(file)) {
-				installAndLoadThePlugin(file);
-			}
+			installAndLoadThePlugin(file, true);
 		});
 		ContextMenu contextMenu = new ContextMenu(menuItem);
 		scrollPane.setOnMouseReleased(mouseEvent -> {
@@ -748,21 +772,23 @@ public class AppController implements EventListener {
 	}
 	
 	private void enableDragAndDrop() {
-		Predicate<Dragboard> containsSingleJarFile = (dragboard) -> {
+		Predicate<Dragboard> containsJarFileOnly = (dragboard) -> {
 			if (dragboard.hasFiles()) {
 				List<File> files = dragboard.getFiles();
-				if (files.size() == 1) {
-					File file = files.get(0);
-					if (file.isFile() && file.getName().toLowerCase().endsWith(".jar")) {
-						return true;
+				for (File file : files) {
+					if (file.isFile() == false || file.getName().toLowerCase().endsWith(".jar") == false) {
+						return false;
 					}
 				}
+			} else {
+				return false;
 			}
-			return false;
+			
+			return true;
 		};
 		
 		scrollPane.setOnDragOver(dragEvent -> {
-			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
+			if (containsJarFileOnly.test(dragEvent.getDragboard())) {
 				dragEvent.acceptTransferModes(TransferMode.COPY);
 			} else {
 				dragEvent.consume();
@@ -770,10 +796,9 @@ public class AppController implements EventListener {
 		});
 		scrollPane.setOnDragDropped(dragEvent -> {
 			dragEvent.setDropCompleted(false);
-			if (containsSingleJarFile.test(dragEvent.getDragboard())) {
-				File file = dragEvent.getDragboard().getFiles().get(0);
-				if (possibleToInstallThePlugin(file)) {
-					installAndLoadThePlugin(file);
+			if (containsJarFileOnly.test(dragEvent.getDragboard())) {
+				for (File file : dragEvent.getDragboard().getFiles()) {
+					installAndLoadThePlugin(file, false);
 					
 					dragEvent.setDropCompleted(true);
 				}
@@ -782,23 +807,11 @@ public class AppController implements EventListener {
 		});
 	}
 	
-	private boolean possibleToInstallThePlugin(File file) {
-		boolean possible = true;
-		if (Paths.get(System.getProperty("user.dir"), "plugins", file.getName()).toFile().exists()) {
-			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
-			if (pluginMap.containsKey(file.getName())) {
-				possible = false;
-				MessageBox.showError(App.getStage(), "The selected file name is already in use by another plugin !");
-			}
-		}
-		return possible;
-	}
-	
-	private void installAndLoadThePlugin(File file) {
+	private void installAndLoadThePlugin(File file, boolean strict) {
 		try {
-			boolean succeedToInstall = PluginManager.install(file);
-			if (succeedToInstall) {
-				PluginManager.load(file.getName(), true);
+			Path path = PluginManager.install(file, strict);
+			if (path != null) {
+				PluginManager.load(String.valueOf(path.getFileName()), true);
 				
 				savePriorityOfPlugins();
 			}
@@ -823,14 +836,39 @@ public class AppController implements EventListener {
 		return false;
 	}
 	
+	private List<String> readPurgeTargetPlugins() {
+		return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), true).stream().distinct().collect(Collectors.toList());
+	}
+	
+	private void savePurgeTargetPlugins() {
+		try {
+			List<String> purgeTargetPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PURGE_TARGET_PLUGINS);
+			purgeTargetPlugins = purgeTargetPlugins.stream().distinct().collect(Collectors.toList());
+			SharedMemory.getDataMap().put(BizConst.KEY_PURGE_TARGET_PLUGINS, purgeTargetPlugins);
+			
+			StringBuffer buffer = new StringBuffer();
+			for (String purgeTargetPlugin : purgeTargetPlugins) {
+				buffer.append(purgeTargetPlugin);
+				buffer.append("\r\n");
+			}
+			
+			FileUtil.saveFile(Paths.get(System.getProperty("user.dir"), "plugins", "purge.ini"), buffer.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private List<String> readDeactivatedPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true);
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "deactivated.ini"), true).stream().distinct().collect(Collectors.toList());
     }
     
     private void saveDeactivatedPlugins() {
     	try {
-    		StringBuffer buffer = new StringBuffer();
     		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+    		deactivatedPlugins = deactivatedPlugins.stream().distinct().collect(Collectors.toList());
+    		SharedMemory.getDataMap().put(BizConst.KEY_DEACTIVATED_PLUGINS, deactivatedPlugins);
+    		
+    		StringBuffer buffer = new StringBuffer();
     		for (String deactivatedPlugin : deactivatedPlugins) {
     			buffer.append(deactivatedPlugin);
     			buffer.append("\r\n");
@@ -843,7 +881,7 @@ public class AppController implements EventListener {
     }
 	
     private List<String> readPriorityOfPlugins() {
-    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true);
+    	return FileUtil.readFileByLine(Paths.get(System.getProperty("user.dir"), "plugins", "priority.ini"), true).stream().distinct().collect(Collectors.toList());
     }
     
     private void savePriorityOfPlugins() {
@@ -876,6 +914,51 @@ public class AppController implements EventListener {
 		List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
 		PluginManager.load(fileName, !deactivatedPlugins.contains(fileName));
 	}
+	
+	private void createPromptComponent() {
+		Runnable action = () -> {
+			synchronized (componentBox) {
+				if (componentBox.getChildren().isEmpty()) {
+					Label firstLine = new Label();
+					firstLine.setText("No plugins available.");
+					
+					Hyperlink explore = new Hyperlink();
+					explore.setText("Explore");
+					explore.setOnMouseReleased(mouseEvent -> {
+						explore.setVisited(false);
+						
+						showExploreView();
+					});
+					
+					Label dragAndDrop = new Label();
+					dragAndDrop.setText("or drag and drop.");
+					
+					HBox secondLine = new HBox(explore, dragAndDrop);
+					secondLine.setAlignment(Pos.CENTER);
+					
+					VBox vBox = new VBox(firstLine, secondLine);
+					vBox.setAlignment(Pos.CENTER);
+					vBox.setSpacing(15.0);
+					AnchorPane.setTopAnchor(vBox, 0.0);
+					AnchorPane.setRightAnchor(vBox, 0.0);
+					AnchorPane.setBottomAnchor(vBox, 0.0);
+					AnchorPane.setLeftAnchor(vBox, 0.0);
+					
+					AnchorPane pane = new AnchorPane(vBox);
+					pane.setStyle("-fx-background-color: #ffffff;");
+					pane.setPrefWidth(310);
+					pane.setPrefHeight(310);
+
+					componentBox.getChildren().add(pane);
+				}
+			}
+		};
+		if (Platform.isFxApplicationThread()) {
+			action.run();
+		} else {
+			Platform.runLater(action);
+		}
+	}
 
 	@Override
 	public void onEvent(String event) {
@@ -892,11 +975,17 @@ public class AppController implements EventListener {
 		case BizConst.EVENT_SHOW_CONFIGURATION_VIEW:
 			showConfigurationView();
 			break;
+		case BizConst.EVENT_SAVE_PURGE_TARGET_PLUGINS:
+			savePurgeTargetPlugins();
+			break;
 		case BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS:
 			saveDeactivatedPlugins();
 			break;
 		case BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS:
 			savePriorityOfPlugins();
+			break;
+		case BizConst.EVENT_CREATE_PROMPT_COMPONENT:
+			createPromptComponent();
 			break;
 		}
 	}
