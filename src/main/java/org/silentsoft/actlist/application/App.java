@@ -22,6 +22,7 @@ import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
@@ -243,6 +244,7 @@ public class App extends Application implements EventListener {
 				System.setOut(console.getPrintStream());
 				System.setErr(console.getPrintStream());
 				
+				System.out.println(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), SystemUtil.getOSArchitecture(), SystemUtil.getPlatformArchitecture()));
 				System.out.println(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
 				
 				BorderPane root = new BorderPane();
