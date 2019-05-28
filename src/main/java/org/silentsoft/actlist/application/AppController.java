@@ -797,10 +797,18 @@ public class AppController implements EventListener {
 		scrollPane.setOnDragDropped(dragEvent -> {
 			dragEvent.setDropCompleted(false);
 			if (containsJarFileOnly.test(dragEvent.getDragboard())) {
+				HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
+				int numberOfPluginsBeforeInstall = pluginMap.size();
+				
 				for (File file : dragEvent.getDragboard().getFiles()) {
 					installAndLoadThePlugin(file, false);
 					
 					dragEvent.setDropCompleted(true);
+				}
+				
+				int numberOfPluginsAfterInstall = pluginMap.size();
+				if (numberOfPluginsBeforeInstall != numberOfPluginsAfterInstall) {
+					showPluginsView(); // notice to user that there is a new plugin.
 				}
 			}
 			dragEvent.consume();
