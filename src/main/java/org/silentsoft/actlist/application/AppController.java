@@ -116,8 +116,14 @@ public class AppController implements EventListener {
 	private Region navPluginsWin, navExploreWin, navConsoleWin, navAboutWin, navConfigurationWin;
 	
 	@FXML
+	private Label newPluginsAlarmLabelMac;
+	
+	@FXML
+	private Label newPluginsAlarmLabelWin;
+	
+	@FXML
 	private Label appUpdateAlarmLabelMac;
-
+	
 	@FXML
 	private Label appUpdateAlarmLabelWin;
 	
@@ -381,9 +387,35 @@ public class AppController implements EventListener {
     	}
     }
     
+    private void playNewPluginsAlarm() {
+    	Platform.runLater(() -> {
+    		newPluginsAlarmLabelWin.setVisible(true);
+    		newPluginsAlarmLabelMac.setVisible(true);
+    		
+    		FadeTransition fadeTransition = null;
+    		if (isWinTheme()) {
+    			fadeTransition = new FadeTransition(Duration.millis(400), newPluginsAlarmLabelWin);
+    		} else if (isMacTheme()) {
+    			fadeTransition = new FadeTransition(Duration.millis(400), newPluginsAlarmLabelMac);
+    		}
+    		
+    		if (fadeTransition != null) {
+    			fadeTransition.setFromValue(1.0);
+    			fadeTransition.setToValue(0.3);
+    			fadeTransition.setCycleCount(6);
+    			fadeTransition.setAutoReverse(true);
+    			
+    			fadeTransition.play();
+    		}
+    	});
+    }
+    
     @FXML
     private void showPluginsView() {
 		toggleNav(navPluginsWin, navPluginsMac);
+		
+		newPluginsAlarmLabelWin.setVisible(false);
+		newPluginsAlarmLabelMac.setVisible(false);
     	
     	contentPane.setCenter(componentBox);
     }
@@ -973,6 +1005,9 @@ public class AppController implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM:
+			playNewPluginsAlarm();
 			break;
 		case BizConst.EVENT_SHOW_EXPLORE_VIEW:
 			showExploreView();
