@@ -1009,6 +1009,9 @@ public class AppController implements EventListener {
 		case BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM:
 			playNewPluginsAlarm();
 			break;
+		case BizConst.EVENT_SHOW_PLUGINS_VIEW:
+			showPluginsView();
+			break;
 		case BizConst.EVENT_SHOW_EXPLORE_VIEW:
 			showExploreView();
 			break;
