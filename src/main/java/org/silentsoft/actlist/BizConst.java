@@ -20,6 +20,7 @@ public class BizConst {
 	
 	public static final String EVENT_PLAY_NEW_PLUGINS_ALARM  = "EVENT_PLAY_NEW_PLUGINS_ALARM";
 	
+	public static final String EVENT_SHOW_PLUGINS_VIEW       = "EVENT_SHOW_PLUGINS_VIEW";
 	public static final String EVENT_SHOW_EXPLORE_VIEW       = "EVENT_SHOW_EXPLORE_VIEW";
 	public static final String EVENT_SHOW_ABOUT_VIEW 		 = "EVENT_SHOW_ABOUT_VIEW";
 	public static final String EVENT_SHOW_CONFIGURATION_VIEW = "EVENT_SHOW_CONFIGURATION_VIEW";
