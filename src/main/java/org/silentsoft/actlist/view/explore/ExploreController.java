@@ -12,11 +12,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.PluginManager;
@@ -119,11 +122,20 @@ public class ExploreController extends AbstractViewerController {
 											    		
 											    		new Thread(() -> {
 											    			AtomicBoolean succeedToAutoInstall = new AtomicBoolean(false);
+											    			AtomicInteger responseStatusCode = new AtomicInteger();
+											    			AtomicReference<String> responseReasonPhrase = new AtomicReference<>();
+											    			AtomicReference<Exception> exception = new AtomicReference<>();
 										    				try {
 								    							RESTfulAPI.doGet(href, (beforeRequest) -> {
 								    								
 								    							}, (afterResponse) -> {
 								    								try {
+								    									StatusLine statusLine = afterResponse.getStatusLine();
+								    									if (statusLine != null) {
+								    										responseStatusCode.set(statusLine.getStatusCode());
+								    										responseReasonPhrase.set(statusLine.getReasonPhrase());
+								    									}
+								    									
 								    									HttpEntity entity = afterResponse.getEntity();
 									    								if (entity != null) {
 									    									InputStream content = entity.getContent();
@@ -177,11 +189,14 @@ public class ExploreController extends AbstractViewerController {
 									    									succeedToAutoInstall.set(true);
 									    								}
 								    								} catch (Exception e) {
+								    									System.out.println(String.format("Failed to install (%s -> status : %d - %s)", href, responseStatusCode.get(), responseReasonPhrase.get()));
 								    									e.printStackTrace();
+								    									exception.set(e);
 								    								}
 								    							});
 								    						} catch (Exception e) {
 								    							e.printStackTrace();
+								    							exception.set(e);
 								    						}
 							    							
 							    							if (succeedToAutoInstall.get()) {
@@ -193,6 +208,8 @@ public class ExploreController extends AbstractViewerController {
 								    									EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_PLUGINS_VIEW, false);
 								    								}
 							    								});
+							    							} else {
+							    								MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
 							    							}
 											    			
 											    			Platform.runLater(() -> {
