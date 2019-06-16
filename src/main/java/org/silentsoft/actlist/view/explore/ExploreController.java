@@ -139,6 +139,7 @@ public class ExploreController extends AbstractViewerController {
 												    		
 												    		new Thread(() -> {
 												    			AtomicBoolean succeedToAutoInstall = new AtomicBoolean(false);
+												    			AtomicBoolean networkUnavailable = new AtomicBoolean(false);
 												    			AtomicInteger responseStatusCode = new AtomicInteger();
 												    			AtomicReference<String> responseReasonPhrase = new AtomicReference<>();
 												    			AtomicReference<Exception> exception = new AtomicReference<>();
@@ -213,6 +214,7 @@ public class ExploreController extends AbstractViewerController {
 									    							});
 									    						} catch (Exception e) {
 									    							e.printStackTrace();
+									    							networkUnavailable.set(true);
 									    							exception.set(e);
 									    						}
 								    							
@@ -226,7 +228,11 @@ public class ExploreController extends AbstractViewerController {
 									    								}
 								    								});
 								    							} else {
-								    								MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
+								    								if (networkUnavailable.get()) {
+								    									MessageBox.showException(App.getStage(), "Network Unavailable", exception.get());
+								    								} else {
+								    									MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
+								    								}
 								    							}
 												    			
 												    			Platform.runLater(() -> {
