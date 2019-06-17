@@ -215,7 +215,6 @@ public class ExploreController extends AbstractViewerController {
 									    						} catch (Exception e) {
 									    							e.printStackTrace();
 									    							networkUnavailable.set(true);
-									    							exception.set(e);
 									    						}
 								    							
 								    							if (succeedToAutoInstall.get()) {
@@ -229,7 +228,13 @@ public class ExploreController extends AbstractViewerController {
 								    								});
 								    							} else {
 								    								if (networkUnavailable.get()) {
-								    									MessageBox.showException(App.getStage(), "Network Unavailable", exception.get());
+								    									if (Desktop.isDesktopSupported()) {
+																			try {
+																				Desktop.getDesktop().browse(URI.create(href));
+																			} catch (Exception e) {
+																				e.printStackTrace();
+																			}
+																		}
 								    								} else {
 								    									MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
 								    								}
