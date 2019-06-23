@@ -75,6 +75,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -803,7 +804,42 @@ public class PluginComponent implements EventListener {
     					
     					if (result.containsKey("jar")) {
     						String jar = String.valueOf(result.get("jar")).trim();
+    						
+    						AtomicReference<String> requiredActlist = new AtomicReference<String>(null);
+    						if (result.containsKey("requiredActlist")) {
+    							requiredActlist.set(String.valueOf(result.get("requiredActlist")).trim());
+    						}
+    						
     						updateAction.set(() -> {
+    							boolean shouldSkipAutoUpdate = false;
+    							
+    							try {
+    								if (requiredActlist.get() != null && requiredActlist.get().isEmpty() == false) {
+    									if (VersionComparator.getInstance().compare(BuildVersion.VERSION, requiredActlist.get()) < 0) {
+    										ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+    	    								ButtonType updateAnywayButton = new ButtonType("Update anyway", ButtonData.OK_DONE);
+    										
+    										Alert alert = new Alert(AlertType.NONE);
+    										alert.setTitle("Warning");
+    										alert.getDialogPane().getStyleClass().add("warning");
+    										alert.setHeaderText(String.join("", "This update requires at least Actlist ", requiredActlist.get()));
+    										alert.setContentText("This update may cause the plugin to crash. Do you want to update anyway ?");
+    										alert.getButtonTypes().addAll(new ButtonType[] {cancelButton, updateAnywayButton});
+    										Optional<ButtonType> alertResponse = alert.showAndWait();
+    										if (alertResponse.isPresent() && alertResponse.get() != updateAnywayButton) {
+    											shouldSkipAutoUpdate = true;
+    										}
+    	    							}
+    								}
+    							} catch (Exception e) {
+    								e.printStackTrace();
+    							}
+    							
+    							if (shouldSkipAutoUpdate) {
+    								updateAlarmLabel.setVisible(false);
+    								return;
+    							}
+    							
     							AtomicBoolean succeedToAutoUpdate = new AtomicBoolean(false);
     							
     							// show loading box
