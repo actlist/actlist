@@ -1,3 +1,9 @@
+* 1.5.1
+    * improvements
+      * supports direct install from explore view
+      * `debug(isDebugMode)` and `debug(proxy)` method has been added
+      * supports `ActlistPlugin.isDebugMode()` method for public static access
+      * supports `requiredActlist` parameter from plugin's update check response for restrict automatic updates
 * 1.5.0
     * new features
       * supports automatic plugin updates

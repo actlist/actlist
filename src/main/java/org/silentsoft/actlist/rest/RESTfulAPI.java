@@ -40,8 +40,8 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 	}
 	
 	
-	public static <T> T doGet(String uri, Consumer<HttpRequest> beforeRequest, Consumer<HttpResponse> afterResponse) throws Exception {
-		return doGet(uri, getProxyHost(), null, (request) -> {
+	public static void doGet(String uri, Consumer<HttpRequest> beforeRequest, Consumer<HttpResponse> afterResponse) throws Exception {
+		doGet(uri, getProxyHost(), null, (request) -> {
 			if (beforeRequest != null) {
 				beforeRequest.accept(request);
 			}
