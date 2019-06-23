@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
@@ -52,11 +53,23 @@
 		                  </HBox>
 		                  <VBox fx:id="sideNav" alignment="TOP_CENTER" prefWidth="67.0" spacing="30.0" style="-fx-background-color: rgb(35, 35, 35);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0" VBox.vgrow="ALWAYS">
 		                     <children>
-		                        <Region fx:id="navPluginsMac" maxHeight="16.0" maxWidth="16.0" minHeight="16.0" minWidth="16.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showPluginsView" prefHeight="16.0" prefWidth="16.0" style="-fx-shape: &quot;M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z&quot;; -fx-background-color: #ececec;">
-		                           <cursor>
-		                              <Cursor fx:constant="HAND" />
-		                           </cursor>
-		                        </Region>
+                              <StackPane>
+                                 <children>
+      		                        <Region fx:id="navPluginsMac" maxHeight="16.0" maxWidth="16.0" minHeight="16.0" minWidth="16.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showPluginsView" prefHeight="16.0" prefWidth="16.0" style="-fx-shape: &quot;M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z&quot;; -fx-background-color: #ececec;">
+      		                           <cursor>
+      		                              <Cursor fx:constant="HAND" />
+      		                           </cursor>
+      		                        </Region>
+                                    <Label fx:id="newPluginsAlarmLabelMac" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showPluginsView" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <StackPane.margin>
+                                          <Insets left="40.0" />
+                                       </StackPane.margin>
+                                    </Label>
+                                 </children>
+                              </StackPane>
 		                        <Region fx:id="navExploreMac" maxHeight="18.0" maxWidth="18.0" minHeight="18.0" minWidth="18.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showExploreView" opacity="0.75" prefHeight="18.0" prefWidth="18.0" style="-fx-shape: &quot;M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z&quot;; -fx-background-color: #ececec;">
 		                           <cursor>
 		                              <Cursor fx:constant="HAND" />
@@ -139,11 +152,23 @@
                      <bottom>
                         <HBox alignment="CENTER" prefHeight="45.0" spacing="50.0" style="-fx-border-color: rgb(55, 55, 55); -fx-border-width: 1 0 0 0; -fx-border-insets: 0 10 0 10;" BorderPane.alignment="CENTER">
                            <children>
-                              <Region fx:id="navPluginsWin" maxHeight="18.0" maxWidth="18.0" minHeight="18.0" minWidth="18.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showPluginsView" prefHeight="18.0" prefWidth="18.0" style="-fx-shape: &quot;M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z&quot;; -fx-background-color: #ececec;">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Region>
+                              <StackPane>
+                                 <children>
+                                    <Region fx:id="navPluginsWin" maxHeight="18.0" maxWidth="18.0" minHeight="18.0" minWidth="18.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showPluginsView" prefHeight="18.0" prefWidth="18.0" style="-fx-shape: &quot;M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z&quot;; -fx-background-color: #ececec;">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                    </Region>
+                                    <Label fx:id="newPluginsAlarmLabelWin" maxHeight="6.0" maxWidth="6.0" minHeight="6.0" minWidth="6.0" onMouseClicked="#showPluginsView" style="-fx-background-color: red; -fx-background-radius: 5em;" visible="false">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <StackPane.margin>
+                                          <Insets top="32.0" />
+                                       </StackPane.margin>
+                                    </Label>
+                                 </children>
+                              </StackPane>
                               <Region fx:id="navExploreWin" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" onMouseEntered="#eventNavMouseEntered" onMouseExited="#eventNavMouseExited" onMouseReleased="#showExploreView" opacity="0.75" prefHeight="20.0" prefWidth="20.0" style="-fx-shape: &quot;M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z&quot;; -fx-background-color: #ececec;">
 		                           <cursor>
 		                              <Cursor fx:constant="HAND" />
