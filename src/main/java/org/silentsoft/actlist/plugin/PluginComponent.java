@@ -250,6 +250,12 @@ public class PluginComponent implements EventListener {
 					String configContent = FileUtil.readFile(configFile);
 					PluginConfig pluginConfig = JSONUtil.JSONToObject(configContent, PluginConfig.class);
 					if (pluginConfig != null) {
+						// defense logic for wrong interactions with plugin
+						if (pluginFileName.equals(pluginConfig.getPlugin()) == false) {
+							pluginConfig.setPlugin(pluginFileName);
+							pluginConfig.commit();
+						}
+						
 						plugin.setPluginConfig(pluginConfig);
 					}
 				}
