@@ -146,6 +146,7 @@ public class App extends Application implements EventListener {
 	
 	private void heavyLifting() {
 		updateProxyHost();
+		generateUserAgentAndInfoText();
 	}
 	
 	private void updateProxyHost() {
@@ -163,6 +164,41 @@ public class App extends Application implements EventListener {
 		
 		System.setProperty("https.proxyHost", proxyHost);
 		System.setProperty("https.proxyPort", proxyPort);
+	}
+	
+	private void generateUserAgentAndInfoText() {
+		String osArchitecture = SystemUtil.getOSArchitecture();
+		String platformArchitecture = SystemUtil.getPlatformArchitecture();
+		
+		StringBuffer userAgent = new StringBuffer();
+		{
+			userAgent.append("Actlist-");
+			
+			userAgent.append(BuildVersion.VERSION);
+			
+			if (SystemUtil.isWindows()) {
+				userAgent.append(" windows-");
+			} else if (SystemUtil.isMac()) {
+				userAgent.append(" macosx-");
+			} else if (SystemUtil.isLinux()) {
+				userAgent.append(" linux-");
+			} else {
+				userAgent.append(" unknown-");
+			}
+			userAgent.append(osArchitecture);
+			
+			userAgent.append(" platform-");
+			userAgent.append(platformArchitecture);
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_USER_AGENT, userAgent.toString());
+		
+		StringBuffer infoText = new StringBuffer();
+		{
+			infoText.append(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), osArchitecture, platformArchitecture));
+			infoText.append("\r\n");
+			infoText.append(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_INFO_TEXT, infoText.toString());
 	}
 	
 	private void initializeWithoutFxThread() throws Exception {
@@ -244,8 +280,7 @@ public class App extends Application implements EventListener {
 				System.setOut(console.getPrintStream());
 				System.setErr(console.getPrintStream());
 				
-				System.out.println(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), SystemUtil.getOSArchitecture(), SystemUtil.getPlatformArchitecture()));
-				System.out.println(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
+				System.out.println(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT)));
 				
 				BorderPane root = new BorderPane();
 				root.setStyle("-fx-background-color: transparent;");
