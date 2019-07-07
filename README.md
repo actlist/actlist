@@ -61,7 +61,7 @@ Mac OS X:
           <dependency>
               <groupId>org.silentsoft</groupId>
               <artifactId>actlist-plugin</artifactId>
-              <version>1.5.1</version>
+              <version>1.5.2</version>
               <scope>provided</scope>
           </dependency>
       </dependencies>

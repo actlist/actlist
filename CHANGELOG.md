@@ -1,3 +1,8 @@
+* 1.5.2
+    * improvements
+      * minor speed improvements
+    * bugfix
+      * wrong plugin config file interactions
 * 1.5.1
     * improvements
       * supports direct install from explore view
