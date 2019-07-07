@@ -10,6 +10,9 @@ public class BizConst {
 	public static final String KEY_CONSOLE_TEXT_AREA = "KEY_CONSOLE_TEXT_AREA";
 	public static final String KEY_PLUGIN_MAP = "KEY_PLUGIN_MAP";
 	
+	public static final String KEY_USER_AGENT = "KEY_USER_AGENT";
+	public static final String KEY_INFO_TEXT = "KEY_INFO_TEXT";
+	
 	public static final String KEY_IS_AVAILABLE_NEW_ACTLIST = "KEY_IS_AVAILABLE_NEW_ACTLIST";
 	
 	public static final String KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS = "KEY_NOTIFY_PRELOADER_NUMBER_OF_PLUGINS";

@@ -25,9 +25,8 @@ import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.plugin.PluginManager;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
-import org.silentsoft.actlist.version.BuildVersion;
-import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
+import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.viewer.AbstractViewerController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -63,27 +62,7 @@ public class ExploreController extends AbstractViewerController {
 	public void initialize(Parent viewer, Object... parameters) {
 		new Thread(() -> {
 			Platform.runLater(() -> {
-				StringBuffer userAgent = new StringBuffer();
-				{
-					userAgent.append("Actlist-");
-					
-					userAgent.append(BuildVersion.VERSION);
-					
-					if (SystemUtil.isWindows()) {
-						userAgent.append(" windows-");
-					} else if (SystemUtil.isMac()) {
-						userAgent.append(" macosx-");
-					} else if (SystemUtil.isLinux()) {
-						userAgent.append(" linux-");
-					} else {
-						userAgent.append(" unknown-");
-					}
-					userAgent.append(SystemUtil.getOSArchitecture());
-					
-					userAgent.append(" platform-");
-					userAgent.append(SystemUtil.getPlatformArchitecture());
-				}
-				webView.getEngine().setUserAgent(userAgent.toString());
+				webView.getEngine().setUserAgent(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_USER_AGENT)));
 				
 				webView.getEngine().setCreatePopupHandler((popupFeatures) -> {
 					WebEngine webEngine = new WebEngine();

@@ -14,10 +14,10 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
+import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
-import org.silentsoft.actlist.version.BuildVersion;
-import org.silentsoft.core.util.SystemUtil;
+import org.silentsoft.io.memory.SharedMemory;
 
 import com.github.markusbernhardt.proxy.ProxySearch;
 
@@ -96,24 +96,7 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 			headers.addAll(Arrays.asList(append));
 		}
 		
-		StringBuffer userAgent = new StringBuffer();
-		{
-			userAgent.append("Actlist-");
-			userAgent.append(BuildVersion.VERSION);
-			if (SystemUtil.isWindows()) {
-				userAgent.append(" windows-");
-			} else if (SystemUtil.isMac()) {
-				userAgent.append(" macosx-");
-			} else if (SystemUtil.isLinux()) {
-				userAgent.append(" linux-");
-			} else {
-				userAgent.append(" unknown-");
-			}
-			userAgent.append(SystemUtil.getOSArchitecture());
-			userAgent.append(" platform-");
-			userAgent.append(SystemUtil.getPlatformArchitecture());
-		}
-		headers.add(new BasicHeader("user-agent", userAgent.toString()));
+		headers.add(new BasicHeader("user-agent", String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_USER_AGENT))));
 		
 		return headers.toArray(new Header[headers.size()]);
 	}
