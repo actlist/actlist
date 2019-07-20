@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -877,7 +880,25 @@ public class PluginComponent implements EventListener {
 			    									new JarFile(partialFilePath.toString()).close();
 			    									
 			    									// determine jar file name
-			    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    									String _newPluginFileName = "";
+			    									{
+			    										try {
+			    											Header contentDispositionHeader = afterResponse.getFirstHeader("Content-Disposition");
+				    										if (contentDispositionHeader != null && contentDispositionHeader.getValue() != null) {
+				    											_newPluginFileName = URLDecoder.decode(StringUtils.substringAfterLast(contentDispositionHeader.getValue().toLowerCase().replaceAll("\"", ""), "filename="), "UTF-8").trim();
+				    										}
+			    										} catch (Exception e) {
+			    											
+			    										} finally {
+			    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+			    												_newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    											}
+			    											
+			    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+			    												_newPluginFileName = UUID.randomUUID().toString().replaceAll("-", "");
+			    											}
+			    										}
+			    									}
 			    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
 			    										_newPluginFileName = _newPluginFileName.concat(".jar");
 			    									}
