@@ -353,6 +353,7 @@
 				<fx:jvmarg value="-XX:InitiatingHeapOccupancyPercent=20"/>
 				<fx:jvmarg value="-XX:MinHeapFreeRatio=10"/>
 				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
+				<fx:jvmarg value="-Dfile.encoding=UTF-8"/>
 			</fx:platform>
 			
 			<fx:info title="actlist" vendor="silentsoft.org"/>
