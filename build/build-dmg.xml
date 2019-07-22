@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="actlist" default="do-clean" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property file="build.properties"/>
 	<target name="init-fx-tasks">
 		<path id="fxant">
@@ -284,8 +284,6 @@
 			<exclude name="**/*.java"/>
 		</fileset>
 		</copy>
-	
-	
 	</target>
 	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
 		<delete file="dist"/>
@@ -300,14 +298,6 @@
 			</fileset>
 		</copy>
 	
-	
-		<fx:resources id="appRes">
-			<fx:fileset dir="dist" includes="actlist.jar"/>
-			<fx:fileset dir="dist" includes="actlist.jar.config"/>
-			<fx:fileset dir="dist" includes="plugins/*"/>
-			<fx:fileset dir="dist" includes="libs/*"/>
-		</fx:resources>
-	
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
@@ -316,14 +306,17 @@
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
-	
-	
-	
+		
+		<touch file="dist/actlist.jar" />
 		<fx:jar destfile="dist/actlist.jar">
+			<fileset dir="build/classes"/>
 			<fx:application refid="fxApplication"/>
-			<fileset dir="build/classes">
-			</fileset>
-			<fx:resources refid="appRes"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="libs/*.jar"/>
+			</fx:resources>
 	
 			<manifest>
 				<attribute name="Implementation-Vendor" value="silentsoft.org"/>
@@ -332,7 +325,6 @@
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
-	
 	
 		<mkdir dir="deploy" />
 		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
@@ -358,10 +350,24 @@
 			
 			<fx:info title="actlist" vendor="silentsoft.org"/>
 	
-			<fx:application refId="fxApplication"/>
-			<fx:resources refid="appRes"/>
+			<fx:application refid="fxApplication"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+					<include name="actlist.jar.config"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="plugins/*"/>
+				<fx:fileset dir="dist" includes="libs/*"/>
+			</fx:resources>
 		</fx:deploy>
-	
-	
+	</target>
+	<target name="do-clean" depends="do-deploy">
+		<delete dir="build"/>
+		<delete dir="deploy" excludes="bundles/*" includeemptydirs="true"/>
+		<delete dir="dist/libs"/>
+		<delete dir="dist" includes="actlist.jar"/>
+		<delete dir="externalLibs"/>
+		<delete dir="project"/>
+		<delete dir="projectRefs"/>
 	</target>
 </project>
