@@ -208,7 +208,11 @@ public class AppController implements EventListener {
 	
 	private void initConsole() {
 		consoleTextArea = new TextArea();
-		consoleTextArea.setContextMenu(new ContextMenu()); // disable context menu.
+		{
+			MenuItem clearMenuItem = new MenuItem("Clear");
+			clearMenuItem.setOnAction(event -> EventHandler.callEvent(getClass(), BizConst.EVENT_CLEAR_CONSOLE_LOG));
+			consoleTextArea.setContextMenu(new ContextMenu(clearMenuItem));
+		}
 		consoleTextArea.setEditable(false);
 		consoleTextArea.setFont(Font.font("Consolas", 13.0));
 		{
