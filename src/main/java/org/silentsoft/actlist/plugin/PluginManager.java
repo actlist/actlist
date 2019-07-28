@@ -49,11 +49,12 @@ public class PluginManager {
 		}
 		Path sourcePath = Paths.get(file.toURI());
 		Path targetPath = Paths.get(System.getProperty("user.dir"), "plugins", file.getName());
-		if (Files.exists(targetPath)) {
-			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-			targetPath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
-		}
 		if (shouldCopy) {
+			if (Files.exists(targetPath)) {
+				String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+				targetPath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+			}
+			
 			Files.copy(sourcePath, targetPath);
 		}
 		
