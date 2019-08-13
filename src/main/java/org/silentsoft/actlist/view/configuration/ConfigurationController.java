@@ -44,6 +44,9 @@ public class ConfigurationController extends AbstractViewerController {
 	private JFXRadioButton winTheme, macTheme;
 	
 	@FXML
+	private JFXRadioButton enableDarkMode, disableDarkMode;
+	
+	@FXML
 	private JFXTextField showHideActlistHotKey;
 	
 	/* @FXML private JFXCheckBox animationEffect;*/
@@ -308,6 +311,11 @@ public class ConfigurationController extends AbstractViewerController {
 		}
 		
 		EventHandler.callEvent(getClass(), BizConst.EVENT_APPLY_THEME, false);
+	}
+	
+	@FXML
+	private void darkMode() throws Exception {
+		
 	}
 	
 	@FXML

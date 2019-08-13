@@ -618,9 +618,9 @@ public class AppController implements EventListener {
     
     @FXML
     private void showControls() {
-    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
     }
     
     @FXML
@@ -989,7 +989,6 @@ public class AppController implements EventListener {
 					AnchorPane.setLeftAnchor(vBox, 0.0);
 					
 					AnchorPane pane = new AnchorPane(vBox);
-					pane.setStyle("-fx-background-color: #ffffff;");
 					pane.setPrefWidth(310);
 					pane.setPrefHeight(310);
 
