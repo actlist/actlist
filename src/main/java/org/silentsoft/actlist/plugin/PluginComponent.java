@@ -610,7 +610,8 @@ public class PluginComponent implements EventListener {
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				root.setStyle("-fx-background-color: #f2f2f2;");
+//				root.setStyle("-fx-background-color: #f2f2f2;");
+				root.setStyle("-fx-background-color: #2d2d2d;");
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
@@ -632,7 +633,8 @@ public class PluginComponent implements EventListener {
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				root.setStyle("-fx-background-color: #ffffff;");
+				//root.setStyle("-fx-background-color: #ffffff;");
+				root.setStyle("");
 			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {

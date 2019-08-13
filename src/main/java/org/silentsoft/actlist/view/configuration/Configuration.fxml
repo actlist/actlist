@@ -53,6 +53,27 @@
                               </HBox>
                            </children>
                         </VBox>
+                        <VBox prefHeight="40.0" spacing="5.0">
+                           <children>
+                              <Label text="Dark Mode" />
+                              <HBox>
+                                 <children>
+                                    <JFXRadioButton fx:id="enableDarkMode" onAction="#darkMode" text="Enable">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="darkmode" />
+                                       </toggleGroup>
+                                    </JFXRadioButton>
+                                    <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" selected="true" text="Disable" toggleGroup="$darkmode" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
+                        </VBox>
                         <VBox prefHeight="40.0">
                            <children>
                               <Label text="Show/Hide Actlist (Global HotKey)" />
