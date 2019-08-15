@@ -217,7 +217,7 @@ public class AppController implements EventListener {
 		consoleTextArea.setFont(Font.font("Consolas", 13.0));
 		{
 			StringBuffer style = new StringBuffer();
-			style.append("-fx-control-inner-background: rgb(30, 30, 30); ");
+			style.append("-fx-control-inner-background: rgb(35, 35, 35); ");
 			style.append("-fx-background-color: -fx-control-inner-background; ");			
 			style.append("-fx-background-radius: 0; ");
 			style.append("-fx-faint-focus-color: transparent;");
