@@ -29,9 +29,13 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.layout.AnchorPane;
 
 public class ConfigurationController extends AbstractViewerController {
 
+	@FXML
+	private AnchorPane root;
+	
 	/* General */
 	
 	@FXML
@@ -74,6 +78,9 @@ public class ConfigurationController extends AbstractViewerController {
 	@Override
 	public void initialize(Parent viewer, Object... parameters) {
 		{
+			applyDarkMode();
+		}
+		{
 			/* General */
 			
 			stageOpacity.setValue(ConfigUtil.getStageOpacity() * 100);
@@ -92,6 +99,8 @@ public class ConfigurationController extends AbstractViewerController {
 				macTheme.setSelected(true);
 				break;
 			}
+			
+			enableDarkMode.setSelected(ConfigUtil.isDarkMode());
 			
 			stageOpacity.valueProperty().addListener((observable, oldValue, newValue) -> {
 				App.getStage().setOpacity(newValue.doubleValue() / 100);
@@ -315,7 +324,23 @@ public class ConfigurationController extends AbstractViewerController {
 	
 	@FXML
 	private void darkMode() throws Exception {
+		ConfigUtil.setDarkMode(enableDarkMode.selectedProperty().get());
 		
+		applyDarkMode();
+		
+		EventHandler.callEvent(getClass(), BizConst.EVENT_APPLY_DARK_MODE, false);
+	}
+	
+	private void applyDarkMode() {
+		String css = getClass().getResource("Configuration-darkmode.css").toExternalForm();
+    	
+    	if (ConfigUtil.isDarkMode()) {
+    		if (root.getStylesheets().contains(css) == false) {
+    			root.getStylesheets().add(css);
+    		}
+    	} else {
+    		root.getStylesheets().remove(css);
+    	}
 	}
 	
 	@FXML

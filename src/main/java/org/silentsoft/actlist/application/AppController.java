@@ -177,6 +177,7 @@ public class AppController implements EventListener {
 			makeNormalizable(App.getStage(), handPaneMac);
 		}
 		applyTheme();
+		applyDarkMode();
 		
 		makeResizable(App.getStage(), root);
 		
@@ -388,6 +389,18 @@ public class AppController implements EventListener {
     		body.setLeft(sideArea);
     		
     		handPaneMac.setVisible(true);
+    	}
+    }
+    
+    private void applyDarkMode() {
+    	String css = getClass().getResource("App-darkmode.css").toExternalForm();
+    	
+    	if (ConfigUtil.isDarkMode()) {
+    		if (root.getStylesheets().contains(css) == false) {
+    			root.getStylesheets().add(css);
+    		}
+    	} else {
+    		root.getStylesheets().remove(css);
     	}
     }
     
@@ -1008,6 +1021,9 @@ public class AppController implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_APPLY_DARK_MODE:
+			applyDarkMode();
 			break;
 		case BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM:
 			playNewPluginsAlarm();

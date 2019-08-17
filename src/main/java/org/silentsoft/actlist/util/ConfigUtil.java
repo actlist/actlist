@@ -169,6 +169,14 @@ public class ConfigUtil {
 		return Theme.WIN.equalsIgnoreCase(getTheme());
 	}
 	
+	public static boolean isDarkMode() {
+		return (boolean) getActlistConfig().get("darkMode");
+	}
+	
+	public static void setDarkMode(boolean value) throws Exception {
+		getActlistConfig().put("darkMode", value);
+	}
+	
 	public class ProxyMode {
 		// Do not make as enum type. It must be a string for simple json serialize/deserialize.
 		public static final String NONE = "NONE";

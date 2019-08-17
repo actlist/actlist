@@ -76,6 +76,7 @@ public class App extends Preloader {
 				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
 //				actlistConfig.put("animationEffect", true);
 				actlistConfig.put("alwaysOnTop", false);
+				actlistConfig.put("darkMode", false);
 				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
 				actlistConfig.put("proxyHost", "");
 			}
