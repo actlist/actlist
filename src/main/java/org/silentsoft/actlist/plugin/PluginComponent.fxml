@@ -53,7 +53,7 @@
                   <Insets />
                </HBox.margin>
             </HBox>
-            <JFXToggleButton fx:id="togActivator" onAction="#toggleOnAction" selected="false" style="-fx-background-color: transparent;" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" />
+            <JFXToggleButton fx:id="togActivator" focusTraversable="false" onAction="#toggleOnAction" selected="false" style="-fx-background-color: transparent;" text=" " toggleColor="#fafafa" toggleLineColor="#59bf53" unToggleLineColor="#e0e0e0" />
          </children>
       </HBox>
       <HBox fx:id="pluginLoadingBox" alignment="CENTER" layoutY="45.0" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
