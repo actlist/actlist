@@ -80,7 +80,7 @@ __jackson-databind 2.4.2__
  * https://github.com/FasterXML/jackson-databind
  * Apache License 2.0
 
-__jfoenix 1.0.0__
+__jfoenix 8.0.8__
  * https://github.com/jfoenixadmin/Jfoenix
  * Apache License 2.0
 
