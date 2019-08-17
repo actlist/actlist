@@ -28,14 +28,8 @@
 	-fx-background-image: url("/images/icon/actlist_24.png");
 }
 
-/*
 .body {
 	-fx-background-color: #ffffff;
-}
-*/
-.body {
-	-fx-base: rgb(35, 35, 35);
-	-fx-background-color: -fx-base;
 }
 
 .scroll-bar:horizontal,

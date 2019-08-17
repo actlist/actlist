@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
+<AnchorPane fx:id="root" prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
    <children>
       <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
