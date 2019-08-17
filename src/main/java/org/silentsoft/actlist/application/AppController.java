@@ -177,6 +177,7 @@ public class AppController implements EventListener {
 			makeNormalizable(App.getStage(), handPaneMac);
 		}
 		applyTheme();
+		applyDarkMode();
 		
 		makeResizable(App.getStage(), root);
 		
@@ -217,7 +218,7 @@ public class AppController implements EventListener {
 		consoleTextArea.setFont(Font.font("Consolas", 13.0));
 		{
 			StringBuffer style = new StringBuffer();
-			style.append("-fx-control-inner-background: rgb(30, 30, 30); ");
+			style.append("-fx-control-inner-background: rgb(35, 35, 35); ");
 			style.append("-fx-background-color: -fx-control-inner-background; ");			
 			style.append("-fx-background-radius: 0; ");
 			style.append("-fx-faint-focus-color: transparent;");
@@ -388,6 +389,18 @@ public class AppController implements EventListener {
     		body.setLeft(sideArea);
     		
     		handPaneMac.setVisible(true);
+    	}
+    }
+    
+    private void applyDarkMode() {
+    	String css = getClass().getResource("App-darkmode.css").toExternalForm();
+    	
+    	if (ConfigUtil.isDarkMode()) {
+    		if (root.getStylesheets().contains(css) == false) {
+    			root.getStylesheets().add(css);
+    		}
+    	} else {
+    		root.getStylesheets().remove(css);
     	}
     }
     
@@ -618,9 +631,9 @@ public class AppController implements EventListener {
     
     @FXML
     private void showControls() {
-    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
-    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
     }
     
     @FXML
@@ -989,7 +1002,6 @@ public class AppController implements EventListener {
 					AnchorPane.setLeftAnchor(vBox, 0.0);
 					
 					AnchorPane pane = new AnchorPane(vBox);
-					pane.setStyle("-fx-background-color: #ffffff;");
 					pane.setPrefWidth(310);
 					pane.setPrefHeight(310);
 
@@ -1009,6 +1021,9 @@ public class AppController implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_APPLY_DARK_MODE:
+			applyDarkMode();
 			break;
 		case BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM:
 			playNewPluginsAlarm();

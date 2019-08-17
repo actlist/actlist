@@ -50,6 +50,7 @@ import org.silentsoft.actlist.plugin.about.PluginAbout;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
 import org.silentsoft.actlist.rest.RESTfulAPI;
+import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
@@ -158,6 +159,8 @@ public class PluginComponent implements EventListener {
 				makeConsumable();
 				makeDraggable();
 				
+				applyDarkMode();
+				
 				popOver = new PopOver(new VBox());
 				((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
@@ -246,6 +249,8 @@ public class PluginComponent implements EventListener {
 				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
 				
 				plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+				
+				plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
 				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
@@ -610,7 +615,11 @@ public class PluginComponent implements EventListener {
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				root.setStyle("-fx-background-color: #f2f2f2;");
+				if (ConfigUtil.isDarkMode()) {
+					root.setStyle("-fx-background-color: #2d2d2d;");
+				} else {
+					root.setStyle("-fx-background-color: #f2f2f2;");
+				}
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
@@ -632,7 +641,11 @@ public class PluginComponent implements EventListener {
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				root.setStyle("-fx-background-color: #ffffff;");
+				if (ConfigUtil.isDarkMode()) {
+					root.setStyle("");
+				} else {
+					root.setStyle("-fx-background-color: #ffffff;");
+				}
 			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {
@@ -640,6 +653,10 @@ public class PluginComponent implements EventListener {
 			// but the meaning of this event being called is that it is outside the drag area. so, must remove the snapshot.
 			deleteSnapshot();
 		});
+	}
+	
+	private void applyDarkMode() {
+		hand.setOpacity(ConfigUtil.isDarkMode() ? 1.0 : 0.2);
 	}
 	
 	private void createSnapshot(MouseEvent mouseEvent) {
@@ -1064,6 +1081,7 @@ public class PluginComponent implements EventListener {
 						contentLoadingBox.getChildren().add(new JFXSpinner());
 					}
 					
+					contentBox.setVisible(!shouldShowLoadingBar);
 					contentLoadingBox.setVisible(shouldShowLoadingBar);
 				}
 			};
@@ -1101,8 +1119,7 @@ public class PluginComponent implements EventListener {
 			
 			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 			
-			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
+			popOver.show(App.getStage(), e.getScreenX()-40, e.getScreenY()-10); // -40, -10 : offset of PopOver control
 		}
 	}
 	
@@ -1236,6 +1253,12 @@ public class PluginComponent implements EventListener {
 					break;
 				case BizConst.EVENT_UPDATE_PROXY_HOST:
 					plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+					plugin.applicationConfigChanged();
+					break;
+				case BizConst.EVENT_APPLY_DARK_MODE: 
+					applyDarkMode();
+					plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
+					plugin.applicationConfigChanged();
 					break;
 				}
 			} catch (Exception e) {

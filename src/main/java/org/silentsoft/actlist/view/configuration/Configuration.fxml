@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
+<AnchorPane fx:id="root" prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
    <children>
       <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -52,6 +52,27 @@
                                  </children>
                               </HBox>
                            </children>
+                        </VBox>
+                        <VBox prefHeight="40.0" spacing="5.0">
+                           <children>
+                              <Label text="Dark Mode" />
+                              <HBox>
+                                 <children>
+                                    <JFXRadioButton fx:id="enableDarkMode" onAction="#darkMode" text="Enable">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="darkmode" />
+                                       </toggleGroup>
+                                    </JFXRadioButton>
+                                    <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" selected="true" text="Disable" toggleGroup="$darkmode" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" />
+                           </VBox.margin>
                         </VBox>
                         <VBox prefHeight="40.0">
                            <children>
