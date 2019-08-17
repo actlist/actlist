@@ -250,6 +250,8 @@ public class PluginComponent implements EventListener {
 				
 				plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
 				
+				plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
+				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
 				if (configFile.exists()) {
@@ -1079,6 +1081,7 @@ public class PluginComponent implements EventListener {
 						contentLoadingBox.getChildren().add(new JFXSpinner());
 					}
 					
+					contentBox.setVisible(!shouldShowLoadingBar);
 					contentLoadingBox.setVisible(shouldShowLoadingBar);
 				}
 			};
@@ -1250,9 +1253,12 @@ public class PluginComponent implements EventListener {
 					break;
 				case BizConst.EVENT_UPDATE_PROXY_HOST:
 					plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+					plugin.applicationConfigChanged();
 					break;
 				case BizConst.EVENT_APPLY_DARK_MODE: 
 					applyDarkMode();
+					plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
+					plugin.applicationConfigChanged();
 					break;
 				}
 			} catch (Exception e) {
