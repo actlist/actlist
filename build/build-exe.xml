@@ -48,8 +48,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.1">
-				<filename name="silentsoft-ui-1.1.1.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.2">
+				<filename name="silentsoft-ui-1.1.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -224,7 +224,7 @@
 				<include name="actlist-plugin-1.6.0.jar"/>
 				<include name="silentsoft-core-1.1.2.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
-				<include name="silentsoft-ui-1.1.1.jar"/>
+				<include name="silentsoft-ui-1.1.2.jar"/>
 				<include name="silentsoft-net-1.1.1.jar"/>
 				<include name="jackson-databind-2.4.2.jar"/>
 				<include name="commons-codec-1.6.jar"/>
