@@ -263,6 +263,7 @@ public class Console implements EventListener {
 			AnchorPane.setTopAnchor(body, 27.0);
 			AnchorPane.setBottomAnchor(body, 2.0);
 		}
+		stage.getScene().getRoot().requestLayout();
     }
     
     private void applyTheme() {
