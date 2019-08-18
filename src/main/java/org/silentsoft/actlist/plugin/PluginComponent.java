@@ -1036,6 +1036,19 @@ public class PluginComponent implements EventListener {
 			}
 		} catch (Exception | Error e) {
 			e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+		} finally {
+			new Thread(() -> {
+				try {
+					ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+					param.add(new BasicNameValuePair("uuid", ObjectUtil.toString(plugin.getPluginStatisticsUUID())));
+					param.add(new BasicNameValuePair("name", ObjectUtil.toString(plugin.getPluginName())));
+					param.add(new BasicNameValuePair("version", ObjectUtil.toString(plugin.getPluginVersion())));
+					
+					RESTfulAPI.doPost("http://actlist.silentsoft.org/api/plugin/statistics", param);
+				} catch (Exception | Error e) {
+					
+				}
+			}).start();
 		}
 	};
 	
