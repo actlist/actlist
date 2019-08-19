@@ -696,12 +696,12 @@ public class PluginComponent implements EventListener {
 		HBox hBox = new HBox(node);
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setPadding(new Insets(3, 3, 3, 3));
-		hBox.setStyle("-fx-background-color: white;");
+		hBox.setStyle("-fx-background-color: #fbfbfb;");
 		hBox.setOnMouseEntered(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: lightgray;");
 		});
 		hBox.setOnMouseExited(mouseEvent -> {
-			hBox.setStyle("-fx-background-color: white;");
+			hBox.setStyle("-fx-background-color: #fbfbfb;");
 		});
 		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
 			try {

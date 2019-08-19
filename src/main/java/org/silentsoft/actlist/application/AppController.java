@@ -218,7 +218,7 @@ public class AppController implements EventListener {
 		consoleTextArea.setFont(Font.font("Consolas", 13.0));
 		{
 			StringBuffer style = new StringBuffer();
-			style.append("-fx-control-inner-background: rgb(35, 35, 35); ");
+			style.append("-fx-control-inner-background: rgb(40, 40, 40); ");
 			style.append("-fx-background-color: -fx-control-inner-background; ");			
 			style.append("-fx-background-radius: 0; ");
 			style.append("-fx-faint-focus-color: transparent;");
@@ -513,11 +513,13 @@ public class AppController implements EventListener {
 		
 		Label title = new Label("Actlist Update Alarm");
 		title.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+		title.setTextFill(Paint.valueOf("#000000"));
 		title.setPadding(new Insets(10.0, 0.0, 0.0, 0.0));
 		
 		Label message = new Label("New Actlist is available. Would you like to browse now ?");
 		message.setWrapText(true);
 		message.setFont(Font.font("Verdana", 12.0));
+		message.setTextFill(Paint.valueOf("#000000"));
 		message.setTextAlignment(TextAlignment.CENTER);
 		message.setPrefWidth(194.0);
 		message.setPrefHeight(40.0);
@@ -632,9 +634,9 @@ public class AppController implements EventListener {
     
     @FXML
     private void showControls() {
-    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
-    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
-    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(40, 40, 40)"));
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
     }
     
     @FXML
