@@ -634,9 +634,9 @@ public class AppController implements EventListener {
     
     @FXML
     private void showControls() {
-    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
-    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
-    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(45, 45, 45)"));
+    	((SVGPath) sideCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideMinimizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
+    	((SVGPath) sideMaximizeButton.getGraphic()).setFill(Paint.valueOf("rgb(35, 35, 35)"));
     }
     
     @FXML
