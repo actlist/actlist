@@ -58,7 +58,7 @@
       </HBox>
       <HBox fx:id="pluginLoadingBox" alignment="CENTER" layoutY="45.0" prefHeight="45.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <JFXSpinner />
+            <JFXSpinner prefHeight="28.0" prefWidth="28.0" />
          </children>
       </HBox>
       <Separator layoutX="35.0" layoutY="50.0" prefWidth="215.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="20.0" />
