@@ -7,6 +7,7 @@
 ![created](https://actlist.silentsoft.org/api/shields/created)
 [![actlist-license](https://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
 [![actlist-plugin-license](https://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
+[![HitCount](http://hits.dwyl.io/silentsoft/actlist.svg)](http://hits.dwyl.io/silentsoft/actlist)
 ---
 
 # Actlist
