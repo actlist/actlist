@@ -1091,7 +1091,9 @@ public class PluginComponent implements EventListener {
 					contentLoadingBox.getChildren().clear();
 					
 					if (shouldShowLoadingBar) {
-						contentLoadingBox.getChildren().add(new JFXSpinner());
+						JFXSpinner spinner = new JFXSpinner();
+						spinner.setPrefSize(28.0, 28.0);
+						contentLoadingBox.getChildren().add(spinner);
 					}
 					
 					contentBox.setVisible(!shouldShowLoadingBar);
