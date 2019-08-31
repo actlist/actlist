@@ -664,6 +664,7 @@ public class PluginComponent implements EventListener {
 		snapshot.setManaged(false);
 		snapshot.setMouseTransparent(true);
 		snapshot.setEffect(new DropShadow(3.0, 0.0, 1.5, Color.valueOf("#333333")));
+		snapshot.setVisible(false);
 		
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("snapshot", snapshot);
@@ -673,6 +674,7 @@ public class PluginComponent implements EventListener {
 		componentBox.getChildren().add(snapshot);
 		componentBox.setUserData(map);
 		componentBox.setOnMouseDragged(event -> {
+			snapshot.setVisible(true);
 			snapshot.relocate(event.getX() - mouseEvent.getX(), event.getY() - mouseEvent.getY());
 		});
 	}
