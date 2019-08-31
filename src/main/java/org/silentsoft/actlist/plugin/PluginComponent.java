@@ -613,39 +613,33 @@ public class PluginComponent implements EventListener {
 			root.startFullDrag();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
-			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				if (ConfigUtil.isDarkMode()) {
-					root.setStyle("-fx-background-color: #2d2d2d;");
-				} else {
-					root.setStyle("-fx-background-color: #f2f2f2;");
-				}
+			if (ConfigUtil.isDarkMode()) {
+				root.setStyle("-fx-background-color: #2d2d2d;");
+			} else {
+				root.setStyle("-fx-background-color: #f2f2f2;");
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				deleteSnapshot();
-				
-				// move index of dragging node to index of drop target.
-				int indexOfDraggingNode = componentBox.getChildren().indexOf(mouseDragEvent.getGestureSource());
-				int indexOfDropTarget = componentBox.getChildren().indexOf(root);
-				if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
-					final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
-					componentBox.getChildren().add(indexOfDropTarget, node);
-				}
-				
-				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+			HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
+			
+			// move index of dragging node to index of drop target.
+			int indexOfDraggingNode = componentBox.getChildren().indexOf(map.get("dragging"));
+			int indexOfDropTarget = componentBox.getChildren().indexOf(root);
+			if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
+				final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
+				componentBox.getChildren().add(indexOfDropTarget, node);
 			}
+			
+			EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+			
+			deleteSnapshot();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
-			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				if (ConfigUtil.isDarkMode()) {
-					root.setStyle("");
-				} else {
-					root.setStyle("-fx-background-color: #ffffff;");
-				}
+			if (ConfigUtil.isDarkMode()) {
+				root.setStyle("-fx-background-color: rgb(40, 40, 40);");
+			} else {
+				root.setStyle("-fx-background-color: #ffffff;");
 			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {
@@ -657,6 +651,7 @@ public class PluginComponent implements EventListener {
 	
 	private void applyDarkMode() {
 		hand.setOpacity(ConfigUtil.isDarkMode() ? 1.0 : 0.2);
+		root.setStyle(ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;");
 	}
 	
 	private void createSnapshot(MouseEvent mouseEvent) {
@@ -665,9 +660,13 @@ public class PluginComponent implements EventListener {
 		snapshot.setMouseTransparent(true);
 		snapshot.setEffect(new DropShadow(3.0, 0.0, 1.5, Color.valueOf("#333333")));
 		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("snapshot", snapshot);
+		map.put("dragging", root);
+		
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 		componentBox.getChildren().add(snapshot);
-		componentBox.setUserData(snapshot);
+		componentBox.setUserData(map);
 		componentBox.setOnMouseDragged(event -> {
 			snapshot.relocate(event.getX() - mouseEvent.getX(), event.getY() - mouseEvent.getY());
 		});
@@ -676,7 +675,10 @@ public class PluginComponent implements EventListener {
 	private void deleteSnapshot() {
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 		componentBox.setOnMouseDragged(null);
-		componentBox.getChildren().remove(componentBox.getUserData());
+		{
+			HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
+			componentBox.getChildren().remove(map.get("snapshot"));
+		}
 		componentBox.setUserData(null);
 	}
 	
@@ -1271,7 +1273,6 @@ public class PluginComponent implements EventListener {
 					plugin.applicationConfigChanged();
 					break;
 				case BizConst.EVENT_APPLY_DARK_MODE: 
-					applyDarkMode();
 					plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
 					plugin.applicationConfigChanged();
 					break;
@@ -1279,6 +1280,16 @@ public class PluginComponent implements EventListener {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		
+		try {
+			switch (event) {
+			case BizConst.EVENT_APPLY_DARK_MODE:
+				applyDarkMode();				
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
