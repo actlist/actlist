@@ -613,33 +613,41 @@ public class PluginComponent implements EventListener {
 			root.startFullDrag();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
-			if (ConfigUtil.isDarkMode()) {
-				root.setStyle("-fx-background-color: #2d2d2d;");
-			} else {
-				root.setStyle("-fx-background-color: #f2f2f2;");
+			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			if (componentBox.getUserData() != null) {
+				if (ConfigUtil.isDarkMode()) {
+					root.setStyle("-fx-background-color: #2d2d2d;");
+				} else {
+					root.setStyle("-fx-background-color: #f2f2f2;");
+				}
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
-			
-			// move index of dragging node to index of drop target.
-			int indexOfDraggingNode = componentBox.getChildren().indexOf(map.get("dragging"));
-			int indexOfDropTarget = componentBox.getChildren().indexOf(root);
-			if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
-				final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
-				componentBox.getChildren().add(indexOfDropTarget, node);
+			if (componentBox.getUserData() != null) {
+				HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
+				
+				// move index of dragging node to index of drop target.
+				int indexOfDraggingNode = componentBox.getChildren().indexOf(map.get("dragging"));
+				int indexOfDropTarget = componentBox.getChildren().indexOf(root);
+				if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
+					final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
+					componentBox.getChildren().add(indexOfDropTarget, node);
+				}
+				
+				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+				
+				deleteSnapshot();
 			}
-			
-			EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-			
-			deleteSnapshot();
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
-			if (ConfigUtil.isDarkMode()) {
-				root.setStyle("-fx-background-color: rgb(40, 40, 40);");
-			} else {
-				root.setStyle("-fx-background-color: #ffffff;");
+			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
+			if (componentBox.getUserData() != null) {
+				if (ConfigUtil.isDarkMode()) {
+					root.setStyle("-fx-background-color: rgb(40, 40, 40);");
+				} else {
+					root.setStyle("-fx-background-color: #ffffff;");
+				}
 			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {
