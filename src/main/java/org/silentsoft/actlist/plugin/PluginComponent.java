@@ -635,9 +635,9 @@ public class PluginComponent implements EventListener {
 					componentBox.getChildren().add(indexOfDropTarget, node);
 				}
 				
-				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-				
 				deleteSnapshot();
+				
+				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
