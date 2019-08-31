@@ -641,13 +641,10 @@ public class PluginComponent implements EventListener {
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
-			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getUserData() != null) {
-				if (ConfigUtil.isDarkMode()) {
-					root.setStyle("-fx-background-color: rgb(40, 40, 40);");
-				} else {
-					root.setStyle("-fx-background-color: #ffffff;");
-				}
+			if (ConfigUtil.isDarkMode()) {
+				root.setStyle("-fx-background-color: rgb(40, 40, 40);");
+			} else {
+				root.setStyle("-fx-background-color: #ffffff;");
 			}
 		});
 		hand.setOnMouseReleased(mouseEvent -> {
@@ -684,8 +681,10 @@ public class PluginComponent implements EventListener {
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 		componentBox.setOnMouseDragged(null);
 		{
-			HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
-			componentBox.getChildren().remove(map.get("snapshot"));
+			if (componentBox.getUserData() != null) {
+				HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
+				componentBox.getChildren().remove(map.get("snapshot"));
+			}
 		}
 		componentBox.setUserData(null);
 	}
