@@ -133,6 +133,22 @@ public class PluginManager {
 		} catch (Exception e) {
 			
 		}
+		
+		try {
+			List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+			deactivatedPlugins.remove(pluginFileName);
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			List<String> priorityOfPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PRIORITY_OF_PLUGINS);
+			priorityOfPlugins.remove(pluginFileName);
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public static void load(String pluginFileName, boolean activated) throws Exception {
