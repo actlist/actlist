@@ -38,9 +38,9 @@
                            </VBox.margin>
                            <children>
                               <Label text="Theme" />
-                              <HBox spacing="10.0">
+                              <HBox>
                                  <children>
-                                    <JFXRadioButton fx:id="winTheme" onAction="#theme" text="Win">
+                                    <JFXRadioButton fx:id="winTheme" onAction="#theme" prefWidth="85.0" text="Win">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
@@ -48,10 +48,10 @@
                                           <ToggleGroup fx:id="theme" />
                                        </toggleGroup>
                                     </JFXRadioButton>
-                                    <JFXRadioButton fx:id="macTheme" onAction="#theme" selected="true" text="Mac" toggleGroup="$theme" />
+                                    <JFXRadioButton fx:id="macTheme" onAction="#theme" prefWidth="85.0" text="Mac" toggleGroup="$theme" />
                                  </children>
                                  <padding>
-                                    <Insets left="15.0" />
+                                    <Insets left="10.0" />
                                  </padding>
                               </HBox>
                            </children>
@@ -59,9 +59,9 @@
                         <VBox prefHeight="40.0" spacing="5.0">
                            <children>
                               <Label text="Dark Mode" />
-                              <HBox spacing="10.0">
+                              <HBox>
                                  <children>
-                                    <JFXRadioButton fx:id="enableDarkMode" onAction="#darkMode" text="Enable">
+                                    <JFXRadioButton fx:id="enableDarkMode" onAction="#darkMode" prefWidth="85.0" text="Enable">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
@@ -69,10 +69,10 @@
                                           <ToggleGroup fx:id="darkmode" />
                                        </toggleGroup>
                                     </JFXRadioButton>
-                                    <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" selected="true" text="Disable" toggleGroup="$darkmode" />
+                                    <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" prefWidth="85.0" text="Disable" toggleGroup="$darkmode" />
                                  </children>
                                  <padding>
-                                    <Insets left="15.0" />
+                                    <Insets left="10.0" />
                                  </padding>
                               </HBox>
                            </children>
@@ -111,7 +111,7 @@
                               <ToggleGroup fx:id="proxy" />
                            </toggleGroup>
                         </JFXRadioButton>
-                        <JFXRadioButton fx:id="automaticProxy" onAction="#proxy" selected="true" text="Automatic detect" toggleGroup="$proxy" />
+                        <JFXRadioButton fx:id="automaticProxy" onAction="#proxy" text="Automatic detect" toggleGroup="$proxy" />
                         <VBox spacing="5.0">
                            <children>
                               <JFXRadioButton fx:id="manualProxy" onAction="#proxy" text="Manual" toggleGroup="$proxy" />

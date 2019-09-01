@@ -74,12 +74,12 @@ public class ConfigurationController extends AbstractViewerController {
 	private AtomicBoolean isValidAddress;
 	private AtomicBoolean isValidPort;
 	
+	public void initialize() {
+		applyDarkMode();
+	}
 	
 	@Override
 	public void initialize(Parent viewer, Object... parameters) {
-		{
-			applyDarkMode();
-		}
 		{
 			/* General */
 			
@@ -100,7 +100,11 @@ public class ConfigurationController extends AbstractViewerController {
 				break;
 			}
 			
-			enableDarkMode.setSelected(ConfigUtil.isDarkMode());
+			if (ConfigUtil.isDarkMode()) {
+				enableDarkMode.setSelected(true);
+			} else {
+				disableDarkMode.setSelected(true);
+			}
 			
 			stageOpacity.valueProperty().addListener((observable, oldValue, newValue) -> {
 				App.getStage().setOpacity(newValue.doubleValue() / 100);
