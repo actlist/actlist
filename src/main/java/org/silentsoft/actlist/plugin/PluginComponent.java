@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -47,6 +50,7 @@ import org.silentsoft.actlist.plugin.about.PluginAbout;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.plugin.tray.TrayNotification;
 import org.silentsoft.actlist.rest.RESTfulAPI;
+import org.silentsoft.actlist.util.ConfigUtil;
 import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.DateUtil;
 import org.silentsoft.core.util.FileUtil;
@@ -155,6 +159,8 @@ public class PluginComponent implements EventListener {
 				makeConsumable();
 				makeDraggable();
 				
+				applyDarkMode();
+				
 				popOver = new PopOver(new VBox());
 				((VBox) popOver.getContentNode()).setPadding(new Insets(3, 3, 3, 3));
 				popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
@@ -243,6 +249,8 @@ public class PluginComponent implements EventListener {
 				plugin.classLoaderObject().set(pluginMap.get(pluginFileName));
 				
 				plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+				
+				plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
 				
 				plugin.setPluginConfig(new PluginConfig(pluginFileName));
 				File configFile = Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")).toFile();
@@ -606,29 +614,36 @@ public class PluginComponent implements EventListener {
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				root.setStyle("-fx-background-color: #f2f2f2;");
+			if (componentBox.getUserData() != null) {
+				if (ConfigUtil.isDarkMode()) {
+					root.setStyle("-fx-background-color: #2d2d2d;");
+				} else {
+					root.setStyle("-fx-background-color: #f2f2f2;");
+				}
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, mouseDragEvent -> {
 			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
-				deleteSnapshot();
+			if (componentBox.getUserData() != null) {
+				HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
 				
 				// move index of dragging node to index of drop target.
-				int indexOfDraggingNode = componentBox.getChildren().indexOf(mouseDragEvent.getGestureSource());
+				int indexOfDraggingNode = componentBox.getChildren().indexOf(map.get("dragging"));
 				int indexOfDropTarget = componentBox.getChildren().indexOf(root);
 				if (indexOfDraggingNode >= 0 && indexOfDropTarget >= 0) {
 					final Node node = componentBox.getChildren().remove(indexOfDraggingNode);
 					componentBox.getChildren().add(indexOfDropTarget, node);
 				}
 				
+				deleteSnapshot();
+				
 				EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 			}
 		});
 		root.addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, mouseDragEvent -> {
-			VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
-			if (componentBox.getChildren().contains(mouseDragEvent.getGestureSource())) {
+			if (ConfigUtil.isDarkMode()) {
+				root.setStyle("-fx-background-color: rgb(40, 40, 40);");
+			} else {
 				root.setStyle("-fx-background-color: #ffffff;");
 			}
 		});
@@ -639,16 +654,27 @@ public class PluginComponent implements EventListener {
 		});
 	}
 	
+	private void applyDarkMode() {
+		hand.setOpacity(ConfigUtil.isDarkMode() ? 1.0 : 0.2);
+		root.setStyle(ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;");
+	}
+	
 	private void createSnapshot(MouseEvent mouseEvent) {
 		ImageView snapshot = new ImageView(root.snapshot(null, null));
 		snapshot.setManaged(false);
 		snapshot.setMouseTransparent(true);
 		snapshot.setEffect(new DropShadow(3.0, 0.0, 1.5, Color.valueOf("#333333")));
+		snapshot.setVisible(false);
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("snapshot", snapshot);
+		map.put("dragging", root);
 		
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 		componentBox.getChildren().add(snapshot);
-		componentBox.setUserData(snapshot);
+		componentBox.setUserData(map);
 		componentBox.setOnMouseDragged(event -> {
+			snapshot.setVisible(true);
 			snapshot.relocate(event.getX() - mouseEvent.getX(), event.getY() - mouseEvent.getY());
 		});
 	}
@@ -656,7 +682,12 @@ public class PluginComponent implements EventListener {
 	private void deleteSnapshot() {
 		VBox componentBox = (VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX);
 		componentBox.setOnMouseDragged(null);
-		componentBox.getChildren().remove(componentBox.getUserData());
+		{
+			if (componentBox.getUserData() != null) {
+				HashMap<String, Object> map = (HashMap<String, Object>) componentBox.getUserData();
+				componentBox.getChildren().remove(map.get("snapshot"));
+			}
+		}
 		componentBox.setUserData(null);
 	}
 	
@@ -676,12 +707,12 @@ public class PluginComponent implements EventListener {
 		HBox hBox = new HBox(node);
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setPadding(new Insets(3, 3, 3, 3));
-		hBox.setStyle("-fx-background-color: white;");
+		hBox.setStyle("-fx-background-color: #fbfbfb;");
 		hBox.setOnMouseEntered(mouseEvent -> {
 			hBox.setStyle("-fx-background-color: lightgray;");
 		});
 		hBox.setOnMouseExited(mouseEvent -> {
-			hBox.setStyle("-fx-background-color: white;");
+			hBox.setStyle("-fx-background-color: #fbfbfb;");
 		});
 		hBox.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
 			try {
@@ -877,7 +908,25 @@ public class PluginComponent implements EventListener {
 			    									new JarFile(partialFilePath.toString()).close();
 			    									
 			    									// determine jar file name
-			    									String _newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    									String _newPluginFileName = "";
+			    									{
+			    										try {
+			    											Header contentDispositionHeader = afterResponse.getFirstHeader("Content-Disposition");
+				    										if (contentDispositionHeader != null && contentDispositionHeader.getValue() != null) {
+				    											_newPluginFileName = URLDecoder.decode(StringUtils.substringAfterLast(contentDispositionHeader.getValue().toLowerCase().replaceAll("\"", ""), "filename="), "UTF-8").trim();
+				    										}
+			    										} catch (Exception e) {
+			    											
+			    										} finally {
+			    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+			    												_newPluginFileName = String.valueOf(Paths.get(URI.create(jar).getPath()).getFileName());
+			    											}
+			    											
+			    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+			    												_newPluginFileName = UUID.randomUUID().toString().replaceAll("-", "");
+			    											}
+			    										}
+			    									}
 			    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
 			    										_newPluginFileName = _newPluginFileName.concat(".jar");
 			    									}
@@ -998,6 +1047,19 @@ public class PluginComponent implements EventListener {
 			}
 		} catch (Exception | Error e) {
 			e.printStackTrace(); // print stack trace only ! do nothing ! b/c of its not kind of critical exception.
+		} finally {
+			new Thread(() -> {
+				try {
+					ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+					param.add(new BasicNameValuePair("uuid", ObjectUtil.toString(plugin.getPluginStatisticsUUID())));
+					param.add(new BasicNameValuePair("name", ObjectUtil.toString(plugin.getPluginName())));
+					param.add(new BasicNameValuePair("version", ObjectUtil.toString(plugin.getPluginVersion())));
+					
+					RESTfulAPI.doPost("http://actlist.silentsoft.org/api/plugin/statistics", param);
+				} catch (Exception | Error e) {
+					
+				}
+			}).start();
 		}
 	};
 	
@@ -1040,9 +1102,12 @@ public class PluginComponent implements EventListener {
 					contentLoadingBox.getChildren().clear();
 					
 					if (shouldShowLoadingBar) {
-						contentLoadingBox.getChildren().add(new JFXSpinner());
+						JFXSpinner spinner = new JFXSpinner();
+						spinner.setPrefSize(28.0, 28.0);
+						contentLoadingBox.getChildren().add(spinner);
 					}
 					
+					contentBox.setVisible(!shouldShowLoadingBar);
 					contentLoadingBox.setVisible(shouldShowLoadingBar);
 				}
 			};
@@ -1080,8 +1145,7 @@ public class PluginComponent implements EventListener {
 			
 			((VBox) popOver.getContentNode()).getChildren().add(createDeleteFunction());
 			
-			// reason of why the owner is pluginLoadingBox is for hiding automatically when lost focus.
-			popOver.show(pluginLoadingBox, e.getScreenX(), e.getScreenY());
+			popOver.show(App.getStage(), e.getScreenX()-40, e.getScreenY()-10); // -40, -10 : offset of PopOver control
 		}
 	}
 	
@@ -1215,11 +1279,26 @@ public class PluginComponent implements EventListener {
 					break;
 				case BizConst.EVENT_UPDATE_PROXY_HOST:
 					plugin.proxyHostObject().set(RESTfulAPI.getProxyHost());
+					plugin.applicationConfigChanged();
+					break;
+				case BizConst.EVENT_APPLY_DARK_MODE: 
+					plugin.darkModeProperty().set(ConfigUtil.isDarkMode());
+					plugin.applicationConfigChanged();
 					break;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		
+		try {
+			switch (event) {
+			case BizConst.EVENT_APPLY_DARK_MODE:
+				applyDarkMode();				
+				break;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -49,11 +49,12 @@ public class PluginManager {
 		}
 		Path sourcePath = Paths.get(file.toURI());
 		Path targetPath = Paths.get(System.getProperty("user.dir"), "plugins", file.getName());
-		if (Files.exists(targetPath)) {
-			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-			targetPath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
-		}
 		if (shouldCopy) {
+			if (Files.exists(targetPath)) {
+				String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+				targetPath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+			}
+			
 			Files.copy(sourcePath, targetPath);
 		}
 		
@@ -129,6 +130,22 @@ public class PluginManager {
 		
 		try {
 			Files.deleteIfExists(Paths.get(System.getProperty("user.dir"), "plugins", "config", pluginFileName.concat(".config")));
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			List<String> deactivatedPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_DEACTIVATED_PLUGINS);
+			deactivatedPlugins.remove(pluginFileName);
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_SAVE_DEACTIVATED_PLUGINS);
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			List<String> priorityOfPlugins = (List<String>) SharedMemory.getDataMap().get(BizConst.KEY_PRIORITY_OF_PLUGINS);
+			priorityOfPlugins.remove(pluginFileName);
+			EventHandler.callEvent(PluginManager.class, BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
 		} catch (Exception e) {
 			
 		}

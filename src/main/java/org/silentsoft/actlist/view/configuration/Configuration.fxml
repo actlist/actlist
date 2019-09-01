@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="310.0" prefWidth="310.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
+<AnchorPane fx:id="root" prefHeight="310.0" prefWidth="360.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
    <children>
       <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -34,13 +34,13 @@
                         <JFXCheckBox fx:id="alwaysOnTop" onAction="#alwaysOnTop" text="Always on Top" />
                         <VBox prefHeight="40.0" spacing="5.0">
                            <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
+                              <Insets />
                            </VBox.margin>
                            <children>
                               <Label text="Theme" />
                               <HBox>
                                  <children>
-                                    <JFXRadioButton fx:id="winTheme" onAction="#theme" text="Win">
+                                    <JFXRadioButton fx:id="winTheme" onAction="#theme" prefWidth="85.0" text="Win">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
@@ -48,35 +48,62 @@
                                           <ToggleGroup fx:id="theme" />
                                        </toggleGroup>
                                     </JFXRadioButton>
-                                    <JFXRadioButton fx:id="macTheme" onAction="#theme" selected="true" text="Mac" toggleGroup="$theme" />
+                                    <JFXRadioButton fx:id="macTheme" onAction="#theme" prefWidth="85.0" text="Mac" toggleGroup="$theme" />
                                  </children>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
                               </HBox>
                            </children>
+                        </VBox>
+                        <VBox prefHeight="40.0" spacing="5.0">
+                           <children>
+                              <Label text="Dark Mode" />
+                              <HBox>
+                                 <children>
+                                    <JFXRadioButton fx:id="enableDarkMode" onAction="#darkMode" prefWidth="85.0" text="Enable">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="darkmode" />
+                                       </toggleGroup>
+                                    </JFXRadioButton>
+                                    <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" prefWidth="85.0" text="Disable" toggleGroup="$darkmode" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                         </VBox>
                         <VBox prefHeight="40.0">
                            <children>
                               <Label text="Show/Hide Actlist (Global HotKey)" />
                               <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A">
                                  <VBox.margin>
-                                    <Insets left="5.0" />
+                                    <Insets left="15.0" />
                                  </VBox.margin></JFXTextField>
                            </children>
                            <VBox.margin>
-                              <Insets left="10.0" />
+                              <Insets />
                            </VBox.margin>
                         </VBox>
                      </children>
                      <padding>
-                        <Insets bottom="10.0" left="15.0" right="10.0" top="10.0" />
+                        <Insets bottom="10.0" left="25.0" right="10.0" top="10.0" />
                      </padding>
                   </VBox>
                </content>
           </Tab>
           <Tab text="Proxy">
                <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0">
+                  <VBox spacing="20.0">
                      <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                        <Insets bottom="10.0" left="25.0" right="10.0" top="20.0" />
                      </padding>
                      <children>
                         <JFXRadioButton fx:id="noneProxy" onAction="#proxy" text="None">
@@ -84,7 +111,7 @@
                               <ToggleGroup fx:id="proxy" />
                            </toggleGroup>
                         </JFXRadioButton>
-                        <JFXRadioButton fx:id="automaticProxy" onAction="#proxy" selected="true" text="Automatic detect" toggleGroup="$proxy" />
+                        <JFXRadioButton fx:id="automaticProxy" onAction="#proxy" text="Automatic detect" toggleGroup="$proxy" />
                         <VBox spacing="5.0">
                            <children>
                               <JFXRadioButton fx:id="manualProxy" onAction="#proxy" text="Manual" toggleGroup="$proxy" />

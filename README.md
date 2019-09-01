@@ -7,6 +7,7 @@
 ![created](https://actlist.silentsoft.org/api/shields/created)
 [![actlist-license](https://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
 [![actlist-plugin-license](https://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
+[![HitCount](http://hits.dwyl.io/silentsoft/actlist.svg)](http://hits.dwyl.io/silentsoft/actlist)
 ---
 
 # Actlist
@@ -61,7 +62,7 @@ Mac OS X:
           <dependency>
               <groupId>org.silentsoft</groupId>
               <artifactId>actlist-plugin</artifactId>
-              <version>1.5.2</version>
+              <version>1.6.0</version>
               <scope>provided</scope>
           </dependency>
       </dependencies>

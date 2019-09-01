@@ -1,0 +1,17 @@
+.tab-pane > .tab-header-area > .headers-region > .tab {
+	-fx-background-color: rgb(40, 40, 40);
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+	-fx-background-color: black;
+}
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-width: 0;
+}
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: rgb(40, 40, 40);
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: black;
+}
+.tab-pane > .tab-content-area {
+    -fx-background-color: rgb(40, 40, 40);
+}

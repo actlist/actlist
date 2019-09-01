@@ -20,6 +20,9 @@ public class BizConst {
 	public static final String EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN = "EVENT_NOTIFY_PRELOADER_COUNT_DOWN_PLUGIN";
 	
 	public static final String EVENT_APPLY_THEME			 = "EVENT_APPLY_THEME";
+	public static final String EVENT_APPLY_DARK_MODE		 = "EVENT_APPLY_DARK_MODE";
+	
+	public static final String EVENT_CLEAR_CONSOLE_LOG		 = "EVENT_CLEAR_CONSOLE_LOG";
 	
 	public static final String EVENT_PLAY_NEW_PLUGINS_ALARM  = "EVENT_PLAY_NEW_PLUGINS_ALARM";
 	

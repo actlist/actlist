@@ -50,8 +50,8 @@ public class RESTfulAPI extends org.silentsoft.net.rest.RESTfulAPI {
 		}, afterResponse);
 	}
 	
-	public static <T> T doPost(String uri, Object param, Class<T> returnType) throws Exception {
-		return doPost(uri, getProxyHost(), param, returnType, (request) -> {
+	public static <T> T doPost(String uri, Object param) throws Exception {
+		return doPost(uri, getProxyHost(), param, null, (request) -> {
 			request.setHeaders(createHeaders());
 		});
 	}

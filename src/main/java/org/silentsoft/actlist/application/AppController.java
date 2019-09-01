@@ -177,6 +177,7 @@ public class AppController implements EventListener {
 			makeNormalizable(App.getStage(), handPaneMac);
 		}
 		applyTheme();
+		applyDarkMode();
 		
 		makeResizable(App.getStage(), root);
 		
@@ -208,12 +209,16 @@ public class AppController implements EventListener {
 	
 	private void initConsole() {
 		consoleTextArea = new TextArea();
-		consoleTextArea.setContextMenu(new ContextMenu()); // disable context menu.
+		{
+			MenuItem clearMenuItem = new MenuItem("Clear");
+			clearMenuItem.setOnAction(event -> EventHandler.callEvent(getClass(), BizConst.EVENT_CLEAR_CONSOLE_LOG));
+			consoleTextArea.setContextMenu(new ContextMenu(clearMenuItem));
+		}
 		consoleTextArea.setEditable(false);
 		consoleTextArea.setFont(Font.font("Consolas", 13.0));
 		{
 			StringBuffer style = new StringBuffer();
-			style.append("-fx-control-inner-background: rgb(30, 30, 30); ");
+			style.append("-fx-control-inner-background: rgb(40, 40, 40); ");
 			style.append("-fx-background-color: -fx-control-inner-background; ");			
 			style.append("-fx-background-radius: 0; ");
 			style.append("-fx-faint-focus-color: transparent;");
@@ -371,6 +376,7 @@ public class AppController implements EventListener {
 			AnchorPane.setTopAnchor(body, 2.0);
 			AnchorPane.setBottomAnchor(body, 2.0);
 		}
+		stage.getScene().getRoot().requestLayout();
     }
     
     private void applyTheme() {
@@ -384,6 +390,18 @@ public class AppController implements EventListener {
     		body.setLeft(sideArea);
     		
     		handPaneMac.setVisible(true);
+    	}
+    }
+    
+    private void applyDarkMode() {
+    	String css = getClass().getResource("App-darkmode.css").toExternalForm();
+    	
+    	if (ConfigUtil.isDarkMode()) {
+    		if (root.getStylesheets().contains(css) == false) {
+    			root.getStylesheets().add(css);
+    		}
+    	} else {
+    		root.getStylesheets().remove(css);
     	}
     }
     
@@ -495,11 +513,13 @@ public class AppController implements EventListener {
 		
 		Label title = new Label("Actlist Update Alarm");
 		title.setFont(Font.font("Verdana", FontWeight.BOLD, 12.0));
+		title.setTextFill(Paint.valueOf("#000000"));
 		title.setPadding(new Insets(10.0, 0.0, 0.0, 0.0));
 		
 		Label message = new Label("New Actlist is available. Would you like to browse now ?");
 		message.setWrapText(true);
 		message.setFont(Font.font("Verdana", 12.0));
+		message.setTextFill(Paint.valueOf("#000000"));
 		message.setTextAlignment(TextAlignment.CENTER);
 		message.setPrefWidth(194.0);
 		message.setPrefHeight(40.0);
@@ -985,7 +1005,6 @@ public class AppController implements EventListener {
 					AnchorPane.setLeftAnchor(vBox, 0.0);
 					
 					AnchorPane pane = new AnchorPane(vBox);
-					pane.setStyle("-fx-background-color: #ffffff;");
 					pane.setPrefWidth(310);
 					pane.setPrefHeight(310);
 
@@ -1005,6 +1024,9 @@ public class AppController implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_APPLY_DARK_MODE:
+			applyDarkMode();
 			break;
 		case BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM:
 			playNewPluginsAlarm();

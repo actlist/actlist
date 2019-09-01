@@ -1,0 +1,4 @@
+.body {
+	-fx-base: rgb(40, 40, 40);
+	-fx-background-color: -fx-base;
+}

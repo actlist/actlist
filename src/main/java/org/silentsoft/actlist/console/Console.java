@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -64,7 +65,7 @@ public class Console implements EventListener {
 	public void initialize(Stage stage) {
 		EventHandler.addListener(this);
 		
-		console.setContextMenu(new ContextMenu()); // disable context menu.
+		setContextMenu();
 		
 		printStream = new PrintStream(new ByteArrayOutputStream() {
 			@Override
@@ -119,6 +120,12 @@ public class Console implements EventListener {
 				leftMaximizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
 			}
 		}
+	}
+	
+	private void setContextMenu() {
+		MenuItem clearMenuItem = new MenuItem("Clear");
+		clearMenuItem.setOnAction(event -> clearConsoleLog());
+		console.setContextMenu(new ContextMenu(clearMenuItem));
 	}
 	
 	/**
@@ -256,6 +263,7 @@ public class Console implements EventListener {
 			AnchorPane.setTopAnchor(body, 27.0);
 			AnchorPane.setBottomAnchor(body, 2.0);
 		}
+		stage.getScene().getRoot().requestLayout();
     }
     
     private void applyTheme() {
@@ -282,6 +290,17 @@ public class Console implements EventListener {
     	}
     }
     
+    private void clearConsoleLog() {
+    	console.clear();
+		
+		Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
+		if (appConsole instanceof TextArea) {
+			((TextArea) appConsole).clear();
+		}
+		
+		System.out.println(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT)));
+    }
+    
     @FXML
     private void showControls() {
     	((SVGPath) leftCloseButton.getGraphic()).setFill(Paint.valueOf("rgb(30, 30, 30)"));
@@ -305,6 +324,9 @@ public class Console implements EventListener {
 		switch (event) {
 		case BizConst.EVENT_APPLY_THEME:
 			applyTheme();
+			break;
+		case BizConst.EVENT_CLEAR_CONSOLE_LOG:
+			clearConsoleLog();
 			break;
 		}
 	}

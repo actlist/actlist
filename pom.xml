@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist</artifactId>
-	<version>1.5.2</version>
+	<version>1.6.0</version>
 
 	<repositories>
 		<repository>
@@ -28,11 +28,11 @@
 
 		<!-- Silentsoft -->
 		<silentsoft.core.version>1.1.2</silentsoft.core.version>
-		<silentsoft.ui.version>1.1.1</silentsoft.ui.version>
+		<silentsoft.ui.version>1.1.2</silentsoft.ui.version>
 		<silentsoft.net.version>1.1.1</silentsoft.net.version>
 
 		<!-- Actlist -->
-		<actlist.plugin.version>1.5.2</actlist.plugin.version>
+		<actlist.plugin.version>1.6.0</actlist.plugin.version>
 
 		<!-- Native -->
 		<jna.version>4.5.1</jna.version>
@@ -40,7 +40,7 @@
 		<!-- 3rd party -->
 		<maven-model.version>3.6.0</maven-model.version>
 		<centerdevice-nsmenufx.version>2.1.5</centerdevice-nsmenufx.version>
-		<jfoenix.version>1.0.0</jfoenix.version>
+		<jfoenix.version>8.0.8</jfoenix.version>
 		<plushaze-traynotification.tag>5393c3a54f</plushaze-traynotification.tag>
 		<jkeymaster.version>1.2</jkeymaster.version>
 	</properties>

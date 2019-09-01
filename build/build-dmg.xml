@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="actlist" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="actlist" default="do-clean" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property file="build.properties"/>
 	<target name="init-fx-tasks">
 		<path id="fxant">
@@ -22,8 +22,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.5.2">
-				<filename name="actlist-plugin-1.5.2.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.6.0">
+				<filename name="actlist-plugin-1.6.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -37,8 +37,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.1">
-				<filename name="silentsoft-ui-1.1.1.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.1.2">
+				<filename name="silentsoft-ui-1.1.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -92,8 +92,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/com/jfoenix/jfoenix/1.0.0">
-				<filename name="jfoenix-1.0.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/com/jfoenix/jfoenix/8.0.8">
+				<filename name="jfoenix-8.0.8.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -210,10 +210,10 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.5.2.jar"/>
+				<include name="actlist-plugin-1.6.0.jar"/>
 				<include name="silentsoft-core-1.1.2.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
-				<include name="silentsoft-ui-1.1.1.jar"/>
+				<include name="silentsoft-ui-1.1.2.jar"/>
 				<include name="silentsoft-net-1.1.1.jar"/>
 				<include name="jackson-databind-2.4.2.jar"/>
 				<include name="commons-codec-1.6.jar"/>
@@ -238,7 +238,7 @@
 				<include name="log4j-1.2.17.jar"/>
 				<include name="jna-platform-4.5.1.jar"/>
 				<include name="commons-lang-2.6.jar"/>
-				<include name="jfoenix-1.0.0.jar"/>
+				<include name="jfoenix-8.0.8.jar"/>
 				<include name="commons-logging-1.1.3.jar"/>
 				<include name="jkeymaster-1.2.jar"/>
 				<include name="jackson-annotations-2.4.2.jar"/>
@@ -284,8 +284,6 @@
 			<exclude name="**/*.java"/>
 		</fileset>
 		</copy>
-	
-	
 	</target>
 	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
 		<delete file="dist"/>
@@ -300,14 +298,6 @@
 			</fileset>
 		</copy>
 	
-	
-		<fx:resources id="appRes">
-			<fx:fileset dir="dist" includes="actlist.jar"/>
-			<fx:fileset dir="dist" includes="actlist.jar.config"/>
-			<fx:fileset dir="dist" includes="plugins/*"/>
-			<fx:fileset dir="dist" includes="libs/*"/>
-		</fx:resources>
-	
 		<fx:application id="fxApplication"
 			name="Actlist"
 			mainClass="org.silentsoft.actlist.application.App"
@@ -316,14 +306,17 @@
 		/>
 	
 		<mkdir dir="build/classes/META-INF" />
-	
-	
-	
+		
+		<touch file="dist/actlist.jar" />
 		<fx:jar destfile="dist/actlist.jar">
+			<fileset dir="build/classes"/>
 			<fx:application refid="fxApplication"/>
-			<fileset dir="build/classes">
-			</fileset>
-			<fx:resources refid="appRes"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="libs/*.jar"/>
+			</fx:resources>
 	
 			<manifest>
 				<attribute name="Implementation-Vendor" value="silentsoft.org"/>
@@ -332,7 +325,6 @@
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
-	
 	
 		<mkdir dir="deploy" />
 		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
@@ -353,14 +345,29 @@
 				<fx:jvmarg value="-XX:InitiatingHeapOccupancyPercent=20"/>
 				<fx:jvmarg value="-XX:MinHeapFreeRatio=10"/>
 				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
+				<fx:jvmarg value="-Dfile.encoding=UTF-8"/>
 			</fx:platform>
 			
 			<fx:info title="actlist" vendor="silentsoft.org"/>
 	
-			<fx:application refId="fxApplication"/>
-			<fx:resources refid="appRes"/>
+			<fx:application refid="fxApplication"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+					<include name="actlist.jar.config"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="plugins/*"/>
+				<fx:fileset dir="dist" includes="libs/*"/>
+			</fx:resources>
 		</fx:deploy>
-	
-	
+	</target>
+	<target name="do-clean" depends="do-deploy">
+		<delete dir="build"/>
+		<delete dir="deploy" excludes="bundles/*" includeemptydirs="true"/>
+		<delete dir="dist/libs"/>
+		<delete dir="dist" includes="actlist.jar"/>
+		<delete dir="externalLibs"/>
+		<delete dir="project"/>
+		<delete dir="projectRefs"/>
 	</target>
 </project>
