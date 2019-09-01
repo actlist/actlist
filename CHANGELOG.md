@@ -1,3 +1,26 @@
+* 1.6.0
+    * new features
+      * supports dark mode UI
+      * supports statistics through `setPluginStatisticsUUID()`
+      * supports `Clear` context menu on console view
+    * bugfix
+      * launch fails with non-ISO-8859-1 path on Windows
+      * file encoding as a UTF-8 on Windows
+      * detect wrong filename from download url
+      * certain jar DnD with NPE
+      * transparent background bug through `showLoadingBar()`
+    * changes
+      * `debug(...)` method parameter as a builder pattern
+      * some of the `debug(...)` method has been deprecated
+      * minor UI changes
+    * breaking changes (access modifier)
+      * `setSupportedPlatforms()`
+      * `setOneTimePlugin()`
+      * `setPluginArchivesURI()`
+      * `setBeforeRequest()`
+      * `setPluginUpdateCheckURI()`
+    * dependency
+      * update JFoenix dependency to 8.0.8 from 1.0.0
 * 1.5.2
     * improvements
       * minor speed improvements
