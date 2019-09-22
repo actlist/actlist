@@ -95,37 +95,6 @@
 							<sourceRoot>${project.build.directory}/version/generated-sources</sourceRoot>
 						</configuration>
 					</execution>
-					<!-- below two executions(exe, dmg) cannot be run within one platform. so I need run 'maven generate-sources' manually before compile each xml files -->
-					<!-- 
-					<execution>
-						<id>compile-exe</id>
-						<phase>compile</phase>
-						<configuration>
-							<target>
-								<ant antfile="${basedir}/build/build-exe.xml">
-									<target name="do-compile" />
-								</ant>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>compile-dmg</id>
-						<phase>compile</phase>
-						<configuration>
-							<target>
-								<ant antfile="${basedir}/build/build-dmg.xml">
-									<target name="do-compile" />
-								</ant>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					-->
 				</executions>
 			</plugin>
 		</plugins>
