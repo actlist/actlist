@@ -27,8 +27,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.2">
-				<filename name="silentsoft-core-1.1.2.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.3">
+				<filename name="silentsoft-core-1.1.3.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -211,7 +211,7 @@
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
 				<include name="actlist-plugin-1.7.0-SNAPSHOT.jar"/>
-				<include name="silentsoft-core-1.1.2.jar"/>
+				<include name="silentsoft-core-1.1.3.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
 				<include name="silentsoft-ui-1.1.2.jar"/>
 				<include name="silentsoft-net-1.1.1.jar"/>
