@@ -529,6 +529,10 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void makeDisable(Throwable throwable, boolean shouldTraceException) {
+		if (shouldTraceException) {
+			throwable.printStackTrace();
+		}
+		
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
 				try {
