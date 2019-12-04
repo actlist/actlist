@@ -32,7 +32,7 @@ Mac OS X:
 ### Language Requirements
 * Java 1.8 (with JavaFx)
 
-### Development setup
+### Plugin Development Guide
 
 * There are two ways to create an Actlist plugin. the first one is using starter-kit(which is highly recommended) and second one is creating java project manually.
 
