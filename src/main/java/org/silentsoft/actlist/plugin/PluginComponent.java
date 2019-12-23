@@ -660,7 +660,11 @@ public class PluginComponent implements EventListener {
 	
 	private void applyDarkMode() {
 		hand.setOpacity(ConfigUtil.isDarkMode() ? 1.0 : 0.2);
-		root.setStyle(ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;");
+		
+		String backgroundColorStyle = ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;";
+		root.setStyle(backgroundColorStyle);
+		pluginLoadingBox.setStyle(backgroundColorStyle);
+		contentLoadingBox.setStyle(backgroundColorStyle);
 	}
 	
 	private void createSnapshot(MouseEvent mouseEvent) {
