@@ -700,7 +700,7 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void addFunction(Function function) {
-		functions.add(createFunctionBox(new Label("", function.graphic), mouseEvent -> {
+		functions.add(createFunctionBox(function.graphic, mouseEvent -> {
 			try {
 				if (function.action != null) {
 					function.action.run();
