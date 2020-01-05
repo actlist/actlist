@@ -60,7 +60,7 @@ __centerdevice-nsmenufx 2.1.5__
  * https://github.com/codecentric/NSMenuFX
  * BSD-3-Clause
 
-__controlsfx 8.40.10__
+__controlsfx 8.40.15__
  * https://bitbucket.org/controlsfx/controlsfx
  * BSD-3-Clause
 
@@ -111,6 +111,10 @@ __slf4j-api 1.7.5__
 __slf4j-log4j12 1.7.5__
  * https://github.com/qos-ch/slf4j
  * MIT License
+
+__javassist 3.26.0-GA__
+ * https://github.com/jboss-javassist/javassist
+ * Apache License 2.0
 
 __jkeymaster 1.2__
  * https://github.com/tulskiy/jkeymaster
