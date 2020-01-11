@@ -201,11 +201,6 @@
 		<mkdir dir="project" />
 		<copy todir="project">
 			<fileset dir="${basedir}/..">
-				<include name="target/version/generated-sources/**" />
-			</fileset>
-		</copy>
-		<copy todir="project">
-			<fileset dir="${basedir}/..">
 				<include name="src/main/resources/**" />
 			</fileset>
 		</copy>
@@ -266,11 +261,6 @@
 	
 		<!-- Copy project sources itself -->
 		<copy todir="build/src">
-			<fileset dir="project/target/version/generated-sources">
-				<include name="**/*"/>
-			</fileset>
-		</copy>
-		<copy todir="build/src">
 			<fileset dir="project/src/main/resources">
 				<include name="**/*"/>
 			</fileset>
@@ -291,9 +281,6 @@
 	
 		<!-- Copy over none Java-Files -->
 		<copy todir="build/classes">
-		<fileset dir="project/target/version/generated-sources">
-			<exclude name="**/*.java"/>
-		</fileset>
 		<fileset dir="project/src/main/resources">
 			<exclude name="**/*.java"/>
 		</fileset>
