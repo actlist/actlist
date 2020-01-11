@@ -5,6 +5,9 @@ dist: trusty
 jdk:
   - oraclejdk8
 
+git:
+  depth: false
+
 cache:
   directories:
     - "$HOME/.m2"
