@@ -2,10 +2,9 @@ package org.silentsoft.actlist.plugin.about;
 
 import java.awt.Desktop;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.core.util.ObjectUtil;
@@ -166,35 +165,25 @@ public class PluginAboutController extends AbstractViewerController {
 		boolean existsContent = ObjectUtil.isNotEmpty(uri) || ObjectUtil.isNotEmpty(text);
 		if (existsContent) {
 			WebView webView = new WebView();
-			{
-				BufferedReader reader = null;
-				try {
-					if (ObjectUtil.isNotEmpty(uri)) {
-						if ("jar".equals(uri.getScheme())) {
-							reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), Charset.forName("UTF-8")));
-							StringBuffer buffer = new StringBuffer();
-							for (String value=null; (value=reader.readLine()) != null; ) {
-								buffer.append(value.concat("\r\n"));
-							}
-							webView.getEngine().loadContent(buffer.toString(), "text/plain");
-						} else {
-							webView.getEngine().load(uri.toString());
+			
+			if (ObjectUtil.isNotEmpty(uri)) {
+				if ("jar".equals(uri.getScheme())) {
+					try (BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8))) {
+						StringBuffer buffer = new StringBuffer();
+						for (String value=null; (value=reader.readLine()) != null; ) {
+							buffer.append(value.concat("\r\n"));
 						}
-					} else if (ObjectUtil.isNotEmpty(text)) {
-						webView.getEngine().loadContent(text, "text/plain");
+						webView.getEngine().loadContent(buffer.toString(), "text/plain");
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					if (reader != null) {
-						try {
-							reader.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
+				} else {
+					webView.getEngine().load(uri.toString());
 				}
+			} else if (ObjectUtil.isNotEmpty(text)) {
+				webView.getEngine().loadContent(text, "text/plain");
 			}
+			
 			tabPane.getTabs().add(new Tab(title, webView));
 		}
 	}
