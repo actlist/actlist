@@ -34,7 +34,7 @@ Mac OS X:
 
 ## Actlist Application Development Setup Guide
 * 1. Fork this repository into your GitHub Account
-* 2. Clone & import into your favorite IDE
+* 2. Clone & import as a Maven project into your favorite IDE
 * 3. Launch
   ```
   src/main/java/org/silentsoft/actlist/application/App.java
