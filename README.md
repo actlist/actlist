@@ -30,7 +30,8 @@ Mac OS X:
 
 ## Prerequisites For Development
 * Oracle JDK 1.8 or Open JDK with JavaFx binary distribution
-* JavaFx Scene Builder for Graphic Design
+* Maven
+* JavaFx Scene Builder for graphic design
 
 ## Actlist Application Development Setup Guide
 * 1. Fork this repository into your GitHub Account
