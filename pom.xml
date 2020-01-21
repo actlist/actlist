@@ -43,6 +43,7 @@
 		<jfoenix.version>8.0.8</jfoenix.version>
 		<plushaze-traynotification.tag>5393c3a54f</plushaze-traynotification.tag>
 		<javassist.version>3.26.0-GA</javassist.version>
+		<commonmark.version>0.13.1</commonmark.version>
 		<jkeymaster.version>1.2</jkeymaster.version>
 	</properties>
 
@@ -252,6 +253,11 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>${javassist.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.atlassian.commonmark</groupId>
+		    <artifactId>commonmark</artifactId>
+		    <version>${commonmark.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.tulskiy</groupId>
