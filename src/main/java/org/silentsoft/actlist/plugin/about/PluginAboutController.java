@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.silentsoft.actlist.plugin.ActlistPlugin;
 import org.silentsoft.core.util.ObjectUtil;
 import org.silentsoft.ui.viewer.AbstractViewerController;
@@ -173,7 +175,8 @@ public class PluginAboutController extends AbstractViewerController {
 						for (String value=null; (value=reader.readLine()) != null; ) {
 							buffer.append(value.concat("\r\n"));
 						}
-						webView.getEngine().loadContent(buffer.toString(), "text/plain");
+						String content = HtmlRenderer.builder().build().render(Parser.builder().build().parse(buffer.toString()));
+						webView.getEngine().loadContent(content);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -181,7 +184,8 @@ public class PluginAboutController extends AbstractViewerController {
 					webView.getEngine().load(uri.toString());
 				}
 			} else if (ObjectUtil.isNotEmpty(text)) {
-				webView.getEngine().loadContent(text, "text/plain");
+				String content = HtmlRenderer.builder().build().render(Parser.builder().build().parse(text));
+				webView.getEngine().loadContent(content);
 			}
 			
 			tabPane.getTabs().add(new Tab(title, webView));
