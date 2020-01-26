@@ -30,24 +30,28 @@ Mac OS X:
 
 ## Prerequisites For Development
 * Oracle JDK 1.8 or Open JDK with JavaFx binary distribution
-* Maven
 * JavaFx Scene Builder for graphic design
 
 ## Actlist Application Development Setup Guide
-* 1. Fork this repository into your GitHub Account
-* 2. Clone & import as a Maven project into your favorite IDE
-* 3. Launch
-  ```
-  src/main/java/org/silentsoft/actlist/application/App.java
-  ```
+1. Fork this repository into your GitHub Account
+2. Clone & import as a Maven project into your favorite IDE
+3. Launch
+    ```
+    src/main/java/org/silentsoft/actlist/application/App.java
+    ```
 
 ## Actlist Plugin Development Setup Guide
 * There are two ways to create an Actlist plugin. the first one is using starter-kit(which is highly recommended) and second one is creating java project manually.
 
   ### 1. using starter-kit
-    ```
-    $ git clone https://github.com/silentsoft/actlist-plugin-starter-kit.git
-    ```
+    1. [Download starter kit](https://github.com/silentsoft/actlist-plugin-starter-kit/archive/master.zip)
+    2. Rename `master.zip` to the desired name and unzip it
+    3. Enter the directory
+    4. Initialize your project metadata
+       ```
+       $ ./mvnw initialize -DgroupId=com.example -DartifactId=awesome-demo
+       ```
+    5. Import project into your favorite IDE
   ---
   ### 2. or creating java project manually
     * Create a new Java project and configure to Maven project.
