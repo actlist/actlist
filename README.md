@@ -51,6 +51,22 @@ Mac OS X:
        ```
        $ ./mvnw initialize -DgroupId=com.example -DartifactId=awesome-demo
        ```
+       `Tip` - If you are behind a proxy server then you should use one of the following
+       <details markdown="1"><summary>Details</summary>
+
+       - Windows
+         ```
+         $ set MAVEN_OPTS=-Dhttps.proxyHost=10.20.30.40 -Dhttps.proxyPort=8080
+         $ mvnw initialize -DgroupId=com.example -DartifactId=awesome-demo
+         ```
+       - Mac | Linux
+         ```
+         $ export MAVEN_OPTS=-Dhttps.proxyHost=10.20.30.40 -Dhttps.proxyPort=8080
+         $ ./mvnw initialize -DgroupId=com.example -DartifactId=awesome-demo
+         ```
+       - `Note` - The proxy host `10.20.30.40` and proxy port `8080` is up to you.
+
+       </details>
     5. Import project into your favorite IDE
   ---
   ### 2. or creating java project manually
