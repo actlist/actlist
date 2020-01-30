@@ -892,6 +892,8 @@ public class PluginComponent implements EventListener {
 								displayLoadingBar(true);           // for body
     							
 								new Thread(() -> {
+									AtomicBoolean networkUnavailable = new AtomicBoolean(false);
+									AtomicReference<Exception> exception = new AtomicReference<>();
 									try {
 		    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
 		    								try {
@@ -990,10 +992,12 @@ public class PluginComponent implements EventListener {
 			    								}
 		    								} catch (Exception e) {
 		    									e.printStackTrace();
+		    									exception.set(e);
 		    								}
 		    							});
 		    						} catch (Exception e) {
 		    							e.printStackTrace();
+		    							networkUnavailable.set(true);
 		    						}
 	    							
 	    							if (succeedToAutoUpdate.get() == false) {
@@ -1001,9 +1005,20 @@ public class PluginComponent implements EventListener {
 	    									pluginLoadingBox.setVisible(false); // for head
 	    									displayLoadingBar(false);           // for body
 	    									
-		    								showAboutStage();
 		    								updateAlarmLabel.setVisible(false);
 	    								});
+	    								
+	    								if (networkUnavailable.get()) {
+	    									if (Desktop.isDesktopSupported()) {
+	    										try {
+		    										Desktop.getDesktop().browse(URI.create(jar));
+		    									} catch (Exception e) {
+		    										e.printStackTrace();
+		    									}
+	    									}
+	    								} else {
+	    									MessageBox.showException(App.getStage(), "Failed to update", exception.get());
+	    								}
 	    							}
 								}).start();
     						});
