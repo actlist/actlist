@@ -529,6 +529,10 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void makeDisable(Throwable throwable, boolean shouldTraceException) {
+		if (shouldTraceException) {
+			throwable.printStackTrace();
+		}
+		
 		new Thread(() -> {
 			if (togActivator.selectedProperty().get()) {
 				try {
@@ -656,7 +660,11 @@ public class PluginComponent implements EventListener {
 	
 	private void applyDarkMode() {
 		hand.setOpacity(ConfigUtil.isDarkMode() ? 1.0 : 0.2);
-		root.setStyle(ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;");
+		
+		String backgroundColorStyle = ConfigUtil.isDarkMode() ? "-fx-background-color: rgb(40, 40, 40);" : "-fx-background-color: #ffffff;";
+		root.setStyle(backgroundColorStyle);
+		pluginLoadingBox.setStyle(backgroundColorStyle);
+		contentLoadingBox.setStyle(backgroundColorStyle);
 	}
 	
 	private void createSnapshot(MouseEvent mouseEvent) {
@@ -692,7 +700,7 @@ public class PluginComponent implements EventListener {
 	}
 	
 	private void addFunction(Function function) {
-		functions.add(createFunctionBox(new Label("", function.graphic), mouseEvent -> {
+		functions.add(createFunctionBox(function.graphic, mouseEvent -> {
 			try {
 				if (function.action != null) {
 					function.action.run();
@@ -884,6 +892,8 @@ public class PluginComponent implements EventListener {
 								displayLoadingBar(true);           // for body
     							
 								new Thread(() -> {
+									AtomicBoolean networkUnavailable = new AtomicBoolean(false);
+									AtomicReference<Exception> exception = new AtomicReference<>();
 									try {
 		    							RESTfulAPI.doGet(jar, plugin.getBeforeRequest(), (afterResponse) -> {
 		    								try {
@@ -982,10 +992,12 @@ public class PluginComponent implements EventListener {
 			    								}
 		    								} catch (Exception e) {
 		    									e.printStackTrace();
+		    									exception.set(e);
 		    								}
 		    							});
 		    						} catch (Exception e) {
 		    							e.printStackTrace();
+		    							networkUnavailable.set(true);
 		    						}
 	    							
 	    							if (succeedToAutoUpdate.get() == false) {
@@ -993,9 +1005,20 @@ public class PluginComponent implements EventListener {
 	    									pluginLoadingBox.setVisible(false); // for head
 	    									displayLoadingBar(false);           // for body
 	    									
-		    								showAboutStage();
 		    								updateAlarmLabel.setVisible(false);
 	    								});
+	    								
+	    								if (networkUnavailable.get()) {
+	    									if (Desktop.isDesktopSupported()) {
+	    										try {
+		    										Desktop.getDesktop().browse(URI.create(jar));
+		    									} catch (Exception e) {
+		    										e.printStackTrace();
+		    									}
+	    									}
+	    								} else {
+	    									MessageBox.showException(App.getStage(), "Failed to update", exception.get());
+	    								}
 	    							}
 								}).start();
     						});

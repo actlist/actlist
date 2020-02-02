@@ -33,13 +33,13 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.6.0">
-				<filename name="actlist-plugin-1.6.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.7.0">
+				<filename name="actlist-plugin-1.7.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.2">
-				<filename name="silentsoft-core-1.1.2.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.1.3">
+				<filename name="silentsoft-core-1.1.3.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -192,13 +192,18 @@
 				<filename name="commons-io-2.4.jar"/>
 			</fileset>
 		</copy>
-	
-		<mkdir dir="project" />
-		<copy todir="project">
-			<fileset dir="${basedir}/..">
-				<include name="target/version/generated-sources/**" />
+		<copy todir="externalLibs">
+			<fileset dir="${user.home}/.m2/repository/org/javassist/javassist/3.26.0-GA">
+				<filename name="javassist-3.26.0-GA.jar"/>
 			</fileset>
 		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${user.home}/.m2/repository/com/atlassian/commonmark/commonmark/0.13.1">
+				<filename name="commonmark-0.13.1.jar"/>
+			</fileset>
+		</copy>
+		
+		<mkdir dir="project" />
 		<copy todir="project">
 			<fileset dir="${basedir}/..">
 				<include name="src/main/resources/**" />
@@ -221,8 +226,8 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.6.0.jar"/>
-				<include name="silentsoft-core-1.1.2.jar"/>
+				<include name="actlist-plugin-1.7.0.jar"/>
+				<include name="silentsoft-core-1.1.3.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
 				<include name="silentsoft-ui-1.1.2.jar"/>
 				<include name="silentsoft-net-1.1.1.jar"/>
@@ -253,17 +258,14 @@
 				<include name="commons-logging-1.1.3.jar"/>
 				<include name="jkeymaster-1.2.jar"/>
 				<include name="jackson-annotations-2.4.2.jar"/>
+				<include name="javassist-3.26.0-GA.jar"/>
+				<include name="commonmark-0.13.1.jar"/>
 			</fileset>
 		</copy>
 	
 		<!-- Copy project references -->
 	
 		<!-- Copy project sources itself -->
-		<copy todir="build/src">
-			<fileset dir="project/target/version/generated-sources">
-				<include name="**/*"/>
-			</fileset>
-		</copy>
 		<copy todir="build/src">
 			<fileset dir="project/src/main/resources">
 				<include name="**/*"/>
@@ -285,9 +287,6 @@
 	
 		<!-- Copy over none Java-Files -->
 		<copy todir="build/classes">
-		<fileset dir="project/target/version/generated-sources">
-			<exclude name="**/*.java"/>
-		</fileset>
 		<fileset dir="project/src/main/resources">
 			<exclude name="**/*.java"/>
 		</fileset>

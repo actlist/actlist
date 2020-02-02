@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir=".." default="generate-version">
+<project basedir="." default="generate-version">
 	<target name="generate-version">
 		<mkdir dir="${gensrc.dir}/org/silentsoft/actlist/version" />
 		<echo file="${gensrc.dir}/org/silentsoft/actlist/version/BuildVersion.java">
@@ -11,5 +11,6 @@ public class BuildVersion {
 	public static final String BUILD_TIME = "${buildtime}";
 }
 		</echo>
+		<echo file="build.properties">version=${version}</echo>
 	</target>
 </project>

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -701,11 +702,15 @@ public class AppController implements EventListener {
 			
 			// extract plugins
 			List<String> plugins = new ArrayList<String>();
-			Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1).forEach(path -> {
-				if (isAssignableFromJarFile(path)) {
-					plugins.add(path.getFileName().toString());
-				}
-			});
+			{
+				Stream<Path> pathStream = Files.walk(Paths.get(System.getProperty("user.dir"), "plugins"), 1);
+				pathStream.forEach(path -> {
+					if (isAssignableFromJarFile(path)) {
+						plugins.add(path.getFileName().toString());
+					}
+				});
+				pathStream.close();
+			}
 			
 			// remove not exist deactivated plugin
 			for (int i=deactivatedPlugins.size()-1; i>=0; i--) {
@@ -719,7 +724,8 @@ public class AppController implements EventListener {
 			// delete unused config file
 			Path configDirectory = Paths.get(System.getProperty("user.dir"), "plugins", "config");
 			if (Files.exists(configDirectory) && Files.isDirectory(configDirectory)) {
-				Files.walk(configDirectory, 1).forEach(path -> {
+				Stream<Path> pathStream = Files.walk(configDirectory, 1);
+				pathStream.forEach(path -> {
 					String fileName = path.getFileName().toString();
 					if (fileName.toLowerCase().endsWith(".config")) {
 						fileName = fileName.substring(0, fileName.length()-".config".length());
@@ -732,6 +738,7 @@ public class AppController implements EventListener {
 						}
 					}
 				});
+				pathStream.close();
 			}
 			
 			// transform priority
