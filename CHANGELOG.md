@@ -1,3 +1,15 @@
+* 1.7.0
+    * new features
+      * supports markdown text on plugin’s About dialog
+      * supports `analyze` method for checking the minimum compatible version
+      * supports `ToggleFunction` on context menu
+      * supports `getFunction` method for getting context menu's graphic object
+    * improvements
+      * user interaction when failed to plugin’s automatic update
+      * minor css style adjustments
+    * dependency
+      * new dependency - javassist 3.26.0-GA
+      * new dependency - commonmark 0.13.1
 * 1.6.0
     * new features
       * supports dark mode UI
