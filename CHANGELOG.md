@@ -1,3 +1,6 @@
+* 1.7.1
+    * bugfix
+      * critical JSON serialization patch
 * 1.7.0
     * new features
       * supports markdown text on plugin’s About dialog
