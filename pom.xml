@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.silentsoft</groupId>
 	<artifactId>actlist</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.1</version>
 
 	<repositories>
 		<repository>
@@ -32,7 +32,7 @@
 		<silentsoft.net.version>1.1.1</silentsoft.net.version>
 
 		<!-- Actlist -->
-		<actlist.plugin.version>1.7.0</actlist.plugin.version>
+		<actlist.plugin.version>1.7.1</actlist.plugin.version>
 
 		<!-- Native -->
 		<jna.version>4.5.1</jna.version>

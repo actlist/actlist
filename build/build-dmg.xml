@@ -22,8 +22,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.7.0">
-				<filename name="actlist-plugin-1.7.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.7.1">
+				<filename name="actlist-plugin-1.7.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -215,7 +215,7 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="actlist-plugin-1.7.0.jar"/>
+				<include name="actlist-plugin-1.7.1.jar"/>
 				<include name="silentsoft-core-1.1.3.jar"/>
 				<include name="silentsoft-io-1.1.1.jar"/>
 				<include name="silentsoft-ui-1.1.2.jar"/>
