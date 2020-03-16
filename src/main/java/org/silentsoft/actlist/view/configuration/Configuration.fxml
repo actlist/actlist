@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="root" prefHeight="310.0" prefWidth="360.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
+<AnchorPane fx:id="root" prefWidth="360.0" stylesheets="@Configuration.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.silentsoft.actlist.view.configuration.ConfigurationController">
    <children>
       <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -51,7 +51,7 @@
                                     <JFXRadioButton fx:id="macTheme" onAction="#theme" prefWidth="85.0" text="Mac" toggleGroup="$theme" />
                                  </children>
                                  <padding>
-                                    <Insets left="10.0" />
+                                    <Insets left="15.0" />
                                  </padding>
                               </HBox>
                            </children>
@@ -72,7 +72,23 @@
                                     <JFXRadioButton fx:id="disableDarkMode" onAction="#darkMode" prefWidth="85.0" text="Disable" toggleGroup="$darkmode" />
                                  </children>
                                  <padding>
-                                    <Insets left="10.0" />
+                                    <Insets left="15.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </VBox>
+                        <VBox prefHeight="40.0" spacing="5.0">
+                           <children>
+                              <Label text="Logging Level" />
+                              <HBox>
+                                 <children>
+                                    <JFXComboBox fx:id="loggingLevel" editable="false" focusColor="#50cd84" focusTraversable="false" promptText="Info" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="15.0" />
                                  </padding>
                               </HBox>
                            </children>
@@ -83,10 +99,17 @@
                         <VBox prefHeight="40.0">
                            <children>
                               <Label text="Show/Hide Actlist (Global HotKey)" />
-                              <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A">
+                              <HBox>
                                  <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <children>
+                                    <JFXTextField fx:id="showHideActlistHotKey" editable="false" focusColor="#50cd84" focusTraversable="false" text="Ctrl + Alt + A" />
+                                 </children>
+                                 <padding>
                                     <Insets left="15.0" />
-                                 </VBox.margin></JFXTextField>
+                                 </padding>
+                              </HBox>
                            </children>
                            <VBox.margin>
                               <Insets />
