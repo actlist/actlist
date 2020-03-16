@@ -12,6 +12,8 @@ import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.model.Delta;
 import org.silentsoft.ui.model.MaximizeProperty;
 import org.silentsoft.ui.util.StageDragResizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -30,6 +32,8 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class Console implements EventListener {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Console.class);
 	
 	@FXML
 	private AnchorPane root;
@@ -75,6 +79,10 @@ public class Console implements EventListener {
 				try {
 					String log = toString("UTF-8");
 					reset();
+					
+					if (log.trim().isEmpty() == false && log.equals(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT))) == false) {
+						LOGGER.info(log);
+					}
 					
 					Platform.runLater(() -> {
 						console.appendText(log);

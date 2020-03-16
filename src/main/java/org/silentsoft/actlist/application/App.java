@@ -17,12 +17,13 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import org.apache.http.HttpHost;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
@@ -59,7 +60,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class App extends Application implements EventListener {
-
+	
 	private static Stage stage;
 	
 	private static Parent app;
@@ -110,6 +111,7 @@ public class App extends Application implements EventListener {
 		try {
 			// debug mode only
 			if (SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG) == null) {
+				org.silentsoft.actlist.preloader.App.generateUserAgentAndInfoText();
 				org.silentsoft.actlist.preloader.App.loadConfiguration();
 			}
 		} catch (Exception e) {
@@ -145,8 +147,12 @@ public class App extends Application implements EventListener {
 	}
 	
 	private void heavyLifting() {
+		updateLoggingLevel();
 		updateProxyHost();
-		generateUserAgentAndInfoText();
+	}
+	
+	private void updateLoggingLevel() {
+		LogManager.getRootLogger().setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
 	}
 	
 	private void updateProxyHost() {
@@ -164,41 +170,6 @@ public class App extends Application implements EventListener {
 		
 		System.setProperty("https.proxyHost", proxyHost);
 		System.setProperty("https.proxyPort", proxyPort);
-	}
-	
-	private void generateUserAgentAndInfoText() {
-		String osArchitecture = SystemUtil.getOSArchitecture();
-		String platformArchitecture = SystemUtil.getPlatformArchitecture();
-		
-		StringBuffer userAgent = new StringBuffer();
-		{
-			userAgent.append("Actlist-");
-			
-			userAgent.append(BuildVersion.VERSION);
-			
-			if (SystemUtil.isWindows()) {
-				userAgent.append(" windows-");
-			} else if (SystemUtil.isMac()) {
-				userAgent.append(" macosx-");
-			} else if (SystemUtil.isLinux()) {
-				userAgent.append(" linux-");
-			} else {
-				userAgent.append(" unknown-");
-			}
-			userAgent.append(osArchitecture);
-			
-			userAgent.append(" platform-");
-			userAgent.append(platformArchitecture);
-		}
-		SharedMemory.getDataMap().put(BizConst.KEY_USER_AGENT, userAgent.toString());
-		
-		StringBuffer infoText = new StringBuffer();
-		{
-			infoText.append(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), osArchitecture, platformArchitecture));
-			infoText.append("\r\n");
-			infoText.append(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
-		}
-		SharedMemory.getDataMap().put(BizConst.KEY_INFO_TEXT, infoText.toString());
 	}
 	
 	private void initializeWithoutFxThread() throws Exception {

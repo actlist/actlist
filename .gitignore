@@ -12,6 +12,7 @@
 /build/projectRefs
 /plugins
 /target/
+/log/
 .mvn/
 .settings/
 .classpath
