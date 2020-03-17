@@ -62,6 +62,7 @@ public class Console implements EventListener {
 	@FXML
 	private TextArea console;
 	
+	static PrintStream consoleStream;
 	private PrintStream printStream;
 	
 	private MaximizeProperty maximizeProperty;
@@ -71,7 +72,7 @@ public class Console implements EventListener {
 		
 		setContextMenu();
 		
-		printStream = new PrintStream(new ByteArrayOutputStream() {
+		consoleStream = new PrintStream(new ByteArrayOutputStream() {
 			@Override
 			public synchronized void write(byte[] b, int off, int len) {
 				super.write(b, off, len);
@@ -79,10 +80,6 @@ public class Console implements EventListener {
 				try {
 					String log = toString("UTF-8");
 					reset();
-					
-					if (log.trim().isEmpty() == false && log.equals(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT))) == false) {
-						LOGGER.info(log);
-					}
 					
 					Platform.runLater(() -> {
 						console.appendText(log);
@@ -92,6 +89,27 @@ public class Console implements EventListener {
 							((TextArea) appConsole).appendText(log);
 						}
 					});
+				} catch (Exception e) {
+					;
+				}
+			}
+		}, true);
+		printStream = new PrintStream(new ByteArrayOutputStream() {
+			@Override
+			public synchronized void write(byte[] b, int off, int len) {
+				super.write(b, off, len);
+				
+				try {
+					String log = toString("UTF-8");
+					reset();
+					
+					if (log.trim().isEmpty() == false) {
+						if (log.equals(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT)))) {
+							consoleStream.println(log);
+						} else {
+							LOGGER.info(log);
+						}
+					}
 				} catch (Exception e) {
 					;
 				}
@@ -323,6 +341,9 @@ public class Console implements EventListener {
     	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
     }
     
+    static PrintStream getConsoleStream() {
+		return consoleStream;
+	}
 	public PrintStream getPrintStream() {
 		return printStream;
 	}
