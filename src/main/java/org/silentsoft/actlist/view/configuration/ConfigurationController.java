@@ -136,8 +136,6 @@ public class ConfigurationController extends AbstractViewerController {
 						LogManager.getRootLogger().setLevel(Level.toLevel(newValue));
 						
 						ConfigUtil.setLoggingLevel(newValue);
-						
-						System.out.println(Level.toLevel(newValue));
 					}
 				} catch (Exception e) {
 					
