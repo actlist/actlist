@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<import file="${basedir}/target-init-fx-tasks.xml"/>
+	<import file="${basedir}/target-generate-iss-script.xml"/>
+	<import file="${basedir}/target-setup-staging-area.xml"/>
+	<import file="${basedir}/target-do-compile.xml"/>
+	
+	<target name="do-deploy" depends="init-fx-tasks, generate-iss-script, setup-staging-area, do-compile">
+		<delete file="dist"/>
+		<delete file="deploy" />
+	
+		<mkdir dir="dist" />
+		<mkdir dir="dist/libs" />
+	
+		<copy todir="dist/libs">
+			<fileset dir="externalLibs">
+				<include name="*" />
+			</fileset>
+		</copy>
+	
+		<fx:application id="fxApplication"
+			name="Actlist"
+			mainClass="org.silentsoft.actlist.application.App"
+			preloaderClass="org.silentsoft.actlist.preloader.App"
+			version="${version}"
+		/>
+	
+		<mkdir dir="build/classes/META-INF" />
+		
+		<touch file="dist/actlist.jar" />
+		<fx:jar destfile="dist/actlist.jar">
+			<fileset dir="build/classes"/>
+			<fx:application refid="fxApplication"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="libs/*.jar"/>
+			</fx:resources>
+	
+			<manifest>
+				<attribute name="Implementation-Vendor" value="silentsoft.org"/>
+				<attribute name="Implementation-Title" value="Actlist"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+				<attribute name="JavaFX-Feature-Proxy" value="None"/>
+			</manifest>
+		</fx:jar>
+	
+		<mkdir dir="deploy" />
+		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
+		<fx:deploy
+			embedJNLP="false"
+			extension="false"
+			includeDT="false"
+			offlineAllowed="true"
+			outdir="${basedir}/deploy"
+			outfile="actlist" nativeBundles="${nativeBundles}"
+			updatemode="background" >
+	
+			<fx:platform basedir="${java.home}">
+				<fx:jvmarg value="-client"/>
+				<fx:jvmarg value="-Xms64m"/>
+				<fx:jvmarg value="-XX:+UseParNewGC"/>
+				<fx:jvmarg value="-XX:+UseConcMarkSweepGC"/>
+				<fx:jvmarg value="-XX:InitiatingHeapOccupancyPercent=20"/>
+				<fx:jvmarg value="-XX:MinHeapFreeRatio=10"/>
+				<fx:jvmarg value="-XX:MaxHeapFreeRatio=20"/>
+				<fx:jvmarg value="-Dfile.encoding=UTF-8"/>
+			</fx:platform>
+			
+			<fx:info title="actlist" vendor="silentsoft.org"/>
+	
+			<fx:application refid="fxApplication"/>
+			<fx:resources>
+				<fx:fileset dir="dist">
+		            <include name="actlist.jar"/>
+					<include name="actlist.jar.config"/>
+		        </fx:fileset>
+				<fx:fileset dir="dist" includes="plugins/*"/>
+				<fx:fileset dir="dist" includes="libs/*"/>
+			</fx:resources>
+		</fx:deploy>
+	</target>
+</project>
