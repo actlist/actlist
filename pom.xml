@@ -75,9 +75,32 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<ant antfile="${basedir}/build/build-version.xml" inheritAll="false">
+									<property name="gensrc.dir" value="${project.build.sourceDirectory}" />
+									<property name="version" value="${project.version}" />
+									<property name="buildtime" value="${buildtime}" />
+								</ant>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>dmg</id>
@@ -94,22 +117,6 @@
 						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>generate-sources</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<ant antfile="${basedir}/build/build-version.xml" inheritAll="false">
-											<property name="gensrc.dir" value="${project.build.sourceDirectory}"/>
-											<property name="version" value="${project.version}"/>
-											<property name="buildtime" value="${buildtime}"/>
-										</ant>
-									</target>
-								</configuration>
-							</execution>
-							<execution>
 								<id>package</id>
 								<phase>package</phase>
 								<goals>
@@ -117,7 +124,7 @@
 								</goals>
 								<configuration>
 									<target>
-										<ant antfile="${basedir}/build/build-dmg.xml" inheritAll="false"/>
+										<ant antfile="${basedir}/build/build-dmg.xml" inheritAll="false" />
 									</target>
 								</configuration>
 							</execution>
@@ -150,22 +157,6 @@
 						<version>1.7</version>
 						<executions>
 							<execution>
-								<id>generate-sources</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<ant antfile="${basedir}/build/build-version.xml" inheritAll="false">
-											<property name="gensrc.dir" value="${project.build.sourceDirectory}"/>
-											<property name="version" value="${project.version}"/>
-											<property name="buildtime" value="${buildtime}"/>
-										</ant>
-									</target>
-								</configuration>
-							</execution>
-							<execution>
 								<id>package</id>
 								<phase>package</phase>
 								<goals>
@@ -173,7 +164,7 @@
 								</goals>
 								<configuration>
 									<target>
-										<ant antfile="${basedir}/build/build-exe.xml" inheritAll="false"/>
+										<ant antfile="${basedir}/build/build-exe.xml" inheritAll="false" />
 									</target>
 								</configuration>
 							</execution>
@@ -282,9 +273,9 @@
 			<version>${javassist.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.atlassian.commonmark</groupId>
-		    <artifactId>commonmark</artifactId>
-		    <version>${commonmark.version}</version>
+			<groupId>com.atlassian.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>${commonmark.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.tulskiy</groupId>
@@ -292,7 +283,7 @@
 			<version>${jkeymaster.version}</version>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
