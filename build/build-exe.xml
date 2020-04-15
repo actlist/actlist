@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="actlist" default="build" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="actlist" default="build" basedir=".">
 	<property file="build.properties"/>
 	<property name="nativeBundles" value="exe"/>
 	
