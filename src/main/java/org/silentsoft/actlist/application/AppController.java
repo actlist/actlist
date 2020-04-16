@@ -59,6 +59,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Dragboard;
@@ -134,7 +135,10 @@ public class AppController implements EventListener {
 	@FXML
 	private BorderPane contentPane;
 	
-	@FXML
+//	@FXML
+	private Pagination componentBoxPagination;
+	
+//	@FXML
 	private VBox componentBox;
 	
 	private TextArea consoleTextArea;
@@ -148,6 +152,7 @@ public class AppController implements EventListener {
 	protected void initialize() {
 		EventHandler.addListener(this);
 		
+		initComponentBox();
 		initConsole();
 		
 		root.setPrefWidth(ConfigUtil.getRootWidth());
@@ -186,8 +191,9 @@ public class AppController implements EventListener {
 		checkUpdate();
 		
 		SharedMemory.getDataMap().put(BizConst.KEY_PLUGIN_MAP, pluginMap);
-		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
+		//SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
 		
+		showPluginsView();
 		loadPlugins();
 		
 		enableContextMenu();
@@ -206,6 +212,77 @@ public class AppController implements EventListener {
 				sideMaximizeButton.setStyle("-fx-background-color: #808080; -fx-background-radius: 5em;");
 			}
 		}
+	}
+	
+	private void initComponentBox() {
+		componentBox = new VBox();
+		{
+			BorderPane.setAlignment(componentBox, Pos.CENTER);
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_COMPONENT_BOX, componentBox);
+		
+		componentBoxPagination = new Pagination();
+		componentBoxPagination.setPageCount(5);
+		componentBoxPagination.setMaxPageIndicatorCount(20);
+		componentBoxPagination.getStyleClass().addAll("bullet", "componentBoxPagination");
+		componentBoxPagination.setOnDragDetected(mouseEvent -> {
+			componentBoxPagination.setUserData(mouseEvent.getSceneX());
+			componentBoxPagination.startFullDrag();
+		});
+		componentBoxPagination.setOnMouseDragReleased(mouseDragEvent -> {
+			double startedX = (double) componentBoxPagination.getUserData();
+			double currentX = mouseDragEvent.getSceneX();
+			if (Math.abs(startedX - currentX) >= 20) {
+				if (startedX < currentX) {
+					componentBoxPagination.setCurrentPageIndex(componentBoxPagination.getCurrentPageIndex()-1); // left to right
+				} else {
+					componentBoxPagination.setCurrentPageIndex(componentBoxPagination.getCurrentPageIndex()+1); // right to left
+				}
+			}
+		});
+		componentBoxPagination.setOnScroll(event -> System.out.println(event));
+		
+		/**
+		 * TODO
+		 * 
+		 * App::Load -> read index from file system
+		 * componentBoxPagination.currentPageIndex.addListener -> save index to file system
+		 */
+		
+		componentBoxPagination.setPageFactory((pageIndex) -> {
+			System.out.println("page factory .. = " + pageIndex + " isempty = " + componentBox.getChildren().isEmpty() + " count = " + componentBox.getChildren().size());
+			return componentBox;
+			
+//			VBox page = new VBox();
+//			if (componentBox.getChildren().isEmpty() == false && componentBox.getChildren().size() > pageIndex) {
+//				componentBox.getChildren().forEach(node -> {
+//					node.setVisible(false);
+//				});
+//				
+//				//page.getChildren().add(componentBox.getChildren().get(pageIndex));
+//				for (int i=0, j=componentBox.getChildren().size(); i<j; i++) {
+//					if (pageIndex == i) {
+//						componentBox.getChildren().get(i).setVisible(true);
+//					}
+//				}
+//			} else {
+//				//page.getChildren().add(new Label(pageIndex+""));
+//			}
+//			return componentBox;
+			
+			
+//			List<Node> nodes = ((VBox) SharedMemory.getDataMap().get(BizConst.KEY_COMPONENT_BOX)).getChildren();
+//			VBox page = new VBox();
+//			if (pageIndex == 0) {
+//				page.getChildren().addAll(((PluginComponent) nodes.get(0).getUserData()).getNode(), ((PluginComponent) nodes.get(1).getUserData()).getNode());
+//			} else if (pageIndex == 1) {
+//				page.getChildren().addAll(((PluginComponent) nodes.get(2).getUserData()).getNode(), ((PluginComponent) nodes.get(3).getUserData()).getNode());
+//			} else {
+//				page.getChildren().addAll(nodes);
+//			}
+//			return page;
+		});
+		BorderPane.setAlignment(componentBoxPagination, Pos.CENTER);
 	}
 	
 	private void initConsole() {
@@ -436,7 +513,8 @@ public class AppController implements EventListener {
 		newPluginsAlarmLabelWin.setVisible(false);
 		newPluginsAlarmLabelMac.setVisible(false);
     	
-    	contentPane.setCenter(componentBox);
+    	//contentPane.setCenter(componentBox);
+		contentPane.setCenter(componentBoxPagination);
     }
     
     @FXML
@@ -805,8 +883,8 @@ public class AppController implements EventListener {
 	}
 	
 	private void enableContextMenu() {
-		MenuItem menuItem = new MenuItem("Add a new plugin");
-		menuItem.setOnAction(actionEvent -> {
+		MenuItem menuAddNewPlugin = new MenuItem("Add a new plugin");
+		menuAddNewPlugin.setOnAction(actionEvent -> {
 			ExtensionFilter jarFilter = new ExtensionFilter("Actlist Plugin File", "*.jar");
 			
 			FileChooser fileChooser = new FileChooser();
@@ -822,9 +900,17 @@ public class AppController implements EventListener {
 			
 			installAndLoadThePlugin(file, true);
 		});
-		ContextMenu contextMenu = new ContextMenu(menuItem);
-		scrollPane.setOnMouseReleased(mouseEvent -> {
+		
+		ContextMenu contextMenu = new ContextMenu(menuAddNewPlugin);
+		/*scrollPane.setOnMouseReleased(mouseEvent -> {*/
+		componentBoxPagination.setOnMouseReleased(mouseEvent -> {
 			if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+//				contextMenu.getItems().clear();
+//				if (componentBoxPagination.getCurrentPageIndex() == 0) {
+//					contextMenu.getItems().addAll(menuAddNewPlugin, menuSeparator, menuAddPage);
+//				} else {
+//					contextMenu.getItems().addAll(menuAddNewPlugin, menuSeparator, menuAddPage, menuDeletePage);
+//				}
 				contextMenu.show(App.getStage(), mouseEvent.getScreenX(), mouseEvent.getScreenY());
 			}
 		});

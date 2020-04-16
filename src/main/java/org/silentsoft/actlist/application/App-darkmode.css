@@ -2,3 +2,14 @@
 	-fx-base: rgb(40, 40, 40);
 	-fx-background-color: -fx-base;
 }
+
+.componentBoxPagination .pagination-control .bullet-button {
+	-fx-min-width: 16;
+	-fx-min-height: 16;
+    -fx-background-color: transparent, #3e3e3e;
+}
+.componentBoxPagination .pagination-control .bullet-button:selected {   
+	-fx-min-width: 16;
+	-fx-min-height: 16;
+    -fx-background-color: transparent, #a3a3a3;
+}

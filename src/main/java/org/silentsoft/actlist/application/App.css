@@ -32,6 +32,28 @@
 	-fx-background-color: #ffffff;
 }
 
+.componentBoxPagination {
+	-fx-arrows-visible: false;
+	-fx-page-information-visible: false;
+	-fx-tooltip-visible: false;
+}
+.componentBoxPagination .pagination-control {
+    -fx-padding: -9 0 -2 0;
+}
+.componentBoxPagination .pagination-control .page-information {
+	-fx-padding: 0;
+}
+.componentBoxPagination .pagination-control .bullet-button {
+	-fx-min-width: 16;
+	-fx-min-height: 16;
+    -fx-background-color: transparent, #efefef, #e3e3e3;
+}
+.componentBoxPagination .pagination-control .bullet-button:selected {
+	-fx-min-width: 17;
+	-fx-min-height: 17;
+    -fx-background-color: transparent, #efefef, #a3a3a3;
+}
+
 .scroll-bar:horizontal,
 .scroll-bar:vertical {
     -fx-background-color: transparent;

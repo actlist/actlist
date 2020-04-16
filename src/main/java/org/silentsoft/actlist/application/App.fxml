@@ -106,11 +106,7 @@
                  <center> 
 		    		  <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" focusTraversable="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="67.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 				         <content>
-                        <BorderPane fx:id="contentPane">
-                           <center>
-      				            <VBox fx:id="componentBox" BorderPane.alignment="CENTER" />
-                           </center>
-                        </BorderPane>
+                        <BorderPane fx:id="contentPane" />
 				         </content>
                      <padding>
                         <Insets bottom="-0.5" left="-0.5" right="-0.5" top="-0.5" />
