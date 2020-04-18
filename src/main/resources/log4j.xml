@@ -11,9 +11,10 @@
 		</layout>
 	</appender>
 
-	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
+	<appender name="file" class="org.apache.log4j.RollingFileAppender">
 		<param name="File" value="log/actlist.log" />
-		<param name="DatePattern" value=".yyyy-MM-dd" />
+		<param name="MaxFileSize" value="1MB" />
+		<param name="MaxBackupIndex" value="4" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c{3}(%L) -> %M] %m%n" />
 		</layout>
