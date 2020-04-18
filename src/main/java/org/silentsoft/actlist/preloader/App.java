@@ -2,21 +2,11 @@ package org.silentsoft.actlist.preloader;
 
 import java.awt.Robot;
 import java.awt.event.InputEvent;
-import java.io.File;
-import java.nio.file.Paths;
 
-import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.util.ConfigUtil;
-import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
-import org.silentsoft.actlist.version.BuildVersion;
-import org.silentsoft.core.util.FileUtil;
-import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
-import org.silentsoft.io.memory.SharedMemory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javafx.application.Preloader;
 import javafx.fxml.FXML;
@@ -30,8 +20,6 @@ import javafx.stage.StageStyle;
 
 public class App extends Preloader {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
-
 	private Stage stage;
 	
 	@FXML
@@ -46,8 +34,6 @@ public class App extends Preloader {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		generateUserAgentAndInfoText();
-		loadConfiguration();
 		checkSingleInstance();
 		
 		this.stage = stage;
@@ -61,81 +47,6 @@ public class App extends Preloader {
         stage.setWidth(400);
         stage.setHeight(360);
         stage.show();
-	}
-	
-	public static void generateUserAgentAndInfoText() {
-		String osArchitecture = SystemUtil.getOSArchitecture();
-		String platformArchitecture = SystemUtil.getPlatformArchitecture();
-		
-		StringBuffer userAgent = new StringBuffer();
-		{
-			userAgent.append("Actlist-");
-			
-			userAgent.append(BuildVersion.VERSION);
-			
-			if (SystemUtil.isWindows()) {
-				userAgent.append(" windows-");
-			} else if (SystemUtil.isMac()) {
-				userAgent.append(" macosx-");
-			} else if (SystemUtil.isLinux()) {
-				userAgent.append(" linux-");
-			} else {
-				userAgent.append(" unknown-");
-			}
-			userAgent.append(osArchitecture);
-			
-			userAgent.append(" platform-");
-			userAgent.append(platformArchitecture);
-		}
-		SharedMemory.getDataMap().put(BizConst.KEY_USER_AGENT, userAgent.toString());
-		
-		StringBuffer infoText = new StringBuffer();
-		{
-			infoText.append(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), osArchitecture, platformArchitecture));
-			infoText.append("\r\n");
-			infoText.append(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
-		}
-		SharedMemory.getDataMap().put(BizConst.KEY_INFO_TEXT, infoText.toString());
-		
-		welcome();
-	}
-	
-	private static void welcome() {
-		String text = String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT));
-		for (String message : text.split("\r\n")) {
-			LOGGER.info(message);
-		}
-	}
-	
-	public static void loadConfiguration() {
-		try {
-			ActlistConfig actlistConfig = null;
-			
-			File configFile = Paths.get(System.getProperty("user.dir"), "actlist.jar.config").toFile();
-			if (configFile.exists()) {
-				String configContent = FileUtil.readFile(configFile);
-				actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
-			} else {
-				actlistConfig = new ActlistConfig();
-				actlistConfig.put("rootWidth", 506.0);
-				actlistConfig.put("rootHeight", 443.0);
-				actlistConfig.put("stageWidth", 516.0);  // left shadow(5) + root(506) + right shadow(5)
-				actlistConfig.put("stageHeight", 453.0); // top shadow(5) + root(443) + bottom shadow(5)
-				actlistConfig.put("stageOpacity", 1.0);
-				actlistConfig.put("loggingLevel", "Info");
-				actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
-				actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
-//				actlistConfig.put("animationEffect", true);
-				actlistConfig.put("alwaysOnTop", false);
-				actlistConfig.put("darkMode", false);
-				actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
-				actlistConfig.put("proxyHost", "");
-			}
-			
-			SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
-		} catch (Exception e) {
-			
-		}
 	}
 	
 	private static void checkSingleInstance() {
