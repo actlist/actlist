@@ -19,11 +19,16 @@ import javax.swing.KeyStroke;
 import org.apache.http.HttpHost;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
 import org.silentsoft.actlist.console.Console;
 import org.silentsoft.actlist.rest.RESTfulAPI;
 import org.silentsoft.actlist.util.ConfigUtil;
+import org.silentsoft.actlist.util.ConfigUtil.ProxyMode;
+import org.silentsoft.actlist.version.BuildVersion;
+import org.silentsoft.core.util.FileUtil;
+import org.silentsoft.core.util.JSONUtil;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.event.EventListener;
@@ -31,6 +36,8 @@ import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.hotkey.HotkeyHandler;
 import org.silentsoft.ui.tray.TrayIconHandler;
 import org.silentsoft.ui.util.StageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
@@ -61,13 +68,15 @@ import javafx.stage.StageStyle;
 
 public class App extends Application implements EventListener {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+	
 	private static Stage stage;
 	
 	private static Parent app;
 	
 	private AppController appController;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		loadConfiguration();
 		
 		launch(args);
@@ -107,16 +116,37 @@ public class App extends Application implements EventListener {
 		return provider;
 	}
 	
-	private static void loadConfiguration() {
-		try {
-			// debug mode only
-			if (SharedMemory.getDataMap().get(BizConst.KEY_ACTLIST_CONFIG) == null) {
-				org.silentsoft.actlist.preloader.App.generateUserAgentAndInfoText();
-				org.silentsoft.actlist.preloader.App.loadConfiguration();
-			}
-		} catch (Exception e) {
-			
+	private static void loadConfiguration() throws Exception {
+		ActlistConfig actlistConfig = null;
+		
+		File configFile = Paths.get(System.getProperty("user.dir"), "actlist.jar.config").toFile();
+		if (configFile.exists()) {
+			String configContent = FileUtil.readFile(configFile);
+			actlistConfig = JSONUtil.JSONToObject(configContent, ActlistConfig.class);
+		} else {
+			actlistConfig = new ActlistConfig();
+			actlistConfig.put("rootWidth", 506.0);
+			actlistConfig.put("rootHeight", 443.0);
+			actlistConfig.put("stageWidth", 516.0);  // left shadow(5) + root(506) + right shadow(5)
+			actlistConfig.put("stageHeight", 453.0); // top shadow(5) + root(443) + bottom shadow(5)
+			actlistConfig.put("stageOpacity", 1.0);
+			actlistConfig.put("loggingLevel", "Info");
+			actlistConfig.put("showHideActlistHotKeyModifier", InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK);
+			actlistConfig.put("showHideActlistHotKeyCode", (int)'A');
+//			actlistConfig.put("animationEffect", true);
+			actlistConfig.put("alwaysOnTop", false);
+			actlistConfig.put("darkMode", false);
+			actlistConfig.put("proxyMode", ProxyMode.AUTOMATIC);
+			actlistConfig.put("proxyHost", "");
 		}
+		
+		SharedMemory.getDataMap().put(BizConst.KEY_ACTLIST_CONFIG, actlistConfig);
+		
+		updateLoggingLevel();
+	}
+	
+	private static void updateLoggingLevel() {
+		LogManager.getRootLogger().setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
 	}
 	
 	@SuppressWarnings("static-access")
@@ -147,12 +177,52 @@ public class App extends Application implements EventListener {
 	}
 	
 	private void heavyLifting() {
-		updateLoggingLevel();
+		generateUserAgentAndInfoText();
 		updateProxyHost();
 	}
 	
-	private void updateLoggingLevel() {
-		LogManager.getRootLogger().setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
+	private void generateUserAgentAndInfoText() {
+		String osArchitecture = SystemUtil.getOSArchitecture();
+		String platformArchitecture = SystemUtil.getPlatformArchitecture();
+		
+		StringBuffer userAgent = new StringBuffer();
+		{
+			userAgent.append("Actlist-");
+			
+			userAgent.append(BuildVersion.VERSION);
+			
+			if (SystemUtil.isWindows()) {
+				userAgent.append(" windows-");
+			} else if (SystemUtil.isMac()) {
+				userAgent.append(" macosx-");
+			} else if (SystemUtil.isLinux()) {
+				userAgent.append(" linux-");
+			} else {
+				userAgent.append(" unknown-");
+			}
+			userAgent.append(osArchitecture);
+			
+			userAgent.append(" platform-");
+			userAgent.append(platformArchitecture);
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_USER_AGENT, userAgent.toString());
+		
+		StringBuffer infoText = new StringBuffer();
+		{
+			infoText.append(String.format("Actlist %s (%s %s, platform %s)", BuildVersion.VERSION, SystemUtil.getOSName(), osArchitecture, platformArchitecture));
+			infoText.append("\r\n");
+			infoText.append(String.format("%s, %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
+		}
+		SharedMemory.getDataMap().put(BizConst.KEY_INFO_TEXT, infoText.toString());
+		
+		welcome();
+	}
+	
+	private void welcome() {
+		String text = String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT));
+		for (String message : text.split("\r\n")) {
+			LOGGER.info(message);
+		}
 	}
 	
 	private void updateProxyHost() {
