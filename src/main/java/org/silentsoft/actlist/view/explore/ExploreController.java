@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -104,8 +105,8 @@ public class ExploreController extends AbstractViewerController {
 											String className = anchorElement.getClassName();
 											if (className != null) {
 												if (className.contains("actlist-plugin-download")) {
-													String href = anchorElement.getHref();
-												    if (href != null) {
+													String href = fetch(anchorElement.getHref());
+												    if (ObjectUtil.isNotEmpty(href)) {
 												    	if (href.toLowerCase().endsWith(".jar")) {
 												    		Consumer<String> changeChildNodeClassName = (value) -> {
 												    			if (anchorElement.getChildNodes().getLength() > 0) {
@@ -278,6 +279,33 @@ public class ExploreController extends AbstractViewerController {
 				webView.getEngine().load("http://actlist.silentsoft.org/explore/");
 			});
 		}).start();
+	}
+	
+	private String fetch(String href) {
+		String url = href;
+		
+		if (ObjectUtil.isNotEmpty(url)) {
+			HttpURLConnection connection = null;
+			try {
+				connection = (HttpURLConnection) URI.create(href).toURL().openConnection();
+				connection.setInstanceFollowRedirects(false);
+				connection.connect();
+				
+				int responseCode = connection.getResponseCode();
+				if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+					String location = connection.getHeaderField("Location");
+					if (ObjectUtil.isNotEmpty(location)) {
+						url = fetch(location);
+					}
+				}
+			} catch (Exception e) {
+				
+			} finally {
+				IOUtils.close(connection);
+			}
+		}
+		
+		return url;
 	}
 	
 	private void showFailureContent() {
