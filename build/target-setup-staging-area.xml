@@ -8,8 +8,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/1.7.1">
-				<filename name="actlist-plugin-1.7.1.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/2.0.1">
+				<filename name="actlist-plugin-2.0.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">

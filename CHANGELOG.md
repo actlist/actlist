@@ -1,3 +1,16 @@
+* 2.0.1
+    * new features
+      * supports dynamic logging level configuration
+      * supports log file under `/log` directory
+    * improvements
+      * retry with proxy and non-proxy request
+      * url fetching logic to prevent non-proxy redirect request failure
+      * pretty JSON serialization
+    * dependency
+      * update commons-codec to 1.11 from 1.6
+      * update commons-logging to 1.2 from 1.1.3
+      * update httpclient to 4.5.12 from 4.3.6
+      * update jackson to 2.10.3 from 2.4.2
 * 1.7.1
     * bugfix
       * critical JSON serialization patch

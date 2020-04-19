@@ -9,7 +9,7 @@ __material icons__
  * https://material.io/icons/
  * Apache License 2.0
 
-__actlist-plugin 2.0.1-SNAPSHOT__
+__actlist-plugin 2.0.1__
  * https://github.com/silentsoft/actlist-plugin
  * Apache License 2.0
 

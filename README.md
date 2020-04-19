@@ -71,30 +71,16 @@ Mac OS X:
   ---
   ### 2. or creating java project manually
     * Create a new Java project and configure to Maven project.
-    * Add `property`, `repository`, `parent` and `dependency` information to `pom.xml`
+    * Add `parent` and `property` information to `pom.xml`
       ```
-      <properties>
-          <mainClass>your.pkg.Plugin</mainClass>
-      </properties>
-      <repositories>
-          <repository>
-              <id>silentsoft-repository</id>
-              <url>http://nexus.silentsoft.org/repository/maven-public</url>
-          </repository>
-      </repositories>
       <parent>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin-sdk</artifactId>
-          <version>2.0.0</version>
+          <version>2.0.1</version>
       </parent>
-      <dependencies>
-          <dependency>
-              <groupId>org.silentsoft</groupId>
-              <artifactId>actlist-plugin</artifactId>
-              <version>1.7.1</version>
-              <scope>provided</scope>
-          </dependency>
-      </dependencies>
+      <properties>
+          <mainClass>your.pkg.Plugin</mainClass>
+      </properties>
       ```
     * Generate executable main class called `your.pkg.Plugin.java` that you assigned from `mainClass` property on `pom.xml`
     * Inherit the `ActlistPlugin` class in your `Plugin` class.
