@@ -81,6 +81,14 @@ public class ConfigUtil {
 		getActlistConfig().put("alwaysOnTop", value);
 	}
 	
+	public static String getLoggingLevel() {
+		return getActlistConfig().get("loggingLevel");
+	}
+	
+	public static void setLoggingLevel(String value) throws Exception {
+		getActlistConfig().put("loggingLevel", value);
+	}
+	
 	/*
 	public static boolean isAnimationEffect() {
 		return (boolean) getActlistConfig().get("animationEffect");

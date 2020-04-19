@@ -9,7 +9,19 @@ __material icons__
  * https://material.io/icons/
  * Apache License 2.0
 
-__commons-codec 1.6__
+__actlist-plugin 2.0.1__
+ * https://github.com/silentsoft/actlist-plugin
+ * Apache License 2.0
+
+__centerdevice-nsmenufx 2.1.5__
+ * https://github.com/codecentric/NSMenuFX
+ * BSD-3-Clause
+
+__commonmark 0.13.1__
+ * https://github.com/atlassian/commonmark-java
+ * BSD-2-Clause
+
+__commons-codec 1.11__
  * https://github.com/apache/commons-codec
  * Apache License 2.0
 
@@ -25,7 +37,7 @@ __commons-lang 2.6__
  * https://github.com/apache/commons-lang
  * Apache License 2.0
 
-__commons-logging 1.1.3__
+__commons-logging 1.2__
  * https://github.com/apache/commons-logging
  * Apache License 2.0
 
@@ -33,16 +45,60 @@ __commons-net 3.3__
  * https://github.com/apache/commons-net
  * Apache License 2.0
 
-__httpclient 4.3.6__
+__controlsfx 8.40.15__
+ * https://github.com/controlsfx/controlsfx
+ * BSD-3-Clause
+
+__httpclient 4.5.12__
  * https://github.com/apache/httpcomponents-client
  * Apache License 2.0
 
-__httpcore 4.3.3__
+__httpcore 4.4.13__
  * https://github.com/apache/httpcomponents-core
  * Apache License 2.0
 
-__httpmime 4.3.6__
+__httpmime 4.5.12__
  * Apache License 2.0
+
+__ini4j 0.5.4__
+ * https://github.com/michaelPf85/ini4j
+ * Apache License 2.0
+
+__jackson-annotations 2.10.3__
+ * https://github.com/FasterXML/jackson-annotations
+ * Apache License 2.0
+
+__jackson-core 2.10.3__
+ * https://github.com/FasterXML/jackson-core
+ * Apache License 2.0
+
+__jackson-databind 2.10.3__
+ * https://github.com/FasterXML/jackson-databind
+ * Apache License 2.0
+
+__javassist 3.26.0-GA__
+ * https://github.com/jboss-javassist/javassist
+ * Apache License 2.0
+
+__jfoenix 8.0.8__
+ * https://github.com/jfoenixadmin/Jfoenix
+ * Apache License 2.0
+
+__jkeymaster 1.2__
+ * https://github.com/tulskiy/jkeymaster
+ * LGPL-3.0
+
+__jna 4.5.1__
+ * https://github.com/java-native-access/jna
+ * Apache License 2.0
+
+__jna-platform 4.5.1__
+ * https://github.com/java-native-access/jna
+ * Apache License 2.0
+
+__json 20141113__
+ * https://github.com/douglascrockford/JSON-java
+ * JSON License
 
 __log4j 1.2.17__
  * https://github.com/apache/log4j
@@ -56,53 +112,25 @@ __plexus-utils 3.1.0__
  * https://github.com/codehaus-plexus/plexus-utils
  * Apache License 2.0
 
-__centerdevice-nsmenufx 2.1.5__
- * https://github.com/codecentric/NSMenuFX
- * BSD-3-Clause
-
-__controlsfx 8.40.15__
- * https://bitbucket.org/controlsfx/controlsfx
- * BSD-3-Clause
-
-__json 20141113__
- * https://github.com/douglascrockford/JSON-java
- * JSON License
-
-__jackson-annotations 2.4.2__
- * https://github.com/FasterXML/jackson-annotations
- * Apache License 2.0
-
-__jackson-core 2.4.2__
- * https://github.com/FasterXML/jackson-core
- * Apache License 2.0
-
-__jackson-databind 2.4.2__
- * https://github.com/FasterXML/jackson-databind
- * Apache License 2.0
-
-__jfoenix 8.0.8__
- * https://github.com/jfoenixadmin/Jfoenix
- * Apache License 2.0
-
-__jna 4.5.1__
- * https://github.com/java-native-access/jna
- * Apache License 2.0
-
-__jna-platform 4.5.1__
- * https://github.com/java-native-access/jna
- * Apache License 2.0
-
 __proxy-vole 1.0.3__
  * https://github.com/MarkusBernhardt/proxy-vole
  * Apache License 2.0
 
-__ini4j 0.5.4__
- * https://github.com/michaelPf85/ini4j
+__silentsoft-core 1.3.0__
+ * https://github.com/silentsoft/silentsoft-core
  * Apache License 2.0
 
-__PlusHaze-TrayNotification 5393c3a54f__
- * https://github.com/PlusHaze/TrayNotification
- * MIT License
+__silentsoft-io 1.2.0__
+ * https://github.com/silentsoft/silentsoft-io
+ * Apache License 2.0
+
+__silentsoft-net 1.4.0__
+ * https://github.com/silentsoft/silentsoft-net
+ * Apache License 2.0
+
+__silentsoft-ui 1.2.0__
+ * https://github.com/silentsoft/silentsoft-ui
+ * Apache License 2.0
 
 __slf4j-api 1.7.5__
  * https://github.com/qos-ch/slf4j
@@ -112,17 +140,9 @@ __slf4j-log4j12 1.7.5__
  * https://github.com/qos-ch/slf4j
  * MIT License
 
-__javassist 3.26.0-GA__
- * https://github.com/jboss-javassist/javassist
- * Apache License 2.0
-
-__commonmark 0.13.1__
- * https://github.com/atlassian/commonmark-java
- * BSD-2-Clause
-
-__jkeymaster 1.2__
- * https://github.com/tulskiy/jkeymaster
- * LGPL-3.0
+__PlusHaze-TrayNotification 5393c3a54f__
+ * https://github.com/PlusHaze/TrayNotification
+ * MIT License
 
 __Oracle Java SE Runtime Environment 8__
  * https://www.oracle.com/technetwork/java/javase/terms/license/index.html
@@ -354,34 +374,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ```
 ______
 
-__JSON License__
-
-```
-Copyright (c) 2002 JSON.org
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-The Software shall be used for Good, not Evil.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-______
-
-__MIT License__
-
-```
-Copyright <YEAR> <COPYRIGHT HOLDER>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-______
-
 __BSD-2-Clause__
 
 ```
@@ -565,6 +557,34 @@ whether future versions of the GNU Lesser General Public License shall
 apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
+```
+______
+
+__JSON License__
+
+```
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+______
+
+__MIT License__
+
+```
+Copyright <YEAR> <COPYRIGHT HOLDER>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 ______
 

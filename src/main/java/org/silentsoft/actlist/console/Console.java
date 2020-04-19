@@ -12,6 +12,8 @@ import org.silentsoft.io.memory.SharedMemory;
 import org.silentsoft.ui.model.Delta;
 import org.silentsoft.ui.model.MaximizeProperty;
 import org.silentsoft.ui.util.StageDragResizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -30,6 +32,8 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class Console implements EventListener {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Console.class);
 	
 	@FXML
 	private AnchorPane root;
@@ -58,6 +62,7 @@ public class Console implements EventListener {
 	@FXML
 	private TextArea console;
 	
+	static PrintStream consoleStream;
 	private PrintStream printStream;
 	
 	private MaximizeProperty maximizeProperty;
@@ -67,7 +72,7 @@ public class Console implements EventListener {
 		
 		setContextMenu();
 		
-		printStream = new PrintStream(new ByteArrayOutputStream() {
+		consoleStream = new PrintStream(new ByteArrayOutputStream() {
 			@Override
 			public synchronized void write(byte[] b, int off, int len) {
 				super.write(b, off, len);
@@ -84,6 +89,27 @@ public class Console implements EventListener {
 							((TextArea) appConsole).appendText(log);
 						}
 					});
+				} catch (Exception e) {
+					;
+				}
+			}
+		}, true);
+		printStream = new PrintStream(new ByteArrayOutputStream() {
+			@Override
+			public synchronized void write(byte[] b, int off, int len) {
+				super.write(b, off, len);
+				
+				try {
+					String log = toString("UTF-8");
+					reset();
+					
+					if (log.trim().isEmpty() == false) {
+						if (log.equals(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT)))) {
+							consoleStream.println(log);
+						} else {
+							LOGGER.info(log);
+						}
+					}
 				} catch (Exception e) {
 					;
 				}
@@ -315,6 +341,9 @@ public class Console implements EventListener {
     	((SVGPath) leftMaximizeButton.getGraphic()).setFill(Paint.valueOf("transparent"));
     }
     
+    static PrintStream getConsoleStream() {
+		return consoleStream;
+	}
 	public PrintStream getPrintStream() {
 		return printStream;
 	}

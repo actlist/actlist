@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+	<target name="check-operating-system">
+		<condition property="isWindows">
+			<equals arg1="${nativeBundles}" arg2="exe"/>
+		</condition>
+	</target>
+	<target name="generate-iss-script" if="isWindows" depends="check-operating-system">
+		<delete file="package/windows/Actlist.iss"/>
+		<copy file="build.iss" tofile="package/windows/Actlist.iss">
+			<filterchain>
+				<replacetokens>
+					<token key="AppVersion" value="${version}"/>
+					<!-- <token key="AppArchitecture" value="${os.arch}"/> -->
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
+</project>

@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.KeyStroke;
 
 import org.apache.http.conn.util.InetAddressUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.util.ConfigUtil;
@@ -51,6 +53,9 @@ public class ConfigurationController extends AbstractViewerController {
 	private JFXRadioButton enableDarkMode, disableDarkMode;
 	
 	@FXML
+	private JFXComboBox<String> loggingLevel;
+	
+	@FXML
 	private JFXTextField showHideActlistHotKey;
 	
 	/* @FXML private JFXCheckBox animationEffect;*/
@@ -84,6 +89,8 @@ public class ConfigurationController extends AbstractViewerController {
 			/* General */
 			
 			stageOpacity.setValue(ConfigUtil.getStageOpacity() * 100);
+			loggingLevel.setItems(FXCollections.observableArrayList("All", "Trace", "Debug", "Info", "Warn", "Error", "Off"));
+			loggingLevel.getSelectionModel().select(ConfigUtil.getLoggingLevel());
 			showHideActlistHotKey.setText(ConfigUtil.getShowHideActlistHotKeyText());
 			/* animationEffect.setSelected(ConfigUtil.isAnimationEffect()); */
 			alwaysOnTop.setSelected(ConfigUtil.isAlwaysOnTop());
@@ -119,6 +126,17 @@ public class ConfigurationController extends AbstractViewerController {
 			stageOpacity.setOnKeyReleased(keyEvent -> {
 				try {
 					ConfigUtil.setStageOpacity(stageOpacity.getValue() / 100);
+				} catch (Exception e) {
+					
+				}
+			});
+			loggingLevel.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+				try {
+					if (newValue != null) {
+						LogManager.getRootLogger().setLevel(Level.toLevel(newValue));
+						
+						ConfigUtil.setLoggingLevel(newValue);
+					}
 				} catch (Exception e) {
 					
 				}

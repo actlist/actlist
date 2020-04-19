@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+	<target name="do-clean">
+		<delete dir="build"/>
+		<delete dir="deploy" excludes="bundles/*" includeemptydirs="true"/>
+		<delete dir="dist/libs"/>
+		<delete dir="dist" includes="actlist.jar"/>
+		<delete dir="externalLibs"/>
+		<delete dir="project"/>
+		<delete dir="projectRefs"/>
+		<delete file="package/windows/Actlist.iss"/>
+	</target>
+</project>
