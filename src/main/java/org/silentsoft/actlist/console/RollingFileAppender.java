@@ -4,12 +4,12 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class ConsoleAppender extends org.apache.log4j.ConsoleAppender {
+public class RollingFileAppender extends org.apache.log4j.RollingFileAppender {
 	
 	private Layout simpleLayout;
 	private Layout detailLayout;
 	
-	public ConsoleAppender() {
+	public RollingFileAppender() {
 		simpleLayout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}] %m%n");
 		detailLayout = new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}] %-5p [%c{3}(%L) -> %M] %m%n");
 	}
@@ -23,10 +23,6 @@ public class ConsoleAppender extends org.apache.log4j.ConsoleAppender {
 		}
 		
 		super.append(event);
-		
-		if (Console.getConsoleStream() != null) {
-			Console.getConsoleStream().println(getLayout().format(event).trim());
-		}
 	}
 
 }
