@@ -105,23 +105,23 @@ public class ExploreController extends AbstractViewerController {
 											String className = anchorElement.getClassName();
 											if (className != null) {
 												if (className.contains("actlist-plugin-download")) {
-													String href = fetch(anchorElement.getHref());
-												    if (ObjectUtil.isNotEmpty(href)) {
-												    	if (href.toLowerCase().endsWith(".jar")) {
-												    		Consumer<String> changeChildNodeClassName = (value) -> {
-												    			if (anchorElement.getChildNodes().getLength() > 0) {
-													    			Node node = anchorElement.getChildNodes().item(0);
-													    			if (node instanceof HTMLElement) {
-													    				HTMLElement iElement = (HTMLElement) node;
-													    				iElement.setClassName(value);
-													    			}
-													    		}
-												    		};
-												    		
-												    		changeChildNodeClassName.accept("fa fa-spinner fa-pulse");
-												    		anchorElement.setClassName(className.replace("actlist-plugin-download", "actlist-plugin-installing"));
-												    		
-												    		new Thread(() -> {
+													if (ObjectUtil.isNotEmpty(anchorElement.getHref())) {
+														Consumer<String> changeChildNodeClassName = (value) -> {
+											    			if (anchorElement.getChildNodes().getLength() > 0) {
+												    			Node node = anchorElement.getChildNodes().item(0);
+												    			if (node instanceof HTMLElement) {
+												    				HTMLElement iElement = (HTMLElement) node;
+												    				iElement.setClassName(value);
+												    			}
+												    		}
+											    		};
+											    		
+														changeChildNodeClassName.accept("fa fa-spinner fa-pulse");
+											    		anchorElement.setClassName(className.replace("actlist-plugin-download", "actlist-plugin-installing"));
+											    		
+											    		new Thread(() -> {
+											    			String href = fetch(anchorElement.getHref());
+													    	if (href.toLowerCase().endsWith(".jar")) {
 												    			AtomicBoolean succeedToAutoInstall = new AtomicBoolean(false);
 												    			AtomicBoolean networkUnavailable = new AtomicBoolean(false);
 												    			AtomicInteger responseStatusCode = new AtomicInteger();
@@ -241,22 +241,22 @@ public class ExploreController extends AbstractViewerController {
 								    									MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
 								    								}
 								    							}
-												    			
-												    			Platform.runLater(() -> {
-												    				changeChildNodeClassName.accept("fa fa-download");
-												    				anchorElement.setClassName(className.replace("actlist-plugin-installing", "actlist-plugin-download"));
-												    			});
-												    		}).start();
-													    } else {
-															if (Desktop.isDesktopSupported()) {
-																try {
-																	Desktop.getDesktop().browse(URI.create(href));
-																} catch (Exception e) {
-																	e.printStackTrace();
+														    } else {
+																if (Desktop.isDesktopSupported()) {
+																	try {
+																		Desktop.getDesktop().browse(URI.create(href));
+																	} catch (Exception e) {
+																		e.printStackTrace();
+																	}
 																}
-															}
-													    }
-												    }
+														    }
+													    	
+													    	Platform.runLater(() -> {
+											    				changeChildNodeClassName.accept("fa fa-download");
+											    				anchorElement.setClassName(className.replace("actlist-plugin-installing", "actlist-plugin-download"));
+											    			});
+											    		}).start();
+													}
 												    
 												    event.preventDefault();
 												} else if (className.contains("actlist-plugin-installing")) {
