@@ -7,8 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.KeyStroke;
 
 import org.apache.http.conn.util.InetAddressUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
 import org.silentsoft.actlist.util.ConfigUtil;
@@ -17,6 +15,7 @@ import org.silentsoft.actlist.util.ConfigUtil.Theme;
 import org.silentsoft.core.util.SystemUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.ui.viewer.AbstractViewerController;
+import org.slf4j.LoggerFactory;
 
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -27,6 +26,7 @@ import com.jfoenix.validation.base.ValidatorBase;
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 
+import ch.qos.logback.classic.Level;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -133,7 +133,7 @@ public class ConfigurationController extends AbstractViewerController {
 			loggingLevel.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				try {
 					if (newValue != null) {
-						LogManager.getRootLogger().setLevel(Level.toLevel(newValue));
+						((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME)).setLevel(Level.toLevel(newValue));
 						
 						ConfigUtil.setLoggingLevel(newValue);
 					}
