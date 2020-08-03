@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -167,27 +168,33 @@ public class PluginAboutController extends AbstractViewerController {
 		boolean existsContent = ObjectUtil.isNotEmpty(uri) || ObjectUtil.isNotEmpty(text);
 		if (existsContent) {
 			WebView webView = new WebView();
-			
-			if (ObjectUtil.isNotEmpty(uri)) {
-				if ("jar".equals(uri.getScheme())) {
-					try (BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8))) {
-						StringBuffer buffer = new StringBuffer();
-						for (String value=null; (value=reader.readLine()) != null; ) {
-							buffer.append(value.concat("\r\n"));
+			{
+				Consumer<String> loadContent = (raw) -> {
+					String content = HtmlRenderer.builder().build().render(Parser.builder().build().parse(raw));
+					
+					webView.getEngine().setUserStyleSheetLocation(getClass().getResource("/github-markdown.css").toExternalForm());
+					webView.getEngine().loadContent(String.format("<article class='markdown-body'>%s</article>", content));
+				};
+				
+				if (ObjectUtil.isNotEmpty(uri)) {
+					if ("jar".equals(uri.getScheme())) {
+						try (BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8))) {
+							StringBuffer buffer = new StringBuffer();
+							for (String value=null; (value=reader.readLine()) != null; ) {
+								buffer.append(value.concat("\r\n"));
+							}
+							
+							loadContent.accept(buffer.toString());
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-						String content = HtmlRenderer.builder().build().render(Parser.builder().build().parse(buffer.toString()));
-						webView.getEngine().loadContent(content);
-					} catch (Exception e) {
-						e.printStackTrace();
+					} else {
+						webView.getEngine().load(uri.toString());
 					}
-				} else {
-					webView.getEngine().load(uri.toString());
+				} else if (ObjectUtil.isNotEmpty(text)) {
+					loadContent.accept(text);
 				}
-			} else if (ObjectUtil.isNotEmpty(text)) {
-				String content = HtmlRenderer.builder().build().render(Parser.builder().build().parse(text));
-				webView.getEngine().loadContent(content);
 			}
-			
 			tabPane.getTabs().add(new Tab(title, webView));
 		}
 	}
