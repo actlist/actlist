@@ -2,10 +2,9 @@
   <img src="https://github.com/silentsoft/actlist/blob/dev/src/main/resources/images/icon/actlist_64.png?raw=true"></br>
   Actlist
 </h1>
-<div align="center">
-  <h5>Easy and simply execute your own act list.</h5>
-</div>
-<h1 align="center">
+<h2 align="center">
+  <sup>
+    <h5>Easy and simply execute your own act list.</h5>
 
 [![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
 ![platform](https://actlist.silentsoft.org/api/shields/platform)
@@ -15,7 +14,8 @@
 [![HitCount](http://hits.dwyl.io/silentsoft/actlist.svg)](http://hits.dwyl.io/silentsoft/actlist)
 [![Gitter](https://badges.gitter.im/silentsoft/actlist.svg)](https://gitter.im/silentsoft/actlist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-</h1>
+  </sup>
+</h2>
 
 Actlist will helps you to execute your desire things.
 
