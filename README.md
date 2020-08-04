@@ -5,6 +5,8 @@
 <h2 align="center">
   <sup>
     <h5>Easy and simply execute your own act list.</h5>
+  </sup>
+  <div>
 
 [![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
 ![platform](https://actlist.silentsoft.org/api/shields/platform)
@@ -14,7 +16,7 @@
 [![HitCount](http://hits.dwyl.io/silentsoft/actlist.svg)](http://hits.dwyl.io/silentsoft/actlist)
 [![Gitter](https://badges.gitter.im/silentsoft/actlist.svg)](https://gitter.im/silentsoft/actlist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-  </sup>
+  </div>
 </h2>
 
 Actlist will helps you to execute your desire things.
