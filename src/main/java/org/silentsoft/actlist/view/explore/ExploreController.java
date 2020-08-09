@@ -26,9 +26,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.application.App;
+import org.silentsoft.actlist.comparator.VersionComparator;
 import org.silentsoft.actlist.plugin.PluginManager;
 import org.silentsoft.actlist.plugin.messagebox.MessageBox;
 import org.silentsoft.actlist.rest.RESTfulAPI;
+import org.silentsoft.actlist.version.BuildVersion;
 import org.silentsoft.core.util.ObjectUtil;
 import org.silentsoft.io.event.EventHandler;
 import org.silentsoft.io.memory.SharedMemory;
@@ -49,6 +51,9 @@ import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -105,10 +110,35 @@ public class ExploreController extends AbstractViewerController {
 											String className = anchorElement.getClassName();
 											if (className != null) {
 												if (className.contains("actlist-plugin-download")) {
-													String href = fetch(anchorElement.getHref());
-												    if (ObjectUtil.isNotEmpty(href)) {
-												    	if (href.toLowerCase().endsWith(".jar")) {
-												    		Consumer<String> changeChildNodeClassName = (value) -> {
+													if (ObjectUtil.isNotEmpty(anchorElement.getHref())) {
+														boolean shouldDownload = true;
+														
+														try {
+															if (anchorElement.hasAttribute("data-required-actlist")) {
+																String requiredActlist = anchorElement.getAttribute("data-required-actlist").trim();
+																if (requiredActlist.matches("\\d+.\\d+.\\d+")) {
+																	if (VersionComparator.getInstance().compare(BuildVersion.VERSION, requiredActlist) < 0) {
+							    										ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+							    	    								ButtonType downloadAnywayButton = new ButtonType("Download anyway", ButtonData.OK_DONE);
+							    										
+							    										Alert alert = new Alert(AlertType.NONE);
+							    										alert.setTitle("Warning");
+							    										alert.getDialogPane().getStyleClass().add("warning");
+							    										alert.setHeaderText(String.join("", "This plugin requires at least Actlist ", requiredActlist));
+							    										alert.setContentText("If you don't use the required version of Actlist, the plugin may not work properly. Do you want to download anyway ?");
+							    										alert.getButtonTypes().addAll(new ButtonType[] {cancelButton, downloadAnywayButton});
+							    										Optional<ButtonType> alertResponse = alert.showAndWait();
+							    										
+							    										shouldDownload = alertResponse.isPresent() && alertResponse.get() == downloadAnywayButton;
+							    	    							}
+																}
+															}
+														} catch (Exception e) {
+															e.printStackTrace();
+														}
+														
+														if (shouldDownload) {
+															Consumer<String> changeChildNodeClassName = (value) -> {
 												    			if (anchorElement.getChildNodes().getLength() > 0) {
 													    			Node node = anchorElement.getChildNodes().item(0);
 													    			if (node instanceof HTMLElement) {
@@ -118,145 +148,148 @@ public class ExploreController extends AbstractViewerController {
 													    		}
 												    		};
 												    		
-												    		changeChildNodeClassName.accept("fa fa-spinner fa-pulse");
+															changeChildNodeClassName.accept("fa fa-spinner fa-pulse");
 												    		anchorElement.setClassName(className.replace("actlist-plugin-download", "actlist-plugin-installing"));
 												    		
 												    		new Thread(() -> {
-												    			AtomicBoolean succeedToAutoInstall = new AtomicBoolean(false);
-												    			AtomicBoolean networkUnavailable = new AtomicBoolean(false);
-												    			AtomicInteger responseStatusCode = new AtomicInteger();
-												    			AtomicReference<String> responseReasonPhrase = new AtomicReference<>();
-												    			AtomicReference<Exception> exception = new AtomicReference<>();
-											    				try {
-									    							RESTfulAPI.doGet(href, (beforeRequest) -> {
-									    								
-									    							}, (afterResponse) -> {
-									    								try {
-									    									StatusLine statusLine = afterResponse.getStatusLine();
-									    									if (statusLine != null) {
-									    										responseStatusCode.set(statusLine.getStatusCode());
-									    										responseReasonPhrase.set(statusLine.getReasonPhrase());
-									    									}
-									    									
-									    									HttpEntity entity = afterResponse.getEntity();
-										    								if (entity != null) {
-										    									InputStream content = entity.getContent();
-										    									
-										    									// create a partial file
-										    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-										    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
-										    									if (Files.notExists(partialFilePath.getParent())) {
-											    									Files.createDirectories(partialFilePath.getParent());							    										
+												    			String href = fetch(anchorElement.getHref());
+														    	if (href.toLowerCase().endsWith(".jar")) {
+													    			AtomicBoolean succeedToAutoInstall = new AtomicBoolean(false);
+													    			AtomicBoolean networkUnavailable = new AtomicBoolean(false);
+													    			AtomicInteger responseStatusCode = new AtomicInteger();
+													    			AtomicReference<String> responseReasonPhrase = new AtomicReference<>();
+													    			AtomicReference<Exception> exception = new AtomicReference<>();
+												    				try {
+										    							RESTfulAPI.doGet(href, (beforeRequest) -> {
+										    								
+										    							}, (afterResponse) -> {
+										    								try {
+										    									StatusLine statusLine = afterResponse.getStatusLine();
+										    									if (statusLine != null) {
+										    										responseStatusCode.set(statusLine.getStatusCode());
+										    										responseReasonPhrase.set(statusLine.getReasonPhrase());
 										    									}
-										    									Files.createFile(partialFilePath);
 										    									
-										    									// write into partial file
-										    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
-										    									IOUtils.copy(content, fileStream);
-										    									fileStream.close();
-										    									
-										    									// test valid jar or not
-										    									new JarFile(partialFilePath.toString()).close();
-										    									
-										    									// determine jar file name
-										    									String _newPluginFileName = "";
-										    									{
-										    										try {
-										    											Header contentDispositionHeader = afterResponse.getFirstHeader("Content-Disposition");
-											    										if (contentDispositionHeader != null && contentDispositionHeader.getValue() != null) {
-											    											_newPluginFileName = URLDecoder.decode(StringUtils.substringAfterLast(contentDispositionHeader.getValue().toLowerCase().replaceAll("\"", ""), "filename="), "UTF-8").trim();
+										    									HttpEntity entity = afterResponse.getEntity();
+											    								if (entity != null) {
+											    									InputStream content = entity.getContent();
+											    									
+											    									// create a partial file
+											    									String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+											    									Path partialFilePath = Paths.get(System.getProperty("java.io.tmpdir"), uuid.concat(".partial"));
+											    									if (Files.notExists(partialFilePath.getParent())) {
+												    									Files.createDirectories(partialFilePath.getParent());							    										
+											    									}
+											    									Files.createFile(partialFilePath);
+											    									
+											    									// write into partial file
+											    									OutputStream fileStream = new FileOutputStream(partialFilePath.toString());
+											    									IOUtils.copy(content, fileStream);
+											    									fileStream.close();
+											    									
+											    									// test valid jar or not
+											    									new JarFile(partialFilePath.toString()).close();
+											    									
+											    									// determine jar file name
+											    									String _newPluginFileName = "";
+											    									{
+											    										try {
+											    											Header contentDispositionHeader = afterResponse.getFirstHeader("Content-Disposition");
+												    										if (contentDispositionHeader != null && contentDispositionHeader.getValue() != null) {
+												    											_newPluginFileName = URLDecoder.decode(StringUtils.substringAfterLast(contentDispositionHeader.getValue().toLowerCase().replaceAll("\"", ""), "filename="), "UTF-8").trim();
+												    										}
+											    										} catch (Exception e) {
+											    											
+											    										} finally {
+											    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+											    												_newPluginFileName = String.valueOf(Paths.get(URI.create(href).getPath()).getFileName());
+											    											}
+											    											
+											    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
+											    												_newPluginFileName = UUID.randomUUID().toString().replaceAll("-", "");
+											    											}
 											    										}
-										    										} catch (Exception e) {
-										    											
-										    										} finally {
-										    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
-										    												_newPluginFileName = String.valueOf(Paths.get(URI.create(href).getPath()).getFileName());
-										    											}
-										    											
-										    											if (ObjectUtil.isEmpty(_newPluginFileName)) {
-										    												_newPluginFileName = UUID.randomUUID().toString().replaceAll("-", "");
-										    											}
-										    										}
-										    									}
-										    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
-										    										_newPluginFileName = _newPluginFileName.concat(".jar");
-										    									}
-										    									
-										    									// check whether duplicated or not and if so, pick a uuid as a file name
-										    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
-										    									if (Files.exists(newPluginFilePath)) {
-										    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
-										    									}
-										    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
-										    									
-										    									// move the partial file to the plugins directory
-										    									Files.move(partialFilePath, newPluginFilePath);
-										    									
-										    									CountDownLatch latch = new CountDownLatch(1);
-										    									Platform.runLater(() -> {
-										    										try {
-										    											PluginManager.load(newPluginFileName, true);
-												    									
-												    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
-										    										} catch (Exception | Error e) {
-										    											e.printStackTrace();
-										    										} finally {
-										    											latch.countDown();
-										    										}
-										    									});
-										    									latch.await();
-										    									
-										    									succeedToAutoInstall.set(true);
+											    									}
+											    									if (_newPluginFileName.toLowerCase().endsWith(".jar") == false) {
+											    										_newPluginFileName = _newPluginFileName.concat(".jar");
+											    									}
+											    									
+											    									// check whether duplicated or not and if so, pick a uuid as a file name
+											    									Path newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", _newPluginFileName);
+											    									if (Files.exists(newPluginFilePath)) {
+											    										newPluginFilePath = Paths.get(System.getProperty("user.dir"), "plugins", uuid.concat(".jar"));
+											    									}
+											    									final String newPluginFileName = String.valueOf(newPluginFilePath.getFileName());
+											    									
+											    									// move the partial file to the plugins directory
+											    									Files.move(partialFilePath, newPluginFilePath);
+											    									
+											    									CountDownLatch latch = new CountDownLatch(1);
+											    									Platform.runLater(() -> {
+											    										try {
+											    											PluginManager.load(newPluginFileName, true);
+													    									
+													    									EventHandler.callEvent(getClass(), BizConst.EVENT_SAVE_PRIORITY_OF_PLUGINS);
+											    										} catch (Exception | Error e) {
+											    											e.printStackTrace();
+											    										} finally {
+											    											latch.countDown();
+											    										}
+											    									});
+											    									latch.await();
+											    									
+											    									succeedToAutoInstall.set(true);
+											    								}
+										    								} catch (Exception e) {
+										    									System.out.println(String.format("Failed to install (%s -> status : %d - %s)", href, responseStatusCode.get(), responseReasonPhrase.get()));
+										    									e.printStackTrace();
+										    									exception.set(e);
 										    								}
-									    								} catch (Exception e) {
-									    									System.out.println(String.format("Failed to install (%s -> status : %d - %s)", href, responseStatusCode.get(), responseReasonPhrase.get()));
-									    									e.printStackTrace();
-									    									exception.set(e);
-									    								}
-									    							});
-									    						} catch (Exception e) {
-									    							e.printStackTrace();
-									    							networkUnavailable.set(true);
-									    						}
-								    							
-								    							if (succeedToAutoInstall.get()) {
-								    								EventHandler.callEvent(getClass(), BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM);
-								    								
-								    								Platform.runLater(() -> {
-								    									Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Succeed to install", "Do you want to check it out the new plugin ?");
-									    								if (result.isPresent() && result.get() == ButtonType.OK) {
-									    									EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_PLUGINS_VIEW, false);
-									    								}
-								    								});
-								    							} else {
-								    								if (networkUnavailable.get()) {
-								    									if (Desktop.isDesktopSupported()) {
-																			try {
-																				Desktop.getDesktop().browse(URI.create(href));
-																			} catch (Exception e) {
-																				e.printStackTrace();
+										    							});
+										    						} catch (Exception e) {
+										    							e.printStackTrace();
+										    							networkUnavailable.set(true);
+										    						}
+									    							
+									    							if (succeedToAutoInstall.get()) {
+									    								EventHandler.callEvent(getClass(), BizConst.EVENT_PLAY_NEW_PLUGINS_ALARM);
+									    								
+									    								Platform.runLater(() -> {
+									    									Optional<ButtonType> result = MessageBox.showConfirm(App.getStage(), "Succeed to install", "Do you want to check it out the new plugin ?");
+										    								if (result.isPresent() && result.get() == ButtonType.OK) {
+										    									EventHandler.callEvent(getClass(), BizConst.EVENT_SHOW_PLUGINS_VIEW, false);
+										    								}
+									    								});
+									    							} else {
+									    								if (networkUnavailable.get()) {
+									    									if (Desktop.isDesktopSupported()) {
+																				try {
+																					Desktop.getDesktop().browse(URI.create(href));
+																				} catch (Exception e) {
+																					e.printStackTrace();
+																				}
 																			}
+									    								} else {
+									    									MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
+									    								}
+									    							}
+															    } else {
+																	if (Desktop.isDesktopSupported()) {
+																		try {
+																			Desktop.getDesktop().browse(URI.create(href));
+																		} catch (Exception e) {
+																			e.printStackTrace();
 																		}
-								    								} else {
-								    									MessageBox.showException(App.getStage(), String.format("Failed to install (%d)", responseStatusCode.get()), responseReasonPhrase.get(), exception.get());
-								    								}
-								    							}
-												    			
-												    			Platform.runLater(() -> {
+																	}
+															    }
+														    	
+														    	Platform.runLater(() -> {
 												    				changeChildNodeClassName.accept("fa fa-download");
 												    				anchorElement.setClassName(className.replace("actlist-plugin-installing", "actlist-plugin-download"));
 												    			});
 												    		}).start();
-													    } else {
-															if (Desktop.isDesktopSupported()) {
-																try {
-																	Desktop.getDesktop().browse(URI.create(href));
-																} catch (Exception e) {
-																	e.printStackTrace();
-																}
-															}
-													    }
-												    }
+														}
+													}
 												    
 												    event.preventDefault();
 												} else if (className.contains("actlist-plugin-installing")) {

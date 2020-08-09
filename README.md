@@ -1,19 +1,23 @@
-# Actlist
+<h1 align="center">
+  <img src="https://github.com/silentsoft/actlist/blob/dev/src/main/resources/images/icon/actlist_64.png?raw=true"></br>
+  Actlist
+</h1>
+<h2 align="center">
+  <sup>
+    <h5>Easy and simply execute your own act list.</h5>
+  </sup>
+  <div>
 
 [![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
 ![platform](https://actlist.silentsoft.org/api/shields/platform)
+[![Build Status](https://travis-ci.com/silentsoft/actlist.svg?branch=dev)](https://travis-ci.com/silentsoft/actlist)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
-[![Build Status](https://travis-ci.org/silentsoft/actlist.svg?branch=dev)](https://travis-ci.org/silentsoft/actlist)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=silentsoft_actlist&metric=alert_status)](https://sonarcloud.io/dashboard?id=silentsoft_actlist)
-![statistics-since](https://actlist.silentsoft.org/api/shields/statistics-since)
-![created](https://actlist.silentsoft.org/api/shields/created)
-[![actlist-license](https://actlist.silentsoft.org/api/shields/actlist-license)](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt)
-[![actlist-plugin-license](https://actlist.silentsoft.org/api/shields/actlist-plugin-license)](https://github.com/silentsoft/actlist-plugin/blob/master/LICENSE.txt)
 [![HitCount](http://hits.dwyl.io/silentsoft/actlist.svg)](http://hits.dwyl.io/silentsoft/actlist)
 [![Gitter](https://badges.gitter.im/silentsoft/actlist.svg)](https://gitter.im/silentsoft/actlist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-> Easy and simply execute your own act list.
+  </div>
+</h2>
 
 Actlist will helps you to execute your desire things.
 
@@ -76,7 +80,7 @@ Mac OS X:
       <parent>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin-sdk</artifactId>
-          <version>2.0.1</version>
+          <version>2.1.0</version>
       </parent>
       <properties>
           <mainClass>your.pkg.Plugin</mainClass>

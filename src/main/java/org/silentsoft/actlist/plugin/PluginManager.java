@@ -58,29 +58,29 @@ public class PluginManager {
 			Files.copy(sourcePath, targetPath);
 		}
 		
-		URLClassLoader urlClassLoader = null;
+		URLClassLoader classLoader = null;
 		
 		boolean isErrorOccur = false;
 		try {
 			Class<?> pluginClass = null;
 			InputStream inputStream = null;
 			
-			urlClassLoader = new URLClassLoader(new URL[]{ targetPath.toUri().toURL() });
+			classLoader = new PluginClassLoader(new URL[]{ targetPath.toUri().toURL() });
 			
 			try {
-				URL manifestURL = urlClassLoader.findResource(JarFile.MANIFEST_NAME);
+				URL manifestURL = classLoader.findResource(JarFile.MANIFEST_NAME);
 				inputStream = manifestURL.openStream();
 				
 				Manifest manifest = new Manifest(inputStream);
 				String mainClass = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS).trim();
 				if (ObjectUtil.isNotEmpty(mainClass)) {
-					pluginClass = urlClassLoader.loadClass(mainClass);
+					pluginClass = classLoader.loadClass(mainClass);
 				}
 			} catch (Exception | Error e) {
 				e.printStackTrace();
 			} finally {
 				if (pluginClass == null) {
-					pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+					pluginClass = classLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
 				}
 				
 				if (inputStream != null) {
@@ -95,9 +95,9 @@ public class PluginManager {
 			e.printStackTrace();
 			isErrorOccur = true;
 		} finally {
-			if (urlClassLoader != null) {
+			if (classLoader != null) {
 				// close the file handle. this file will be loaded within load() method. not this time.
-				urlClassLoader.close();
+				classLoader.close();
 			}
 		}
 		
@@ -156,25 +156,25 @@ public class PluginManager {
 	}
 	
 	public static void load(String pluginFileName, boolean activated, Integer index) throws Exception {
-		URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{ Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName).toUri().toURL() });
+		URLClassLoader classLoader = new PluginClassLoader(new URL[]{ Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName).toUri().toURL() });
 		
 		Class<?> pluginClass = null;
 		InputStream inputStream = null;
 		
 		try {
-			URL manifestURL = urlClassLoader.findResource(JarFile.MANIFEST_NAME);
+			URL manifestURL = classLoader.findResource(JarFile.MANIFEST_NAME);
 			inputStream = manifestURL.openStream();
 			
 			Manifest manifest = new Manifest(inputStream);
 			String mainClass = manifest.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS).trim();
 			if (ObjectUtil.isNotEmpty(mainClass)) {
-				pluginClass = urlClassLoader.loadClass(mainClass);
+				pluginClass = classLoader.loadClass(mainClass);
 			}
 		} catch (Exception | Error e) {
 			e.printStackTrace();
 		} finally {
 			if (pluginClass == null) {
-				pluginClass = urlClassLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
+				pluginClass = classLoader.loadClass(BizConst.PLUGIN_CLASS_NAME);
 			}
 			
 			if (inputStream != null) {
@@ -185,7 +185,7 @@ public class PluginManager {
 		if (ActlistPlugin.class.isAssignableFrom(pluginClass)) {
 			HashMap<String, URLClassLoader> pluginMap = (HashMap<String, URLClassLoader>) SharedMemory.getDataMap().get(BizConst.KEY_PLUGIN_MAP);
 			boolean shouldClearPromptLabel = (pluginMap.size() == 0);
-			pluginMap.put(pluginFileName, urlClassLoader);
+			pluginMap.put(pluginFileName, classLoader);
 			
 			FXMLLoader fxmlLoader = new FXMLLoader(PluginComponent.class.getResource(PluginComponent.class.getSimpleName().concat(CommonConst.EXTENSION_FXML)));
 			Node component = fxmlLoader.load();

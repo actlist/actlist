@@ -8,8 +8,8 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/2.0.1">
-				<filename name="actlist-plugin-2.0.1.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/actlist-plugin/2.1.0">
+				<filename name="actlist-plugin-2.1.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -53,8 +53,8 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/controlsfx/controlsfx/8.40.15">
-				<filename name="controlsfx-8.40.15.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/controlsfx/controlsfx/8.40.16">
+				<filename name="controlsfx-8.40.16.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -123,8 +123,13 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/log4j/log4j/1.2.17">
-				<filename name="log4j-1.2.17.jar"/>
+			<fileset dir="${user.home}/.m2/repository/ch/qos/logback/logback-classic/1.2.3">
+				<filename name="logback-classic-1.2.3.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${user.home}/.m2/repository/ch/qos/logback/logback-core/1.2.3">
+				<filename name="logback-core-1.2.3.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -143,33 +148,28 @@
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.3.0">
-				<filename name="silentsoft-core-1.3.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-core/1.4.0">
+				<filename name="silentsoft-core-1.4.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-io/1.2.0">
-				<filename name="silentsoft-io-1.2.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-io/1.3.0">
+				<filename name="silentsoft-io-1.3.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.4.0">
-				<filename name="silentsoft-net-1.4.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-net/1.5.0">
+				<filename name="silentsoft-net-1.5.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.2.0">
-				<filename name="silentsoft-ui-1.2.0.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/silentsoft/silentsoft-ui/1.3.0">
+				<filename name="silentsoft-ui-1.3.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/slf4j/slf4j-api/1.7.5">
-				<filename name="slf4j-api-1.7.5.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${user.home}/.m2/repository/org/slf4j/slf4j-log4j12/1.7.5">
-				<filename name="slf4j-log4j12-1.7.5.jar"/>
+			<fileset dir="${user.home}/.m2/repository/org/slf4j/slf4j-api/1.7.25">
+				<filename name="slf4j-api-1.7.25.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">

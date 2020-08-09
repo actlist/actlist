@@ -63,6 +63,7 @@ public class Console implements EventListener {
 	private TextArea console;
 	
 	static PrintStream consoleStream;
+	static PrintStream advancedStream;
 	private PrintStream printStream;
 	
 	private MaximizeProperty maximizeProperty;
@@ -82,12 +83,27 @@ public class Console implements EventListener {
 					reset();
 					
 					Platform.runLater(() -> {
-						console.appendText(log);
-						
 						Object appConsole = SharedMemory.getDataMap().get(BizConst.KEY_CONSOLE_TEXT_AREA);
 						if (appConsole instanceof TextArea) {
 							((TextArea) appConsole).appendText(log);
 						}
+					});
+				} catch (Exception e) {
+					;
+				}
+			}
+		}, true);
+		advancedStream = new PrintStream(new ByteArrayOutputStream() {
+			@Override
+			public synchronized void write(byte[] b, int off, int len) {
+				super.write(b, off, len);
+				
+				try {
+					String log = toString("UTF-8");
+					reset();
+					
+					Platform.runLater(() -> {
+						console.appendText(log);
 					});
 				} catch (Exception e) {
 					;
@@ -106,6 +122,7 @@ public class Console implements EventListener {
 					if (log.trim().isEmpty() == false) {
 						if (log.equals(String.valueOf(SharedMemory.getDataMap().get(BizConst.KEY_INFO_TEXT)))) {
 							consoleStream.println(log);
+							advancedStream.println(log);
 						} else {
 							LOGGER.info(log);
 						}
@@ -344,6 +361,9 @@ public class Console implements EventListener {
     static PrintStream getConsoleStream() {
 		return consoleStream;
 	}
+    static PrintStream getAdvancedStream() {
+    	return advancedStream;
+    }
 	public PrintStream getPrintStream() {
 		return printStream;
 	}

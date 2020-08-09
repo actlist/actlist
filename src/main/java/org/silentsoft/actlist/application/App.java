@@ -17,8 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import org.apache.http.HttpHost;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.silentsoft.actlist.ActlistConfig;
 import org.silentsoft.actlist.BizConst;
 import org.silentsoft.actlist.CommonConst;
@@ -43,6 +41,7 @@ import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
+import ch.qos.logback.classic.Level;
 import de.codecentric.centerdevice.MenuToolkit;
 import de.codecentric.centerdevice.glass.AdapterContext;
 import javafx.application.Application;
@@ -146,7 +145,8 @@ public class App extends Application implements EventListener {
 	}
 	
 	private static void updateLoggingLevel() {
-		LogManager.getRootLogger().setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
+//		LogManager.getRootLogger().setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
+		((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME)).setLevel(Level.toLevel(ConfigUtil.getLoggingLevel()));
 	}
 	
 	@SuppressWarnings("static-access")

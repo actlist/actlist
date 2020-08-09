@@ -1,3 +1,15 @@
+* 2.1.0
+    * new features
+      * supports height adjustment for graphic plugin
+    * improvements
+      * logging experience
+      * fix lazy reaction when clicks download button on explore view
+      * plugin jar class loading mechanism
+      * add markdown css to content area on ​the Plugin's About dialog
+      * add minor inspection before downloading the plugin in the explore view
+    * dependency
+      * remove log4j 1.7.5
+      * add logback 1.2.3
 * 2.0.1
     * new features
       * supports dynamic logging level configuration

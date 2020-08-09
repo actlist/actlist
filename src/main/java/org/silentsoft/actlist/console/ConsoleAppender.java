@@ -1,15 +1,20 @@
 package org.silentsoft.actlist.console;
 
-import org.apache.log4j.spi.LoggingEvent;
+import java.io.IOException;
 
-public class ConsoleAppender extends org.apache.log4j.ConsoleAppender {
-	
+import ch.qos.logback.classic.spi.ILoggingEvent;
+
+public class ConsoleAppender extends ch.qos.logback.core.ConsoleAppender<ILoggingEvent> {
+
 	@Override
-	public void append(LoggingEvent event) {
-		super.append(event);
-		
+	protected void append(ILoggingEvent event) {
 		if (Console.getConsoleStream() != null) {
-			Console.getConsoleStream().println(getLayout().format(event).trim());
+			try {
+				Console.getConsoleStream().write(getEncoder().encode(event));
+				Console.getConsoleStream().flush();
+			} catch (IOException e) {
+				
+			}
 		}
 	}
 
