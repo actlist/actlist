@@ -9,7 +9,7 @@ __material icons__
  * https://material.io/icons/
  * Apache License 2.0
 
-__actlist-plugin 2.1.0-SNAPSHOT__
+__actlist-plugin 2.1.0__
  * https://github.com/silentsoft/actlist-plugin
  * Apache License 2.0
 
@@ -140,7 +140,7 @@ __silentsoft-ui 1.3.0__
  * https://github.com/silentsoft/silentsoft-ui
  * Apache License 2.0
 
-__slf4j-api 1.7.5__
+__slf4j-api 1.7.25__
  * https://github.com/qos-ch/slf4j
  * MIT License
 

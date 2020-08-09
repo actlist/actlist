@@ -42,7 +42,7 @@ public class NoticeFileTest {
 			.addText("This product includes software developed by silentsoft.org.")
 			.addText("This product includes software developed by The Apache Software Foundation (http://www.apache.org/).")
 			.addLibrary("material icons", "https://material.io/icons/", APACHE_LICENSE_2_0)
-			.addLibrary("actlist-plugin 2.1.0-SNAPSHOT", "https://github.com/silentsoft/actlist-plugin", APACHE_LICENSE_2_0)
+			.addLibrary("actlist-plugin 2.1.0", "https://github.com/silentsoft/actlist-plugin", APACHE_LICENSE_2_0)
 			.addLibrary("centerdevice-nsmenufx 2.1.5", "https://github.com/codecentric/NSMenuFX", BSD_3_CLAUSE)
 			.addLibrary("commonmark 0.13.1", "https://github.com/atlassian/commonmark-java", BSD_2_CLAUSE)
 			.addLibrary("commons-codec 1.11", "https://github.com/apache/commons-codec", APACHE_LICENSE_2_0)
@@ -75,7 +75,7 @@ public class NoticeFileTest {
 			.addLibrary("silentsoft-io 1.3.0", "https://github.com/silentsoft/silentsoft-io", APACHE_LICENSE_2_0)
 			.addLibrary("silentsoft-net 1.5.0", "https://github.com/silentsoft/silentsoft-net", APACHE_LICENSE_2_0)
 			.addLibrary("silentsoft-ui 1.3.0", "https://github.com/silentsoft/silentsoft-ui", APACHE_LICENSE_2_0)
-			.addLibrary("slf4j-api 1.7.5", "https://github.com/qos-ch/slf4j", MIT_LICENSE)
+			.addLibrary("slf4j-api 1.7.25", "https://github.com/qos-ch/slf4j", MIT_LICENSE)
 			.addLibrary("PlusHaze-TrayNotification 5393c3a54f", "https://github.com/PlusHaze/TrayNotification", MIT_LICENSE)
 			.addLibrary("Oracle Java SE Runtime Environment 8", "https://www.oracle.com/technetwork/java/javase/terms/license/index.html", BCL_LICENSE)
 			.generate();
