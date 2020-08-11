@@ -31,7 +31,7 @@
 		<logback.version>1.2.3</logback.version>
 		<junit.version>4.8.1</junit.version>
 		<jna.version>4.5.1</jna.version>
-		<notice-file-generator.version>2.2.2</notice-file-generator.version>
+		<notice-file-generator.version>2.2.3</notice-file-generator.version>
 	</properties>
 
 	<build>
