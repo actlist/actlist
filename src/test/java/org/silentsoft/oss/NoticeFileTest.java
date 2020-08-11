@@ -10,8 +10,8 @@ import org.silentsoft.oss.license.ApacheLicense2_0;
 import org.silentsoft.oss.license.BCLLicense;
 import org.silentsoft.oss.license.BSD2ClauseLicense;
 import org.silentsoft.oss.license.BSD3ClauseLicense;
+import org.silentsoft.oss.license.EPL1_0License;
 import org.silentsoft.oss.license.JSONLicense;
-import org.silentsoft.oss.license.LGPL2_1License;
 import org.silentsoft.oss.license.LGPL3_0License;
 import org.silentsoft.oss.license.MITLicense;
 
@@ -21,7 +21,7 @@ public class NoticeFileTest {
 	private static final License BSD_2_CLAUSE = new BSD2ClauseLicense();
 	private static final License BSD_3_CLAUSE = new BSD3ClauseLicense();
 	private static final License JSON_LICENSE = new JSONLicense();
-	private static final License LGPL_2_1 = new LGPL2_1License();
+	private static final License EPL_1_0 = new EPL1_0License();
 	private static final License LGPL_3_0 = new LGPL3_0License();
 	private static final License MIT_LICENSE = new MITLicense();
 	private static final License BCL_LICENSE = new BCLLicense();
@@ -66,8 +66,8 @@ public class NoticeFileTest {
 			.addLibrary("jna 4.5.1", "https://github.com/java-native-access/jna", APACHE_LICENSE_2_0)
 			.addLibrary("jna-platform 4.5.1", "https://github.com/java-native-access/jna", APACHE_LICENSE_2_0)
 			.addLibrary("json 20141113", "https://github.com/douglascrockford/JSON-java", JSON_LICENSE)
-			.addLibrary("logback-classic 1.2.3", "https://github.com/qos-ch/logback", LGPL_2_1)
-			.addLibrary("logback-core 1.2.3", "https://github.com/qos-ch/logback", LGPL_2_1)
+			.addLibrary("logback-classic 1.2.3", "https://github.com/qos-ch/logback", EPL_1_0)
+			.addLibrary("logback-core 1.2.3", "https://github.com/qos-ch/logback", EPL_1_0)
 			.addLibrary("maven-model 3.6.0", "https://github.com/apache/maven", APACHE_LICENSE_2_0)
 			.addLibrary("plexus-utils 3.1.0", "https://github.com/codehaus-plexus/plexus-utils", APACHE_LICENSE_2_0)
 			.addLibrary("proxy-vole 1.0.3", "https://github.com/MarkusBernhardt/proxy-vole", APACHE_LICENSE_2_0)
