@@ -42,7 +42,7 @@ public class NoticeFileTest {
 			.addText("This product includes software developed by silentsoft.org.")
 			.addText("This product includes software developed by The Apache Software Foundation (http://www.apache.org/).")
 			.addLibrary("material icons", "https://material.io/icons/", APACHE_LICENSE_2_0)
-			.addLibrary("actlist-plugin 2.1.0", "https://github.com/silentsoft/actlist-plugin", APACHE_LICENSE_2_0)
+			.addLibrary("actlist-plugin 2.2.0", "https://github.com/silentsoft/actlist-plugin", APACHE_LICENSE_2_0)
 			.addLibrary("centerdevice-nsmenufx 2.1.5", "https://github.com/codecentric/NSMenuFX", BSD_3_CLAUSE)
 			.addLibrary("commonmark 0.13.1", "https://github.com/atlassian/commonmark-java", BSD_2_CLAUSE)
 			.addLibrary("commons-codec 1.11", "https://github.com/apache/commons-codec", APACHE_LICENSE_2_0)

@@ -80,7 +80,7 @@ Mac OS X:
       <parent>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin-sdk</artifactId>
-          <version>2.1.0</version>
+          <version>2.2.0</version>
       </parent>
       <properties>
           <mainClass>your.pkg.Plugin</mainClass>
