@@ -1,3 +1,6 @@
+* 2.2.0
+    * bugfix
+      * rollback: plugin jar class loading mechanism
 * 2.1.0
     * new features
       * supports height adjustment for graphic plugin

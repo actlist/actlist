@@ -65,7 +65,7 @@ public class PluginManager {
 			Class<?> pluginClass = null;
 			InputStream inputStream = null;
 			
-			classLoader = new PluginClassLoader(new URL[]{ targetPath.toUri().toURL() });
+			classLoader = new URLClassLoader(new URL[]{ targetPath.toUri().toURL() });
 			
 			try {
 				URL manifestURL = classLoader.findResource(JarFile.MANIFEST_NAME);
@@ -156,7 +156,7 @@ public class PluginManager {
 	}
 	
 	public static void load(String pluginFileName, boolean activated, Integer index) throws Exception {
-		URLClassLoader classLoader = new PluginClassLoader(new URL[]{ Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName).toUri().toURL() });
+		URLClassLoader classLoader = new URLClassLoader(new URL[]{ Paths.get(System.getProperty("user.dir"), "plugins", pluginFileName).toUri().toURL() });
 		
 		Class<?> pluginClass = null;
 		InputStream inputStream = null;
