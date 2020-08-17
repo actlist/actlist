@@ -158,3 +158,6 @@ Please refer to [CHANGELOG](https://github.com/silentsoft/actlist/blob/master/CH
 
 ## License
 Please refer to [LICENSE](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt) and [NOTICE](https://github.com/silentsoft/actlist/blob/master/NOTICE.md).
+
+## Thanks to
+<a href="https://www.jetbrains.com/?from=Actlist"><img src="http://actlist.silentsoft.org/img/jetbrains.png" width="200"></a>
