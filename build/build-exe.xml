@@ -7,6 +7,22 @@
 	<import file="${basedir}/target-do-clean.xml" as="nested"/>
 	
 	<target name="build" depends="nested.do-deploy">
+		<exec executable="cmd">
+			<arg value="/c"/>
+			<arg value="${basedir}/deploy/bundles/Actlist-${version}-${os}-${arch}.${nativeBundles}"/>
+			<arg value="/silent"/>
+			<arg value="/dir=&quot;${basedir}/deploy/bundles/Actlist-${version}-${os}-${arch}&quot;"/>
+			<arg value="/mergetasks=&quot;!desktopicon&quot;"/>
+			<arg value="/noicons"/>
+			<arg value="/nocancel"/>
+			<arg value="/portable=1"/>
+		</exec>
+		
+		<delete file="deploy/bundles/Actlist-${version}-${os}-${arch}.zip"/>
+		<zip destfile="deploy/bundles/Actlist-${version}-${os}-${arch}.zip" basedir="deploy/bundles/Actlist-${version}-${os}-${arch}" level="9"/>
+		
+		<delete dir="deploy/bundles/Actlist-${version}-${os}-${arch}"/>
+		
 		<antcall target="nested.do-clean"/>
 	</target>
 </project>

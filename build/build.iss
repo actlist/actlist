@@ -27,6 +27,7 @@ DefaultDirName={pf}\{#AppName}
 DisableDirPage=No
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
+AllowNoIcons=yes
 OutputBaseFilename={#AppName}-{#AppVersion}
 ;OutputBaseFilename={#AppName}-{#AppVersion}-windows-{#AppArchitecture}
 Compression=lzma
@@ -34,6 +35,7 @@ SolidCompression=yes
 SetupIconFile={#AppName}\{#AppIcoName}
 WizardImageStretch=No
 WizardSmallImageFile={#WizardSmallImageFile}
+Uninstallable=not PortableCheck
 UninstallDisplayIcon={app}\{#AppIcoName}
 
 [Languages]
@@ -54,3 +56,8 @@ Name: "{userdesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; IconFilename:
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+function PortableCheck: Boolean;
+begin
+  Result := ExpandConstant('{param:portable|0}') = '1';
+end;
