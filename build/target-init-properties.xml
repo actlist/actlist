@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+	<property file="build.properties"/>
+	
+	<target name="init-properties">
+		<condition property="arch" value="x64" else="x86">
+			<contains string="${os.arch}" substring="64"/>
+		</condition>
+	</target>
+</project>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="actlist" default="build" basedir=".">
-	<property file="build.properties"/>
+	<property name="os" value="macosx"/>
 	<property name="nativeBundles" value="dmg"/>
 	
 	<import file="${basedir}/target-do-deploy.xml" as="nested"/>
