@@ -15,6 +15,7 @@
 /log/
 .mvn/
 .settings/
+*.iml
 .classpath
 .project
 .DS_Store
