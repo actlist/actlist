@@ -10,7 +10,7 @@
 
 [![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
 ![platform](https://actlist.silentsoft.org/api/shields/platform)
-[![Build Status](https://travis-ci.com/silentsoft/actlist.svg?branch=dev)](https://travis-ci.com/silentsoft/actlist)
+[![Build Status](https://travis-ci.com/actlist/actlist.svg?branch=dev)](https://travis-ci.com/actlist/actlist)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
 [![HitCount](http://hits.dwyl.com/silentsoft/actlist.svg)](http://hits.dwyl.com/silentsoft/actlist)
