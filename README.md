@@ -13,7 +13,7 @@
 [![Build Status](https://travis-ci.com/actlist/actlist.svg?branch=dev)](https://travis-ci.com/actlist/actlist)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
-[![HitCount](http://hits.dwyl.com/silentsoft/actlist.svg)](http://hits.dwyl.com/silentsoft/actlist)
+[![Hits](https://hits.sh/github.com/silentsoft/actlist.svg)](https://hits.sh)
 [![Gitter](https://badges.gitter.im/silentsoft/actlist.svg)](https://gitter.im/silentsoft/actlist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
   </div>
