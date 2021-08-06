@@ -14,7 +14,7 @@
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
 [![Hits](https://hits.sh/github.com/silentsoft/actlist.svg)](https://hits.sh)
-[![Gitter](https://badges.gitter.im/silentsoft/actlist.svg)](https://gitter.im/silentsoft/actlist?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Discord](https://img.shields.io/discord/873205203493593178?logo=discord)](https://discord.gg/Vx6RHgZb7f)
 
   </div>
 </h2>
