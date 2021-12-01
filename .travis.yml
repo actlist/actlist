@@ -13,8 +13,17 @@ cache:
     - "$HOME/.m2"
 
 script:
-  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
-  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=silentsoft_actlist
+  # the following command line builds the project, runs the tests with coverage
+  - mvn clean verify -Pcoverage
+  # https://sonarcloud.io/documentation/appendices/announcements/
+  # https://sonarcloud.io/documentation/appendices/move-analysis-java-11/
+  # https://docs.travis-ci.com/user/languages/java/#switching-jdks-to-java-10-and-up-within-one-job
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  - chmod +x $TRAVIS_BUILD_DIR/install-jdk.sh
+  - export JAVA_HOME=$HOME/openjdk11
+  - $TRAVIS_BUILD_DIR/install-jdk.sh -F 11 --target $JAVA_HOME
+  # execute the SonarCloud analysis
+  - mvn sonar:sonar -Dsonar.projectKey=silentsoft_actlist
 
 addons:
   sonarcloud:
