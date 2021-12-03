@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/silentsoft/actlist/blob/dev/src/main/resources/images/icon/actlist_64.png?raw=true"></br>
+  <img src="https://github.com/actlist/actlist/blob/dev/src/main/resources/images/icon/actlist_64.png?raw=true"></br>
   Actlist
 </h1>
 <h2 align="center">
@@ -8,9 +8,9 @@
   </sup>
   <div>
 
-[![release](https://actlist.silentsoft.org/api/shields/release)](http://actlist.silentsoft.org/archives/)
-![platform](https://actlist.silentsoft.org/api/shields/platform)
+[![release](https://shields.io/github/v/release/actlist/actlist?display_name=tag)](https://actlist.io/archives/)
 [![Build Status](https://travis-ci.com/actlist/actlist.svg?branch=dev)](https://travis-ci.com/actlist/actlist)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist?ref=badge_shield)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
 [![Hits](https://hits.sh/github.com/silentsoft/actlist.svg)](https://hits.sh)
@@ -23,14 +23,14 @@ Actlist will helps you to execute your desire things.
 
 Just do focus only on coding to create what you want. and you can share with others to makes better world.
 
-![](http://actlist.silentsoft.org/img/preview.png?token=90777ed1)
+![](https://actlist.io/img/preview.png?token=90777ed1)
 
 ## Installation
 Windows:
-> [download exe or zip file](http://actlist.silentsoft.org/archives/) and launch.
+> [download exe or zip file](https://actlist.io/archives/) and launch.
 
 Mac OS X:
-> [download dmg file](http://actlist.silentsoft.org/archives/) and launch.
+> [download dmg file](https://actlist.io/archives/) and launch.
 
 ## Prerequisites For Development
 * Oracle JDK 1.8 or Open JDK with JavaFx binary distribution
@@ -48,7 +48,7 @@ Mac OS X:
 * There are two ways to create an Actlist plugin. the first one is using starter-kit(which is highly recommended) and second one is creating java project manually.
 
   ### 1. using starter-kit
-    1. [Download starter kit](https://github.com/silentsoft/actlist-plugin-starter-kit/archive/master.zip)
+    1. [Download starter kit](https://github.com/actlist/actlist-plugin-starter-kit/archive/master.zip)
     2. Rename `master.zip` to the desired name and unzip it
     3. Enter the directory
     4. Initialize your project metadata
@@ -76,7 +76,7 @@ Mac OS X:
   ### 2. or creating java project manually
     * Create a new Java project and configure to Maven project.
     * Add `parent` and `property` information to `pom.xml`
-      ```
+      ```xml
       <parent>
           <groupId>org.silentsoft</groupId>
           <artifactId>actlist-plugin-sdk</artifactId>
@@ -93,7 +93,7 @@ Mac OS X:
     * Done.
       
       Here is an example source code of `Plugin.java`
-      ```
+      ```java
       package your.pkg;
       
       import org.silentsoft.actlist.plugin.ActlistPlugin;
@@ -146,18 +146,18 @@ Mac OS X:
       }
       ```
 
-For more information on ActlistPlugin development, see [here](http://actlist.silentsoft.org/docs/quick-start/)
+For more information on ActlistPlugin development, see [here](https://actlist.io/docs/quick-start/)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Please note we have a [CODE_OF_CONDUCT](https://github.com/silentsoft/actlist/blob/master/CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
+Please note we have a [CODE_OF_CONDUCT](https://github.com/actlist/actlist/blob/master/CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
 
 ## Change log
-Please refer to [CHANGELOG](https://github.com/silentsoft/actlist/blob/master/CHANGELOG.md).
+Please refer to [CHANGELOG](https://github.com/actlist/actlist/blob/master/CHANGELOG.md).
 
 ## License
-Please refer to [LICENSE](https://github.com/silentsoft/actlist/blob/master/LICENSE.txt) and [NOTICE](https://github.com/silentsoft/actlist/blob/master/NOTICE.md).
+Please refer to [LICENSE](https://github.com/actlist/actlist/blob/master/LICENSE.txt) and [NOTICE](https://github.com/actlist/actlist/blob/master/NOTICE.md).
 
 ## Thanks to
-<a href="https://www.jetbrains.com/?from=Actlist"><img src="http://actlist.silentsoft.org/img/jetbrains.png" width="200"></a>
+<a href="https://www.jetbrains.com/?from=Actlist"><img src="https://actlist.io/img/jetbrains.png" width="200"></a>
