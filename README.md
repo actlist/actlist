@@ -4,7 +4,7 @@
 </h1>
 <h2 align="center">
   <sup>
-    <h5>Easy and simply execute your own act list.</h5>
+    <h5>Execute your own action list easily and simply</h5>
   </sup>
   <div>
 
@@ -18,10 +18,6 @@
 
   </div>
 </h2>
-
-Actlist will helps you to execute your desire things.
-
-Just do focus only on coding to create what you want. and you can share with others to makes better world.
 
 ![](https://actlist.io/img/preview.png?token=90777ed1)
 
