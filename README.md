@@ -9,7 +9,7 @@
   <div>
 
 [![release](https://shields.io/github/v/release/actlist/actlist?display_name=tag)](https://actlist.io/archives/)
-[![Build Status](https://travis-ci.com/actlist/actlist.svg?branch=dev)](https://travis-ci.com/actlist/actlist)
+[![Build Status](https://app.travis-ci.com/actlist/actlist.svg?branch=dev)](https://app.travis-ci.com/actlist/actlist)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist?ref=badge_shield)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
