@@ -13,7 +13,7 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsilentsoft%2Factlist?ref=badge_shield)
 ![downloads-total](https://actlist.silentsoft.org/api/shields/downloads-total)
 ![usage](https://actlist.silentsoft.org/api/shields/usage)
-[![Hits](https://hits.sh/github.com/silentsoft/actlist.svg)](https://hits.sh)
+[![Hits](https://hits.sh/github.com/silentsoft/actlist.svg)](https://hits.sh/github.com/silentsoft/actlist/)
 [![Discord](https://img.shields.io/discord/873205203493593178?logo=discord)](https://discord.silentsoft.org/actlist)
 
   </div>
