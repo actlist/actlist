@@ -29,7 +29,7 @@
 		<silentsoft-net.version>1.5.0</silentsoft-net.version>
 		<jkeymaster.version>1.2</jkeymaster.version>
 		<logback.version>1.2.3</logback.version>
-		<junit.version>4.8.1</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<jna.version>4.5.1</jna.version>
 		<notice-file-generator.version>2.2.3</notice-file-generator.version>
 	</properties>
