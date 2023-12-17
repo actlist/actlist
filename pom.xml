@@ -11,7 +11,7 @@
 	<repositories>
 		<repository>
 			<id>silentsoft-repository</id>
-			<url>http://nexus.silentsoft.org/repository/maven-public</url>
+			<url>https://nexus.silentsoft.org/repository/maven-public</url>
 		</repository>
 	</repositories>
 
